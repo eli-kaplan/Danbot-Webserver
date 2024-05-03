@@ -127,7 +127,6 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
 
         # If the item is relevant
         if database.get_drop_whitelist_by_item_name(itemName) is not None:
-
             # Find the tile and team associated with this player / drop
             tile = Tile(database.get_tile_by_drop(itemName))
             team = Team(database.get_team_by_id(team_id))
@@ -137,62 +136,89 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
             # Drop tile logic
             if tile.tile_type == "DROP":
                 # Find the weight of the trigger and add the proportion to the players tile completions
-                for i in range(len(re.split(',|/', tile.tile_triggers))):
-                    t = re.split(',|/', tile.tile_triggers)[i]
-                    if itemName == t.strip():
-                        database.add_player_tile_completions(player_id, (int(tile.tile_trigger_weights[i]) * int(itemQuantity))/tile.tile_triggers_required)
-
-                #
+                for i in range(len(tile.tile_triggers.split(','))):
+                    for trigger in tile.tile_triggers.split(',')[i].split('/'):
+                        if itemName == trigger.strip():
+                            database.add_player_tile_completions(player_id, (int(tile.tile_trigger_weights[i]) * int(itemQuantity))/tile.tile_triggers_required)
                 tile_completion_count = len(database.get_completed_tiles_by_team_id_and_tile_id(team_id, tile.tile_id))
+
+                # If the tile has been completed too many times do nothing
                 if tile_completion_count >= tile.tile_repetition:
                     continue
+
+                # Check if the tile was completed or if it was just progressing the tile
                 triggers = tile.tile_triggers
                 and_triggers = triggers.split(',')
                 trigger_value = 0
                 for i in range(0, len(and_triggers)):
-                    for or_trigger in and_triggers[i].strip().split('/'):
-                        drops = database.get_drops_by_item_name_and_team_id(or_trigger, team_id)
-                        if tile.tile_unique_drops == "TRUE":
+                    # Check the current trigger adding up any or triggers into a cumulative variable list called "drops"
+                    trigger = and_triggers[i].strip()
+                    drops = []
+                    for or_trigger in trigger.split('/'):
+                        or_trigger = or_trigger.strip()
+                        for drop in database.get_drops_by_item_name_and_team_id(or_trigger, team_id):
+                            drops.append(drop)
+
+                    # If the tile is unique ignore quantity / duplicates
+                    if tile.tile_unique_drops == "TRUE":
+                        if len(drops) > tile_completion_count:
                             trigger_value = trigger_value + int(tile.tile_trigger_weights[i])
-                            continue
-                        else:
-                            for drop in drops:
-                                drop = Drop(drop)
-                                trigger_value = int(tile.tile_trigger_weights[i]) * int(drop.drop_quantity) + trigger_value
+                        continue
+                    # else multiply the drop quantity for each drop by the trigger weight
+                    else:
+                        for drop in drops:
+                            drop = Drop(drop)
+                            trigger_value = int(tile.tile_trigger_weights[i]) * int(drop.drop_quantity) + trigger_value
+
+                # If the trigger value is greater than triggers required multiplied by tile completion count then the tile has been completed an additional time
                 if trigger_value >= tile.tile_triggers_required * (tile_completion_count + 1):
                     description = f"{tile.tile_name} completed! Congratulations! Your team has been awarded {tile.tile_points} point(s)!"
                     database.add_completed_tile(tile.tile_id, team_id)
                     description = description + f"\nYou have completed this tile {tile_completion_count + 1} times."
-                    color = 65280
+                    color = 65280 # Green
                     database.add_team_points(team.team_id, tile.tile_points)
+                # Otherwise this drop only progressed the tile and didn't complete it
                 else:
                     description = f"{tile.tile_name} is {trigger_value % tile.tile_triggers_required} / {tile.tile_triggers_required} from being completed!"
                     if tile_completion_count > 0:
                         description = description + f"\nYou have completed this tile {tile_completion_count} times."
-                    color = 16776960
+                    color = 16776960 # Yellow
+
+            # Set logic
             elif tile.tile_type == "SET":
-                # Todo set logic
-                color = 16776960
-                description = "You are still missing\n"
+                color = 16776960 # Yellow by default
+                description = "You are still missing\n" # Assume set is not completed
+
+                # Each set is separated by a '/' character
                 for set in tile.tile_triggers.split('/'):
+                    # If the item belongs to the current set, add 1 / the set length to the players tile completions
                     if itemName in set:
-                        database.add_player_tile_completions(player.player_id, len(set.split(',')))
+                        database.add_player_tile_completions(player.player_id, 1 / len(set.split(',')))
+
+                    # If every item from the set is found in the db is_complete will remain True
+                    # Iterate through every item in the set (separated by ',') and check if the players team has at least one in the db
                     is_complete = True
                     for item in set.split(','):
+                        # Get the item name from the set and check if it exists in the db with the given team id
                         item = item.strip()
                         drops = database.get_drops_by_item_name_and_team_id(item, team_id)
+
+                        # If drops has a length of 0 nobody on the team has gotten this drop yet
                         if len(drops) == 0:
-                            is_complete = False
-                            description = description + "-" + str(item) + "-"
+                            is_complete = False                                 # Flag the tile as incomplete
+                            description = description + "-" + str(item) + "-"   # Add the missing item to the description
+                    # If is_complete is still true, every item from the set has been acquired and the tile is complete
                     if is_complete:
-                        description = f"{tile.tile_name} is completed! {team.team_name} has been awarded {tile.tile_points}\n"
-                        color = 65280
+                        description = f"{tile.tile_name} is completed! {team.team_name} has been awarded {tile.tile_points}\n points!"
+                        color = 65280 # Green
                         database.add_team_points(team.team_id, tile.tile_points)
                         break
                     description = description + "\n"
             # Green = 65280, Yellow = 16776960
+            # Alert the team of either their progress or their tile completion
             send_webhook(team.team_webhook, title=f"{rsn} got a {itemName} from {source}!", description=description, color=color, image=img_file)
 
+    # Return true to signify the drop has been properly processed with no error
     return True
 
 
