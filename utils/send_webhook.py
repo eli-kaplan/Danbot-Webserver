@@ -15,7 +15,6 @@ def send_webhook(url, title, description, color, image):
     :param image_file: (Optional) The FileStorage object containing the image to be sent.
     """
     # Assuming 'image_file' is a SpooledTemporaryFile object from Flask's request.files
-    image.save('lootImage.png')
 
     embeds = [
         {
@@ -29,6 +28,7 @@ def send_webhook(url, title, description, color, image):
     ]
 
     if image is not None:
+        image.save('lootImage.png')
         with open("lootImage.png", "rb") as imageData:
             files = {
                 'file': ('lootImage.png', imageData, 'image/png')

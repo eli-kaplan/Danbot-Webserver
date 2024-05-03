@@ -4,6 +4,18 @@ import csv
 from db_entities import Player, Tile
 
 
+def add_team_points(team_id, team_points):
+    with sqlite3.connect('my_database.db') as conn:
+        cursor = conn.cursor()
+        update_query = '''
+            UPDATE teams
+            SET team_points = team_points + ?
+            WHERE team_id = ?
+        '''
+        cursor.execute(update_query, (team_points, team_id))
+
+
+
 # Functions for 'teams' table
 def add_team(team_name, team_points, team_webhook):
     with sqlite3.connect('my_database.db') as conn:
@@ -35,6 +47,15 @@ def add_player(player_name, deaths, gp_gained, tiles_completed, team_id, discord
         cursor = conn.cursor()
         cursor.execute("INSERT INTO players (player_name, deaths, gp_gained, tiles_completed, team_id, discord_id) VALUES (?, ?, ?, ?, ?, ?)",
                        (player_name, deaths, gp_gained, tiles_completed, team_id, discord_id))
+
+def add_player_tile_completions(player_id, tiles_completed):
+    with sqlite3.connect('my_database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE players
+            SET tiles_completed = tiles_completed + ?
+            WHERE player_id = ?
+        ''', (tiles_completed, player_id))
 
 def attach_player_discord(player_id, discord_id):
     with sqlite3.connect('my_database.db') as conn:

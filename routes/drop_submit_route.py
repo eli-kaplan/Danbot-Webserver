@@ -1,3 +1,6 @@
+import re
+
+import pytest
 from flask import Blueprint, jsonify, request
 import os
 import requests
@@ -79,6 +82,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
         discordId = data['discordUser']['id']
     source = data['extra']['source']
 
+    # Handle discord attachment
     player = database.get_player_by_name(rsn)
     if player is not None:
         player = Player(player)
@@ -100,6 +104,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
         player_id = player.player_id
         team_id = player.team_id
 
+
     # Get item source
     itemSource = data['extra']['source']
 
@@ -116,23 +121,34 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
         # Get item total
         itemTotal = item['priceEach'] * item['quantity']
 
+        # Add the item to the database
         print("Found loot " + player.player_name + ": " + str(item))
         database.add_drop(team_id, player_id, rsn, itemName, itemTotal, itemQuantity, itemSource, discordId)
+
+        # If the item is relevant
         if database.get_drop_whitelist_by_item_name(itemName) is not None:
-            # Todo bingo tile logic
+
+            # Find the tile and team associated with this player / drop
             tile = Tile(database.get_tile_by_drop(itemName))
             team = Team(database.get_team_by_id(team_id))
-
             description = ""
             color = 0
+
+            # Drop tile logic
             if tile.tile_type == "DROP":
-                # Todo drop logic
-                trigger_value = 0
+                # Find the weight of the trigger and add the proportion to the players tile completions
+                for i in range(len(re.split(',|/', tile.tile_triggers))):
+                    t = re.split(',|/', tile.tile_triggers)[i]
+                    if itemName == t.strip():
+                        database.add_player_tile_completions(player_id, int(tile.tile_trigger_weights[i])/tile.tile_triggers_required)
+
+                #
                 tile_completion_count = len(database.get_completed_tiles_by_team_id_and_tile_id(team_id, tile.tile_id))
                 if tile_completion_count >= tile.tile_repetition:
                     continue
                 triggers = tile.tile_triggers
                 and_triggers = triggers.split(',')
+                trigger_value = 0
                 for i in range(0, len(and_triggers)):
                     for or_trigger in and_triggers[i].strip().split('/'):
                         drops = database.get_drops_by_item_name_and_team_id(or_trigger, team_id)
@@ -148,6 +164,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                     database.add_completed_tile(tile.tile_id, team_id)
                     description = description + f"\nYou have completed this tile {tile_completion_count + 1} times."
                     color = 65280
+                    database.add_team_points(team.team_id, tile.tile_points)
                 else:
                     description = f"{tile.tile_name} is {trigger_value % tile.tile_triggers_required} / {tile.tile_triggers_required} from being completed!"
                     if tile_completion_count > 0:
@@ -158,6 +175,8 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                 color = 16776960
                 description = "You are still missing\n"
                 for set in tile.tile_triggers.split('/'):
+                    if itemName in set:
+                        database.add_player_tile_completions(player.player_id, len(set.split(',')))
                     is_complete = True
                     for item in set.split(','):
                         item = item.strip()
@@ -168,10 +187,11 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                     if is_complete:
                         description = f"{tile.tile_name} is completed! {team.team_name} has been awarded {tile.tile_points}\n"
                         color = 65280
+                        database.add_team_points(team.team_id, tile.tile_points)
                         break
                     description = description + "\n"
             # Green = 65280, Yellow = 16776960
-            send_webhook(team.team_webhook, title=f"{rsn} got a {itemName} from {source}!", description='\n'.join(description.split('\n')[:-1]), color=color, image=img_file)
+            send_webhook(team.team_webhook, title=f"{rsn} got a {itemName} from {source}!", description=description, color=color, image=img_file)
 
     return True
 
@@ -450,10 +470,16 @@ def parse_json_data(json_data, img_file) -> dict[str, list[str]]:
 @drop_submission_route.route('', methods=['POST'])
 def handle_request():
     data = request.form
-    img_file = request.files['file']
-
+    try:
+        img_file = request.files['file']
+    except:
+        img_file = None
+    print('here1')
+    print(data)
     if 'payload_json' in data:
+        print("here2")
         json_data = data['payload_json']
+        print('here2')
         try:
             result = parse_json_data(json_data, img_file)
         except Exception as e:

@@ -13,6 +13,9 @@ def home():
 app.register_blueprint(drop_submission_route, url_prefix='/drop_submit_route')
 app.register_blueprint(database_routes, url_prefix="/db")
 
+def create_app():
+    return app
+
 if __name__ == "__main__":
     from waitress import serve
 
