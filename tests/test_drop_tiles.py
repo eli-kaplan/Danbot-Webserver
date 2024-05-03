@@ -53,4 +53,46 @@ def test_tile_completed(client):
     player = db_entities.Player(database.get_player_by_name("Danbis"))
     assert player.tiles_completed == 1
 
+def test_complex_trigger_weights(client):
+    database.reset_tables()
+    database.read_teams('tests/test_csvs/default_team_1.csv')
+    database.read_tiles('tests/test_csvs/default_tiles_1.csv')
 
+    json_data = spoof_drop.item_spoof_json("Danbis", "Coins", 6)
+    result = drop_submit_route.parse_loot(json_data, None)
+    assert result == True
+
+    player = db_entities.Player(database.get_player_by_name("Danbis"))
+    assert player.tiles_completed == 12/20
+
+def test_multiple_completions(client):
+    database.reset_tables()
+    database.read_teams('tests/test_csvs/default_team_1.csv')
+    database.read_tiles('tests/test_csvs/default_tiles_1.csv')
+
+    json_data = spoof_drop.item_spoof_json("Danbis", "Coins", 10)
+    result = drop_submit_route.parse_loot(json_data, None)
+    assert result == True
+
+    player = db_entities.Player(database.get_player_by_name("Danbis"))
+    assert player.tiles_completed == 1
+    team = db_entities.Team(database.get_team_by_id(1))
+    assert team.team_points == 1
+
+    json_data = spoof_drop.item_spoof_json("Danbis", "Coins", 11)
+    result = drop_submit_route.parse_loot(json_data, None)
+    assert result == True
+
+    player = db_entities.Player(database.get_player_by_name("Danbis"))
+    assert player.tiles_completed == 42/20
+    team = db_entities.Team(database.get_team_by_id(1))
+    assert team.team_points == 2
+
+    json_data = spoof_drop.item_spoof_json("Danbis", "Bones", 1)
+    result = drop_submit_route.parse_loot(json_data, None)
+    assert result == True
+
+    player = db_entities.Player(database.get_player_by_name("Danbis"))
+    assert player.tiles_completed == 62/20
+    team = db_entities.Team(database.get_team_by_id(1))
+    assert team.team_points == 3

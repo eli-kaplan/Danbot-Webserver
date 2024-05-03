@@ -140,7 +140,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                 for i in range(len(re.split(',|/', tile.tile_triggers))):
                     t = re.split(',|/', tile.tile_triggers)[i]
                     if itemName == t.strip():
-                        database.add_player_tile_completions(player_id, int(tile.tile_trigger_weights[i])/tile.tile_triggers_required)
+                        database.add_player_tile_completions(player_id, (int(tile.tile_trigger_weights[i]) * int(itemQuantity))/tile.tile_triggers_required)
 
                 #
                 tile_completion_count = len(database.get_completed_tiles_by_team_id_and_tile_id(team_id, tile.tile_id))
