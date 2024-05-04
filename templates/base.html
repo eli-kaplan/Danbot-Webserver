@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #121212; /* Dark background */
+            color: #FFFFFF; /* Light text */
+            font-family: Arial, sans-serif;
+        }
+
+        nav {
+            background-color: #333333; /* Darker background for navbar */
+            height: 50px;
+            padding: 0 16px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+        }
+
+        .content {
+            margin-top: 60px; /* Adjust as needed */
+        }
+
+        button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 10px 32px; /* Adjusted padding */
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            transition-duration: 0.4s;
+        }
+
+        .flash_text {
+            color: red;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <button onclick="location.href='/'" type="button">Home</button>
+    </nav>
+
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                    {% for message in messages %}
+                        <p class="flash_text">{{ message }}</p>
+                    {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+</body>
+</html>
