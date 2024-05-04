@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, Blueprint, flash, redirect
+from flask import Flask, request, render_template, Blueprint, flash, redirect, send_from_directory
 from werkzeug.utils import secure_filename
 import sqlite3
 import os
@@ -57,3 +57,11 @@ def upload_tiles():
         else:
             return redirect("https://www.youtube.com/watch?v=xvFZjo5PgG0")
     return render_template('upload_tiles.html')
+
+@database_routes.route('/db_download', methods=['GET'])
+def db_download():
+    # Specify the directory where your database file is
+    directory = os.getcwd()
+    # Specify the name of your database file
+    filename = 'my_database.db'
+    return send_from_directory(directory, filename, as_attachment=True)

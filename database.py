@@ -1,5 +1,8 @@
+import os
+import shutil
 import sqlite3
 import csv
+from datetime import datetime
 
 from db_entities import Player, Tile
 
@@ -167,6 +170,19 @@ def add_completed_tile(tile_id, team_id):
         cursor = conn.cursor()
         cursor.execute("INSERT INTO completed_tiles (tile_id, team_id) VALUES (?, ?)",
                        (tile_id, team_id))
+
+    # Get the current date and time
+    now = datetime.now()
+
+    # Format the date and time as a string
+    now_str = now.strftime("%Y-%m-%d_%H-%M-%S")
+
+    # Create the backup directory if it doesn't exist
+    if not os.path.exists('backups'):
+        os.makedirs('backups')
+
+    # Copy the database file to the backup directory
+    shutil.copy2('my_database.db', f'backups/my_database_{now_str}.db')
 
 def remove_completed_tile(tile_name):
     with sqlite3.connect('my_database.db') as conn:
@@ -347,6 +363,15 @@ def reset_tables():
 
     # Close the connection
     conn.close()
+
+    dir_path = 'backups'
+
+    # Check if the directory exists
+    if os.path.exists(dir_path):
+        # Delete the directory and all its contents
+        shutil.rmtree(dir_path)
+    else:
+        print("The directory does not exist")
 
 
 
