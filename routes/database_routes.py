@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, Blueprint, flash
+from flask import Flask, request, render_template, Blueprint, flash, redirect
 from werkzeug.utils import secure_filename
 import sqlite3
 import os
@@ -15,7 +15,7 @@ def reset_database():
             database.reset_tables()
             flash("Database reset successfully.")
         else:
-            flash("Incorrect password.")
+            return redirect("https://www.youtube.com/watch?v=xvFZjo5PgG0")
     return render_template('reset_database.html')
 
 @database_routes.route('/upload_teams', methods=['GET', 'POST'])
@@ -35,7 +35,7 @@ def upload_teams():
             else:
                 flash("No file selected.")
         else:
-            flash("Incorrect password.")
+            return redirect("https://www.youtube.com/watch?v=xvFZjo5PgG0")
     return render_template('upload_teams.html')
 
 @database_routes.route('/upload_tiles', methods=['GET', 'POST'])
@@ -55,5 +55,5 @@ def upload_tiles():
             else:
                 flash("No file selected.")
         else:
-            flash("Incorrect password.")
+            return redirect("https://www.youtube.com/watch?v=xvFZjo5PgG0")
     return render_template('upload_tiles.html')
