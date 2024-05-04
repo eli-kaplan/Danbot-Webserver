@@ -53,3 +53,10 @@ class Tile:
         self.tile_triggers_required = tile_tuple[6]
         self.tile_repetition = tile_tuple[7]
         self.tile_points = tile_tuple[8]
+
+class Killcount:
+    def __init__(self, killcount_tuple):
+        self.player_id = killcount_tuple[0]
+        self.team_id = killcount_tuple[1]
+        self.boss_name = killcount_tuple[2]
+        self.kills = killcount_tuple[3]

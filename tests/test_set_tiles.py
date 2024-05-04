@@ -4,7 +4,7 @@ import sys
 import pytest
 
 import db_entities
-from routes import drop_submit_route
+from routes import dink
 
 sys.path.insert(0, os.path.abspath('..'))
 import database
@@ -30,7 +30,7 @@ def test_single_set_piece(client):
     database.read_tiles('tests/test_csvs/default_tiles_2.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 1", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player = db_entities.Player(database.get_player_by_name("Danbis"))
@@ -45,15 +45,15 @@ def test_mix_and_match_completion(client):
     database.read_tiles('tests/test_csvs/default_tiles_2.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 1", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Mal 2", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 3", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player = db_entities.Player(database.get_player_by_name("Danbis"))
@@ -68,15 +68,15 @@ def test_standard_completion(client):
     database.read_tiles('tests/test_csvs/default_tiles_2.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 1", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 2", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 3", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player = db_entities.Player(database.get_player_by_name("Danbis"))
@@ -91,15 +91,15 @@ def test_cross_team_completion_failure(client):
     database.read_tiles('tests/test_csvs/default_tiles_2.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 1", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     json_data = spoof_drop.item_spoof_json("Max uwu", "Odium 2", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 3", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player = db_entities.Player(database.get_player_by_name("Danbis"))
@@ -114,15 +114,15 @@ def test_overcompletion(client):
     database.read_tiles('tests/test_csvs/default_tiles_2.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 1", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 2", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 3", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player = db_entities.Player(database.get_player_by_name("Danbis"))
@@ -132,15 +132,15 @@ def test_overcompletion(client):
     assert team.team_points == 1
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 1", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 2", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 3", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player = db_entities.Player(database.get_player_by_name("Danbis"))

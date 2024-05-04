@@ -92,6 +92,12 @@ def get_player_by_name(player_name):
         cursor.execute("SELECT * FROM players where player_name = ?", (player_name,))
         return cursor.fetchone()
 
+def get_player_by_id(player_id):
+    with sqlite3.connect('my_database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM players where player_id = ?", (player_id,))
+        return cursor.fetchone()
+
 # Functions for 'drops' table
 def add_drop(team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source, discord_id):
     with sqlite3.connect('my_database.db') as conn:
@@ -205,6 +211,37 @@ def get_drops_by_item_name_and_team_id(item_name, team_id):
     with sqlite3.connect('my_database.db') as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM drops where team_id = ? and drop_name = ?", (team_id, item_name,))
+        return cursor.fetchall()
+
+# Functions for 'killcount' table
+def add_killcount(player_id, team_id, bossname, kills):
+    with sqlite3.connect('my_database.db') as conn:
+        cursor = conn.cursor()
+
+        # Check if the row already exists
+        cursor.execute("SELECT * FROM KillCount WHERE player_id = ? AND team_id = ? AND boss_name = ?", (player_id, team_id, bossname))
+        row = cursor.fetchone()
+
+        if row is not None:
+            # If the row exists, update the kills
+            cursor.execute("UPDATE KillCount SET kills = kills + ? WHERE player_id = ? AND team_id = ? AND boss_name = ?", (kills, player_id, team_id, bossname))
+        else:
+            # If the row doesn't exist, insert a new row
+            cursor.execute("INSERT INTO KillCount (player_id, team_id, boss_name, kills) VALUES (?, ?, ?, ?)", (player_id, team_id, bossname, kills))
+
+        # Commit the changes
+        conn.commit()
+
+def get_killcount_by_team_id_and_boss_name(team_id, boss_name):
+    with sqlite3.connect('my_database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM killcount WHERE team_id = ? AND boss_name = ?", (team_id, boss_name))
+        return cursor.fetchall()
+
+def get_killcount_by_player_id(player_id):
+    with sqlite3.connect('my_database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM killcount WHERE player_id = ?", (player_id))
         return cursor.fetchall()
 
 def reset_tables():

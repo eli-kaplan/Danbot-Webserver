@@ -1,18 +1,3 @@
-import json
-
-import pytest
-
-
-def replace_values_in_request(request, player_name, item_name, item_quantity):
-    # Replace player name
-    request['playerName'] = player_name
-
-    # Replace item name and quantity
-    for item in request['extra']['items']:
-        item['name'] = item_name
-        item['quantity'] = item_quantity
-
-    return request
 
 
 # Example usage in a test

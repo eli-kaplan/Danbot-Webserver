@@ -7,10 +7,11 @@ import requests
 import json
 
 import database
+import db_entities
 from db_entities import Player, Team, Tile, Drop
 from utils.send_webhook import send_webhook
 
-drop_submission_route = Blueprint("drop_submit_route", __name__)
+drop_submission_route = Blueprint("dink", __name__)
 
 
 # function to parse death data
@@ -72,12 +73,6 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
     # Check if discordUser exists
     if 'discordUser' not in data:
         discordId = "None"
-    else:
-        discordId = data['discordUser']['id']
-    source = data['extra']['source']
-
-    if 'discordUser' not in data:
-        discordId = 0
     else:
         discordId = data['discordUser']['id']
     source = data['extra']['source']
@@ -332,11 +327,70 @@ def parse_clue(data) -> dict[str, list[str]]:
 
 
 # function to parse kill count data
-def parse_kill_count(data) -> dict[str, list[str]]:
-    print("KILL_COUNT")
-    # print data prettyfied
-    # print(json.dumps(data, indent = 2))
-    return False
+def parse_kill_count(data, img_file) -> dict[str, list[str]]:
+    rsn = data['playerName']
+    boss_name = data['extra']['boss']
+
+    # Check if discordUser exists
+    if 'discordUser' not in data:
+        discordId = "None"
+    else:
+        discordId = data['discordUser']['id']
+
+
+    # Handle discord attachment
+    player = database.get_player_by_name(rsn)
+    if player is not None:
+        player = Player(player)
+        player_id = player.player_id
+        team_id = player.team_id
+
+        if player.discord_id == 0:
+            database.attach_player_discord(player_id, discordId)
+    else:
+        # Todo send discord alert that an alt was detected and we've linked the account
+        print("Alt detected: " + rsn)
+        database.add_alt_account(rsn, discordId)
+        player = database.get_player_by_name(rsn)
+        if player is None:
+            print("Player unknown: " + rsn)
+            # Player is not a part of the bingo / we don't know who owns this account
+            return False
+        player = Player(player)
+        player_id = player.player_id
+        team_id = player.team_id
+
+    database.add_killcount(player_id, team_id, boss_name, 1)
+    print(f"{rsn} has killed {boss_name}.")
+    if database.get_drop_whitelist_by_item_name(boss_name) is not None:
+        tile = Tile(database.get_tile_by_drop(boss_name))
+        team = Team(database.get_team_by_id(team_id))
+        tile_completion_count = len(database.get_completed_tiles_by_team_id_and_tile_id(team_id, tile.tile_id))
+
+        if tile_completion_count >= tile.tile_repetition:
+            return True
+
+        database.add_player_tile_completions(player_id, 1 / tile.tile_triggers_required)
+
+        team_killcount = 0
+        killcounts = database.get_killcount_by_team_id_and_boss_name(team.team_id, boss_name)
+        for killcount in killcounts:
+            killcount = db_entities.Killcount(killcount)
+            team_killcount = team_killcount + killcount.kills
+
+        if team_killcount >= tile.tile_triggers_required * (tile_completion_count + 1):
+            database.add_completed_tile(tile.tile_id, team_id)
+            database.add_team_points(team_id, tile.tile_points)
+            description = (f"You have completed {tile.tile_name}! You have {tile_completion_count + 1} total completions"
+                           f" with the following killcount\n")
+            for killcount in killcounts:
+                killcount = db_entities.Killcount(killcount)
+                player_ = database.get_player_by_id(killcount.player_id)
+                player_ = db_entities.Player(player_)
+                description = description + f"- {player_.player_name} with {killcount.kills} kills\n"
+            send_webhook(team.team_webhook, f"{tile.tile_name} completed!", description=description, color=65280, image=img_file)
+
+    return True
 
 
 # function to parse combat achievement data

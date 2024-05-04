@@ -4,7 +4,7 @@ import sys
 import pytest
 
 import db_entities
-from routes import drop_submit_route
+from routes import dink
 
 sys.path.insert(0, os.path.abspath('..'))
 import database
@@ -31,7 +31,7 @@ def test_relevant_drop_occurred(client):
 
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Coin pouch", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert len(database.get_drops_by_item_name_and_team_id("Coin pouch", 1)) > 0
     assert result == True
 
@@ -41,11 +41,11 @@ def test_tile_completed(client):
     database.read_tiles('tests/test_csvs/default_tiles_1.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Coin pouch", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     team = db_entities.Team(database.get_team_by_id(1))
@@ -59,7 +59,7 @@ def test_complex_trigger_weights(client):
     database.read_tiles('tests/test_csvs/default_tiles_1.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Coins", 6)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player = db_entities.Player(database.get_player_by_name("Danbis"))
@@ -71,7 +71,7 @@ def test_multiple_completions(client):
     database.read_tiles('tests/test_csvs/default_tiles_1.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Coins", 10)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player = db_entities.Player(database.get_player_by_name("Danbis"))
@@ -80,7 +80,7 @@ def test_multiple_completions(client):
     assert team.team_points == 1
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Coins", 11)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player = db_entities.Player(database.get_player_by_name("Danbis"))
@@ -89,7 +89,7 @@ def test_multiple_completions(client):
     assert team.team_points == 2
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Bones", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player = db_entities.Player(database.get_player_by_name("Danbis"))
@@ -103,11 +103,11 @@ def test_drops_shared_by_team(client):
     database.read_tiles('tests/test_csvs/default_tiles_1.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Coins", 5)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     json_data = spoof_drop.item_spoof_json("Deidera", "Coins", 5)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
@@ -123,21 +123,21 @@ def test_collections(client):
     database.read_tiles('tests/test_csvs/default_tiles_1.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Air Rune", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
     assert player_danbis.tiles_completed == 1/3
 
     json_data = spoof_drop.item_spoof_json("Deidera", "Iron bolts", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player_deidera = db_entities.Player(database.get_player_by_name("Deidera"))
     assert player_deidera.tiles_completed == 1/3
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Bronze arrow", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
@@ -147,21 +147,21 @@ def test_collections(client):
     assert team.team_points == 1
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Earth rune", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
     assert player_danbis.tiles_completed == 1
 
     json_data = spoof_drop.item_spoof_json("Deidera", "Fire rune", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player_deidera = db_entities.Player(database.get_player_by_name("Deidera"))
     assert player_deidera.tiles_completed == 2/3
 
     json_data = spoof_drop.item_spoof_json("Deidera", "Steel arrow", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player_deidera = db_entities.Player(database.get_player_by_name("Deidera"))
@@ -176,21 +176,21 @@ def test_cross_team_drops(client):
     database.read_tiles('tests/test_csvs/default_tiles_1.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Air Rune", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
     assert player_danbis.tiles_completed == 1/3
 
     json_data = spoof_drop.item_spoof_json("Max uwu", "Iron bolts", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player_muwu = db_entities.Player(database.get_player_by_name("Max uwu"))
     assert player_muwu.tiles_completed == 1/3
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Bronze arrow", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
@@ -203,15 +203,15 @@ def test_cross_team_drops(client):
     assert team_2.team_points == 0
 
     json_data = spoof_drop.item_spoof_json("Max uwu", "Coin pouch", 1)
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player_muwu = db_entities.Player(database.get_player_by_name("Max uwu"))
     assert player_muwu.tiles_completed == 1
 
-    result = drop_submit_route.parse_loot(json_data, None)
+    result = dink.parse_loot(json_data, None)
     assert result == True
 
     player_muwu = db_entities.Player(database.get_player_by_name("Max uwu"))
