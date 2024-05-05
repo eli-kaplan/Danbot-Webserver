@@ -1,7 +1,6 @@
 import json
 
 import requests
-from discord import SyncWebhook, File, Embed
 
 
 def send_webhook(url, title, description, color, image):

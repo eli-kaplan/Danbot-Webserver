@@ -107,6 +107,7 @@ def add_drop(team_id, player_id, player_name, drop_name, drop_value, drop_quanti
         cursor = conn.cursor()
         cursor.execute("INSERT INTO drops (team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source, discord_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                        (team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source, discord_id))
+        cursor.execute("UPDATE Players SET gp_gained = gp_gained + ? WHERE player_id = ?", (drop_value * drop_quantity, player_id))
 
 def remove_drop(player_id, drop_name):
     with sqlite3.connect('my_database.db') as conn:
@@ -117,6 +118,12 @@ def get_drops():
     with sqlite3.connect('my_database.db') as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM drops")
+        return cursor.fetchall()
+
+def get_drops_by_player_id(player_id):
+    with sqlite3.connect('my_database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM drops WHERE player_id = ?", (player_id,))
         return cursor.fetchall()
 
 # Functions for 'killcount' table
@@ -257,7 +264,7 @@ def get_killcount_by_team_id_and_boss_name(team_id, boss_name):
 def get_killcount_by_player_id(player_id):
     with sqlite3.connect('my_database.db') as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM killcount WHERE player_id = ?", (player_id))
+        cursor.execute("SELECT * FROM killcount WHERE player_id = ?", (player_id,))
         return cursor.fetchall()
 
 def reset_tables():

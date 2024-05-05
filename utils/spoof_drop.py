@@ -12,7 +12,7 @@ def item_spoof_json(player_name, item_name, item_quantity):
                             [
                                 {'id': 526, 'quantity': item_quantity, 'priceEach': 113, 'name': item_name},
                             ],
-                        'source': 'Guard',
+                        'source': 'Admin',
                     },
                 'discordUser': {'id': '202973806749286400'},
 
