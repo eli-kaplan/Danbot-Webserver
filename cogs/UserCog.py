@@ -1,10 +1,12 @@
+from collections import defaultdict
+
 import discord
 from discord.ext import commands
 
 import database
 import db_entities
-from utils import scapify
-from utils.autocomplete import player_names, team_names
+from utils import scapify, bingo
+from utils.autocomplete import player_names, team_names, tile_names
 
 ftext = "\u001b["
 
@@ -80,6 +82,20 @@ class UserCog(commands.Cog):
             kill_block += result
         kill_block += "```"
 
+        team_members = database.get_players_by_team_id(team.team_id)
+        player_block = "```ansi\n"
+        rank = 0
+        for player in team_members:
+            rank = rank + 1
+            player = db_entities.Player(player)
+            spaces_needed = 56 - len(f"Rank {rank}: {player.player_name[:40]}") - len(f"{player.tiles_completed} tiles ({scapify.int_to_gp(player.gp_gained)})")
+            result = f"{ftext + fred}Rank {rank}:{fend} {player.player_name[:40]}{' ' * spaces_needed}{ftext + fblue}{player.tiles_completed} tiles {fend}{ftext + fgreen}({scapify.int_to_gp(player.gp_gained)})\n{fend}"
+            if len(player_block) + len(result) > 1021:
+                break
+            player_block += result
+        player_block += "```"
+
+        embed.add_field(name="Players", value=player_block, inline=False)
         embed.add_field(name="Drops", value=drop_block, inline=False)
         embed.add_field(name="Kills", value=kill_block, inline=False)
         await ctx.respond(embed=embed)
@@ -138,3 +154,67 @@ class UserCog(commands.Cog):
         embed.add_field(name="Drops", value=drop_block, inline=False)
         embed.add_field(name="Kills", value=kill_block, inline=False)
         await ctx.respond(embed=embed)
+
+    @discord.slash_command(name="progress", description="Check your progress on a specific tile")
+    async def progress(self, ctx:discord.ApplicationContext,
+                       team_name: discord.Option(str, "What is your team name?", autocomplete=discord.utils.basic_autocomplete(team_names)),
+                       tile_name: discord.Option(str, "What tile are you checking?", autocomplete=discord.utils.basic_autocomplete(tile_names))):
+        await ctx.defer()
+        team = db_entities.Team(database.get_team_by_name(team_name))
+        tile = db_entities.Tile(database.get_tile_by_name(tile_name))
+        progress = bingo.check_progress(tile, team)
+        if progress is None:
+            ctx.respond(f"You have fully completed {tile.tile_name}!")
+        else:
+            ctx.respond(progress)
+
+    @discord.slash_command(name="board", description="Get a list of tiles you've already completed")
+    async def board(self, ctx:discord.ApplicationContext,
+                    team_name: discord.Option(str, "What is your team name?", autocomplete=discord.utils.basic_autocomplete(team_names)),
+                    board_type: discord.Option(str, "What kind of board would you like to see?", autocomplete=discord.utils.basic_autocomplete(["All Tiles","Completed Tiles","Incomplete Tiles", "Partial Tiles"]))):
+        await ctx.defer()
+        response = f"## {board_type} for {team_name}\n"
+        team = db_entities.Team(database.get_team_by_name(team_name))
+        tiles = database.get_tiles()
+        completed_tiles = database.get_completed_tiles()
+        complete_tile_dict = defaultdict(int)
+        for tile in completed_tiles:
+            tile = db_entities.Completed_Tile(tile)
+            if tile.team_id == team.team_id:
+                complete_tile_dict[tile.tile_id] = complete_tile_dict[tile.tile_id] + 1
+
+        if board_type == "All Tiles":
+            for tile in tiles:
+                tile = db_entities.Tile(tile)
+                if complete_tile_dict != 0:
+                    response = response + f"{tile.tile_name}: "
+                    for i in range(min(complete_tile_dict[tile.tile_id], tile.tile_repetition)):
+                        response = response + ":white_check_mark:"
+                    for i in range(0, tile.tile_repetition - complete_tile_dict[tile.tile_id]):
+                        response = response + ":x:"
+                    response = response + "\n"
+        elif board_type == "Completed Tiles":
+            for tile in tiles:
+                tile = db_entities.Tile(tile)
+                print(complete_tile_dict[tile.tile_id])
+                if complete_tile_dict[tile.tile_id] > 0:
+                    response = response + f"{tile.tile_name}: "
+                    for i in range(min(complete_tile_dict[tile.tile_id], tile.tile_repetition)):
+                        response = response + ":white_check_mark:"
+                    for i in range(0, tile.tile_repetition - complete_tile_dict[tile.tile_id]):
+                        response = response + ":x:"
+        elif board_type == "Incomplete Tiles":
+            for tile in tiles:
+                tile = db_entities.Tile(tile)
+                if complete_tile_dict[tile.tile_id] == 0:
+                    response = response + f"{tile.tile_name}: "
+                    for i in range(0, tile.tile_repetition - complete_tile_dict[tile.tile_id]):
+                        response = response + ":x:"
+        elif board_type == "Partial Tiles":
+            for tile in tiles:
+                tile = db_entities.Tile(tile)
+                progress = bingo.check_progress(tile, team)
+                if progress is not None:
+                    response = response + progress + "\n"
+
+        await ctx.respond(response)

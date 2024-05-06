@@ -3,6 +3,13 @@ import discord
 import database
 import db_entities
 
+async def tile_names(ctx: discord.AutocompleteContext):
+    tile_names = []
+    for tile in database.get_tiles():
+        tile = db_entities.Tile(tile)
+        tile_names.append(tile.tile_name)
+    return tile_names
+
 async def team_names(ctx: discord.AutocompleteContext):
     team_names = []
     for team in database.get_teams():
@@ -16,6 +23,13 @@ async def player_names(ctx: discord.AutocompleteContext):
         player = db_entities.Player(player)
         player_names.append(player.player_name)
     return player_names
+
+async def drop_names(ctx: discord.AutocompleteContext):
+    drop_names = []
+    for drop in database.get_drop_whitelist():
+        drop = db_entities.Drop_whitelist(drop)
+        drop_names.append(drop.drop_name)
+    return drop_names
 
 async def boss_names(ctx: discord.AutocompleteContext):
     return ["Abyssal Sire", "Alchemical Hydra", "Artio", "Barrows Chests", "Bryophyta", "Calvar\'ion", "Callisto",

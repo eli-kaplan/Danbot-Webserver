@@ -40,7 +40,7 @@ class Drop_whitelist:
 class Completed_Tile:
     def __init__(self, completed_tile_tuple):
         self.tile_id = completed_tile_tuple[0]
-        self.team_id = completed_tile_tuple[2]
+        self.team_id = completed_tile_tuple[1]
 
 class Tile:
     def __init__(self, tile_tuple):

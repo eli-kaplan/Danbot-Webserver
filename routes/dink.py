@@ -141,8 +141,6 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                         if itemName == trigger.strip():
                             database.add_player_tile_completions(player_id, (int(tile.tile_trigger_weights[i]) * int(itemQuantity))/tile.tile_triggers_required)
 
-
-
                 # Check if the tile was completed or if it was just progressing the tile
                 triggers = tile.tile_triggers
                 and_triggers = triggers.split(',')
@@ -168,7 +166,6 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                             trigger_value = int(tile.tile_trigger_weights[i]) * int(drop.drop_quantity) + trigger_value
 
                 # If the trigger value is greater than triggers required multiplied by tile completion count then the tile has been completed an additional time
-                print(trigger_value)
                 if trigger_value >= tile.tile_triggers_required * (tile_completion_count + 1) or (tile.tile_unique_drops == "TRUE" and trigger_value >= tile.tile_triggers_required):
                     description = f"{tile.tile_name} completed! Congratulations! Your team has been awarded {tile.tile_points} point(s)!"
                     database.add_completed_tile(tile.tile_id, team_id)

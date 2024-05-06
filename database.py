@@ -96,6 +96,12 @@ def get_players():
         cursor.execute("SELECT * FROM players")
         return cursor.fetchall()
 
+def get_players_by_team_id(team_id):
+    with sqlite3.connect('my_database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM players WHERE team_id = ?", (team_id,))
+        return cursor.fetchall()
+
 def get_player_by_name(player_name):
     with sqlite3.connect('my_database.db') as conn:
         cursor = conn.cursor()
@@ -228,6 +234,12 @@ def add_tile(tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_uni
                        (tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required, tile_repetition, tile_points))
 
 # ... Repeat similar functions for 'drops', 'killcount', 'drop_whitelist', and 'completed_tiles' tables ...
+
+def get_tiles():
+    with sqlite3.connect('my_database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM tiles")
+        return cursor.fetchall()
 
 def get_tile_by_drop(drop_name):
     with sqlite3.connect('my_database.db') as conn:
