@@ -56,7 +56,7 @@ def test_multiplayer_kc_completion(client):
         assert result == True
 
         player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
-        assert round(player_danbis.tiles_completed, 2) == (i + 1 ) / 10
+        assert round(player_danbis.tiles_completed, 2) == round((i + 1 ) / 10, 2)
 
     for i in range(6):
         team = db_entities.Team(database.get_team_by_id(1))
@@ -67,7 +67,7 @@ def test_multiplayer_kc_completion(client):
         assert result == True
 
         player_deidera = db_entities.Player(database.get_player_by_name("Deidera"))
-        assert round(player_deidera.tiles_completed, 2) == (i + 1 ) / 10
+        assert round(player_deidera.tiles_completed, 2) == round((i + 1 ) / 10, 2)
 
     team = db_entities.Team(database.get_team_by_id(1))
     assert team.team_points == 1
@@ -87,7 +87,7 @@ def test_multiple_completions(client):
         assert result == True
 
         player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
-        assert round(player_danbis.tiles_completed, 2) == (i + 1 ) / 10
+        assert round(player_danbis.tiles_completed, 2) == round((i + 1 ) / 10, 2)
 
     team = db_entities.Team(database.get_team_by_id(1))
     assert team.team_points == 1
@@ -101,7 +101,7 @@ def test_multiple_completions(client):
         assert result == True
 
         player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
-        assert round(player_danbis.tiles_completed, 2) == (1 + (i + 1)/ 10)
+        assert round(player_danbis.tiles_completed, 2) == round((1 + (i + 1)/ 10), 2)
 
     team = db_entities.Team(database.get_team_by_id(1))
     assert team.team_points == 2
@@ -121,7 +121,7 @@ def test_multiple_completions_multiple_players(client):
         assert result == True
 
         player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
-        assert round(player_danbis.tiles_completed, 2) == (i + 1 ) / 10
+        assert round(player_danbis.tiles_completed, 2) == round((i + 1 ) / 10, 2)
 
     for i in range(4):
         team = db_entities.Team(database.get_team_by_id(1))
@@ -132,7 +132,7 @@ def test_multiple_completions_multiple_players(client):
         assert result == True
 
         player_danbis = db_entities.Player(database.get_player_by_name("Deidera"))
-        assert round(player_danbis.tiles_completed, 2) == (i + 1 ) / 10
+        assert round(player_danbis.tiles_completed, 2) == round((i + 1 ) / 10, 2)
 
     team = db_entities.Team(database.get_team_by_id(1))
     assert team.team_points == 1
@@ -146,7 +146,7 @@ def test_multiple_completions_multiple_players(client):
         assert result == True
 
         player_danbis = db_entities.Player(database.get_player_by_name("Deidera"))
-        assert round(player_danbis.tiles_completed, 2) == (4 + i + 1 ) / 10
+        assert round(player_danbis.tiles_completed, 2) == round((4 + i + 1 ) / 10, 2)
 
     for i in range(6):
         team = db_entities.Team(database.get_team_by_id(1))
@@ -157,7 +157,7 @@ def test_multiple_completions_multiple_players(client):
         assert result == True
 
         player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
-        assert round(player_danbis.tiles_completed, 2) == (6 + (i + 1))/ 10
+        assert round(player_danbis.tiles_completed, 2) == round((6 + (i + 1))/ 10, 2)
 
     team = db_entities.Team(database.get_team_by_id(1))
     assert team.team_points == 2
@@ -173,7 +173,7 @@ def test_single_player_overcompletion(client):
         assert result == True
 
         player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
-        assert round(player_danbis.tiles_completed, 2) == min((i + 1 ) / 10, 2)
+        assert round(player_danbis.tiles_completed, 2) == round(min((i + 1 ) / 10, 2), 2)
 
 
     team = db_entities.Team(database.get_team_by_id(1))
@@ -190,7 +190,7 @@ def test_multiplayer_overcompletion(client):
         assert result == True
 
         player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
-        assert round(player_danbis.tiles_completed, 2) == min((i + 1 ) / 10, 2)
+        assert round(player_danbis.tiles_completed, 2) == round(min((i + 1 ) / 10, 2), 2)
 
     team = db_entities.Team(database.get_team_by_id(1))
     assert team.team_points == 1
@@ -201,7 +201,7 @@ def test_multiplayer_overcompletion(client):
         assert result == True
 
         player_danbis = db_entities.Player(database.get_player_by_name("Deidera"))
-        assert round(player_danbis.tiles_completed, 2) == min((i + 1 ) / 10, 0.5)
+        assert round(player_danbis.tiles_completed, 2) == round(min((i + 1 ) / 10, 0.5), 2)
 
     team = db_entities.Team(database.get_team_by_id(1))
     assert team.team_points == 2

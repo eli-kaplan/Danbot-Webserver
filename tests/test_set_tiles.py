@@ -34,7 +34,7 @@ def test_single_set_piece(client):
     assert result == True
 
     player = db_entities.Player(database.get_player_by_name("Danbis"))
-    assert player.tiles_completed == 1/3
+    assert round(player.tiles_completed, 2) == round(1/3, 2)
 
     team = db_entities.Team(database.get_team_by_id(1))
     assert team.team_points == 0
@@ -81,7 +81,7 @@ def test_cross_team_completion_failure(client):
     assert result == True
 
     player = db_entities.Player(database.get_player_by_name("Danbis"))
-    assert player.tiles_completed == 2/3
+    assert round(player.tiles_completed, 2) == round(2/3, 2)
 
     team = db_entities.Team(database.get_team_by_id(1))
     assert team.team_points == 0
