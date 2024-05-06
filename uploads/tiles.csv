@@ -1,5 +1,3 @@
 Tile Name,Tile Type,Triggers,Trigger Weights,Unique Drops,Triggers Required,Repetition,Points
-Test Tile,DROP,Coin pouch,1,FALSE,3,15,1
-Test Tile 2,DROP,"Bones, Coins","20,2",FALSE,20,3,1
-Test Tile 3,DROP,"Air Rune / Earth rune, Fire rune /Iron bolts, Steel arrow/ Bronze arrow","1,1,1",TRUE,3,2,1
-Vardorvis,KILLCOUNT,Vardorvis,N/A,N/A,10,2,1
+Full Venator Bow,DROP,Venator shard,1,FALSE,5,1,1
+Mage Gear Collector,DROP,"Virtus mask/Virtus robe top/Virtus robe bottom,Ancestral hat/Ancestral robe top/Ancestral robe bottom,Elder chaos hood/Elder chaos top/Elder chaos robe ","1,1,1",TRUE,3,1,1

@@ -114,11 +114,11 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
         # Get item quantity
         itemQuantity = item['quantity']
         # Get item total
-        itemTotal = item['priceEach'] * item['quantity']
+        item_each = item['priceEach']
 
         # Add the item to the database
         print("Found loot " + player.player_name + ": " + str(item))
-        database.add_drop(team_id, player_id, rsn, itemName, itemTotal, itemQuantity, itemSource, discordId)
+        database.add_drop(team_id, player_id, rsn, itemName, item_each, itemQuantity, itemSource, discordId)
 
         # If the item is relevant
         if database.get_drop_whitelist_by_item_name(itemName) is not None:

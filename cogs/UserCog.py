@@ -164,9 +164,9 @@ class UserCog(commands.Cog):
         tile = db_entities.Tile(database.get_tile_by_name(tile_name))
         progress = bingo.check_progress(tile, team)
         if progress is None:
-            ctx.respond(f"You have fully completed {tile.tile_name}!")
+            await ctx.respond(f"You have fully completed {tile.tile_name}!")
         else:
-            ctx.respond(progress)
+            await ctx.respond(progress)
 
     @discord.slash_command(name="board", description="Get a list of tiles you've already completed")
     async def board(self, ctx:discord.ApplicationContext,

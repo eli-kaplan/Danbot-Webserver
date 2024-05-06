@@ -14,6 +14,7 @@ def check_progress(tile, team):
         triggers = tile.tile_triggers
         and_triggers = triggers.split(',')
         trigger_value = 0
+        drops_found = []
         for i in range(0, len(and_triggers)):
             # Check the current trigger adding up any or triggers into a cumulative variable list called "drops"
             trigger = and_triggers[i].strip()
@@ -27,6 +28,7 @@ def check_progress(tile, team):
             if tile.tile_unique_drops == "TRUE":
                 if len(drops) > tile_completion_count:
                     trigger_value = trigger_value + int(tile.tile_trigger_weights[i])
+                    drops_found.append(or_trigger)
                 continue
             # else multiply the drop quantity for each drop by the trigger weight
             else:
@@ -34,7 +36,14 @@ def check_progress(tile, team):
                     drop = Drop(drop)
                     trigger_value = int(tile.tile_trigger_weights[i]) * int(drop.drop_quantity) + trigger_value
 
-        result = f"{tile.tile_name} is {trigger_value % tile.tile_triggers_required} / {tile.tile_triggers_required} from being completed!"
+        result = f"{tile.tile_name} is {trigger_value % tile.tile_triggers_required} / {tile.tile_triggers_required} from being completed!\n"
+        if tile.tile_unique_drops == "TRUE":
+            result = result + f"You have already found "
+            if len(drops_found) == 0:
+                result = result + "None"
+            else:
+                for found in drops_found:
+                    result = result + "\n- " + found
         if tile_completion_count > 0:
             result = result + f"\nYou have completed this tile {tile_completion_count} times."
     if tile.tile_type == "SET":
