@@ -3,9 +3,14 @@ import discord
 import database
 import db_entities
 
+async def team_names(ctx: discord.AutocompleteContext):
+    team_names = []
+    for team in database.get_teams():
+        team = db_entities.Team(team)
+        team_names.append(team.team_name)
+    return team_names
 
 async def player_names(ctx: discord.AutocompleteContext):
-    database.get_players()
     player_names = []
     for player in database.get_players():
         player = db_entities.Player(player)

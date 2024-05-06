@@ -44,6 +44,13 @@ def get_team_by_id(team_id):
         cursor.execute("SELECT * FROM teams where team_id = ?", (team_id,))
         return cursor.fetchone()
 
+
+def get_team_by_name(team_name):
+    with sqlite3.connect('my_database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM teams where team_name = ?", (team_name,))
+        return cursor.fetchone()
+
 # Functions for 'players' table
 def add_player(player_name, deaths, gp_gained, tiles_completed, team_id, discord_id):
     with sqlite3.connect('my_database.db') as conn:
@@ -118,6 +125,12 @@ def get_drops():
     with sqlite3.connect('my_database.db') as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM drops")
+        return cursor.fetchall()
+
+def get_drops_by_team_id(team_id):
+    with sqlite3.connect('my_database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM drops WHERE team_id = ?", (team_id,))
         return cursor.fetchall()
 
 def get_drops_by_player_id(player_id):
@@ -259,6 +272,12 @@ def get_killcount_by_team_id_and_boss_name(team_id, boss_name):
     with sqlite3.connect('my_database.db') as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM killcount WHERE team_id = ? AND boss_name = ?", (team_id, boss_name))
+        return cursor.fetchall()
+
+def get_killcount_by_team_id(team_id):
+    with sqlite3.connect('my_database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM killcount WHERE team_id = ?", (team_id,))
         return cursor.fetchall()
 
 def get_killcount_by_player_id(player_id):

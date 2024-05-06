@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     print("Starting server...")
 
-    port = os.environ.get('PORT', 8080)
+    port = os.environ.get('PORT', 80)
     print("Server started!")
     serve(app, host="0.0.0.0", port=port)
 
