@@ -454,6 +454,8 @@ def read_teams(file_name):
         players = team[2:]
         team_id = add_team(team_name,0, team_webhook)[0]
         for player in players:
+            if player == "":
+                continue
             add_player(player, 0, 0, 0, team_id, 0)
 
     return teams
