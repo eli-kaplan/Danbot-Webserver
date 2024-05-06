@@ -6,7 +6,7 @@ from discord.ext import commands
 import database
 import db_entities
 from utils import scapify, bingo
-from utils.autocomplete import player_names, team_names, tile_names
+from utils.autocomplete import player_names, team_names, tile_names, fuzzy_autocomplete
 
 ftext = "\u001b["
 
@@ -31,7 +31,7 @@ class UserCog(commands.Cog):
 
     @discord.slash_command(name="team", description="Get a bunch of data about a team in the bingo")
     async def team(self, ctx: discord.ApplicationContext,
-                   team_name: discord.Option(str, "What is the team name?", autocomplete=discord.utils.basic_autocomplete(team_names))):
+                   team_name: discord.Option(str, "What is the team name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names()))):
         await ctx.defer()
         team = database.get_team_by_name(team_name)
         team = db_entities.Team(team)
@@ -102,7 +102,7 @@ class UserCog(commands.Cog):
 
     @discord.slash_command(name="player", description="Get a bunch of data about a player in the bingo")
     async def player(self, ctx: discord.ApplicationContext,
-                     player_name: discord.Option(str, "What is the username?", autocomplete=discord.utils.basic_autocomplete(player_names))):
+                     player_name: discord.Option(str, "What is the username?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, player_names()))):
         await ctx.defer()
         player = database.get_player_by_name(player_name)
         player = db_entities.Player(player)
@@ -157,8 +157,8 @@ class UserCog(commands.Cog):
 
     @discord.slash_command(name="progress", description="Check your progress on a specific tile")
     async def progress(self, ctx:discord.ApplicationContext,
-                       team_name: discord.Option(str, "What is your team name?", autocomplete=discord.utils.basic_autocomplete(team_names)),
-                       tile_name: discord.Option(str, "What tile are you checking?", autocomplete=discord.utils.basic_autocomplete(tile_names))):
+                       team_name: discord.Option(str, "What is your team name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names())),
+                       tile_name: discord.Option(str, "What tile are you checking?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, tile_names()))):
         await ctx.defer()
         team = db_entities.Team(database.get_team_by_name(team_name))
         tile = db_entities.Tile(database.get_tile_by_name(tile_name))
@@ -170,7 +170,7 @@ class UserCog(commands.Cog):
 
     @discord.slash_command(name="board", description="Get a list of tiles you've already completed")
     async def board(self, ctx:discord.ApplicationContext,
-                    team_name: discord.Option(str, "What is your team name?", autocomplete=discord.utils.basic_autocomplete(team_names)),
+                    team_name: discord.Option(str, "What is your team name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names())),
                     board_type: discord.Option(str, "What kind of board would you like to see?", autocomplete=discord.utils.basic_autocomplete(["All Tiles","Completed Tiles","Incomplete Tiles", "Partial Tiles"]))):
         await ctx.defer()
         response = f"## {board_type} for {team_name}\n"

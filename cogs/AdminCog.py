@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from discord import default_permissions, guild_only
 
+import utils.autocomplete
 from routes import dink
 from utils import spoof_drop, scapify
 from utils.autocomplete import *
@@ -23,8 +24,8 @@ class AdminCog(commands.Cog):
     @default_permissions(manage_webhooks=True)
     @guild_only()
     async def award_drop(self, ctx:discord.ApplicationContext,
-                         player_name: discord.Option(str, "What is the username?", autocomplete=discord.utils.basic_autocomplete(player_names)),
-                         drop_name: discord.Option(str, "What is the drop name?", autocomplete=discord.utils.basic_autocomplete(drop_names)),
+                         player_name: discord.Option(str, "What is the username?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, player_names())),
+                         drop_name: discord.Option(str, "What is the drop name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, drop_names())),
                          quantity: discord.Option(int, "How many drops did they get?", default=1),
                          drop_value: discord.Option(int, "How much is each drop worth?", default=0)):
         await ctx.defer()

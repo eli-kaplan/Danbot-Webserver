@@ -4,3 +4,4 @@ requests==2.31.0
 flask==3.0.3
 werkzeug==3.0.2
 waitress==3.0.0
+fuzzywuzzy==0.18.0
