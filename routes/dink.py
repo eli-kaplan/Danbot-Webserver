@@ -22,9 +22,10 @@ def parse_death(data) -> dict[str, list[str]]:
         print("DEATH - " + rsn)
     else:
         print("DEATH - " + rsn + " died to " + data['extra']['killerName'])
+    database.add_death_by_playername(rsn)
     # print data prettyfied
     # print(json.dumps(data, indent = 2))
-    return False
+    return True
 
 
 # function to parse collection data
@@ -403,25 +404,31 @@ def parse_combat_achievement(data) -> dict[str, list[str]]:
 
 
 # function to parse pet data
-def parse_pet(data) -> dict[str, list[str]]:
+def parse_pet(data, img_file) -> dict[str, list[str]]:
     screenshotItems: dict[str, list[str]] = {}
     # print data prettyfied
     rsn = data['playerName']
     pet = data['extra']['petName']
-    output = []
-    # Check if discordUser exists
-    if 'discordUser' not in data:
-        discordId = "None"
+
+    tile = database.get_tile_by_name("Pet")
+    tile = db_entities.Tile(tile)
+    player = database.get_player_by_name(rsn)
+    if player is not None:
+        player = db_entities.Player(player)
     else:
-        discordId = data['discordUser']['id']
+        return False
+    team = database.get_team_by_id(player.team_id)
+    team = db_entities.Team(team)
 
-    # threadIds = submit(rsn, discordId, "PET", pet, 0, 1, "PET")
-    # for threadId in threadIds:
-    #     if threadId not in screenshotItems:
-    #         screenshotItems[threadId] = []
-    #     screenshotItems[threadId].append(pet)
+    if pet in tile.tile_triggers:
+        send_webhook(team.team_webhook, f"{player.player_name} is being followed by {pet}!", description="Too bad its not worth any points....", color=16776960, image=img_file)
+    else:
+        database.add_player_tile_completions(player.player_id, 0.5)
+        database.add_team_points(team.team_id, tile.tile_points)
+        database.add_completed_tile(tile.tile_id, team.team_id)
+        send_webhook(team.team_webhook, f"{player.player_name} is being followed by {pet}!", description=f"{team.team_name} has been awarded {tile.tile_points} points!", color=65280, image=img_file)
 
-    return screenshotItems
+    return True
 
 
 # function to parse speedrun data
@@ -534,7 +541,7 @@ def parse_json_data(json_data, img_file) -> dict[str, list[str]]:
         elif type == 'COMBAT_ACHIEVEMENT':
             return parse_combat_achievement(data)
         elif type == 'PET':
-            return parse_pet(data)
+            return parse_pet(data, img_file)
         elif type == 'SPEEDRUN':
             return parse_speedrun(data)
         elif type == 'BARBARIAN_ASSAULT_GAMBLE':

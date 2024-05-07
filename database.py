@@ -66,6 +66,11 @@ def add_player(player_name, deaths, gp_gained, tiles_completed, team_id, discord
         cursor.execute("INSERT INTO players (player_name, deaths, gp_gained, tiles_completed, team_id, discord_id) VALUES (%s, %s, %s, %s, %s, %s)",
                        (player_name, deaths, gp_gained, tiles_completed, team_id, discord_id))
 
+def add_death_by_playername(rsn):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE Players SET deaths = deaths + 1 WHERE player_name = %s", (rsn,))
+
 def add_player_tile_completions(player_id, tiles_completed):
     with connect() as conn:
         cursor = conn.cursor()
@@ -320,7 +325,7 @@ def reset_tables():
     cursor.execute('''
             CREATE TABLE teams (
                 team_name text,
-                team_points integer,
+                team_points real,
                 team_webhook text,
                 team_id SERIAL PRIMARY KEY
             )
@@ -374,7 +379,7 @@ def reset_tables():
                 tile_unique_drops boolean,
                 tile_triggers_required int,
                 tile_repetition int,
-                tile_points int
+                tile_points real
             )
             ''')
 
