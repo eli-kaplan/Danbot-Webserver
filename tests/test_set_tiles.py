@@ -26,8 +26,8 @@ def client(app):
 
 def test_single_set_piece(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_2.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_2.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 1", 1)
     result = dink.parse_loot(json_data, None)
@@ -42,8 +42,8 @@ def test_single_set_piece(client):
 
 def test_standard_completion(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_2.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_2.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 1", 1)
     result = dink.parse_loot(json_data, None)
@@ -65,8 +65,8 @@ def test_standard_completion(client):
 
 def test_cross_team_completion_failure(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_2.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_2.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 1", 1)
     result = dink.parse_loot(json_data, None)
@@ -88,8 +88,8 @@ def test_cross_team_completion_failure(client):
 
 def test_overcompletion(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_2.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_2.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 1", 1)
     result = dink.parse_loot(json_data, None)
@@ -130,8 +130,8 @@ def test_overcompletion(client):
 
 def test_mix_and_match_completion(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_2.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_2.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Odium 1", 1)
     result = dink.parse_loot(json_data, None)

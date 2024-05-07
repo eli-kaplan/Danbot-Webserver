@@ -4,10 +4,12 @@ import discord
 from discord.ext import commands
 from discord import default_permissions, guild_only
 
+import database
 import utils.autocomplete
 from routes import dink
 from utils import spoof_drop, scapify
 from utils.autocomplete import *
+from utils.send_webhook import send_webhook
 
 
 class AdminCog(commands.Cog):
@@ -47,3 +49,38 @@ class AdminCog(commands.Cog):
             cursor = conn.cursor()
             cursor.execute(query)
             await ctx.respond(f"Executed query: ```{query}```\nResponse data: ```{cursor.fetchall()}```")
+
+    @discord.slash_command(name="award_niche_progress", description="Add tile progress to a niche tile")
+    @default_permissions(manage_webhooks=True)
+    @guild_only()
+    async def award_niche_progress(self,
+                                   ctx: discord.ApplicationContext,
+                                   player_name: discord.Option(str, "What is the players name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, player_names())),
+                                   tile_name: discord.Option(str, "What is the tile_name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, niche_tile_names())),
+                                   progress: discord.Option(int, "What trigger value would you like to add?")):
+        await ctx.defer()
+        database.add_niche_progress(tile_name, player_name, progress)
+        tile = db_entities.Tile(database.get_tile_by_name(tile_name))
+        player = db_entities.Player(database.get_player_by_name(player_name))
+        team = db_entities.Team(database.get_team_by_id(player.team_id))
+        tile_completions = len(database.get_completed_tiles_by_team_id_and_tile_id(player.team_id, tile.tile_id))
+        if tile_completions >= tile.tile_repetition:
+            response = f"This tile has already been completed {tile.tile_repetition} times. There is no point in awarding more progress."
+            ctx.respond(response)
+            return
+
+        database.add_player_tile_completions(player.player_id, progress/tile.tile_triggers_required)
+        response = f"Successfully added {progress} trigger weight to {tile.tile_name} for {player.player_name}'s team. Additionally I've given {player.player_name} {round(progress/tile.tile_triggers_required, 2)} tile completions"
+        progress = database.get_niche_progress_by_tile_id_and_team_id(tile.tile_id, player.team_id)
+
+        if progress >= (tile_completions + 1) * tile.tile_triggers_required:
+            database.add_completed_tile(tile.tile_id, player.team_id)
+            database.add_team_points(player.team_id, tile.tile_points)
+            if int(progress % tile.tile_triggers_required) == tile.tile_triggers_required:
+                progress = 0
+            send_webhook(team.team_webhook, title=f"{tile.tile_name} completed!", description=f"You now have {tile_completions + 1} completions and are {int(progress % tile.tile_triggers_required)}/{tile.tile_triggers_required} from your next completion", color=65280, image=None)
+            response = response + f"\nIt seems they have also completed this tile so I've awarded them {tile.tile_points} points and sent them a message letting them know! They now have {tile_completions + 1} completions for this tile"
+        else:
+            send_webhook(team.team_webhook, title=f"Request approved for {tile.tile_name}!", description=f"You are now {int(progress % tile.tile_triggers_required)}/{tile.tile_triggers_required} away from completing this tile", color=16776960, image=None)
+
+        await ctx.respond(response)

@@ -21,8 +21,8 @@ def client(app):
 
 def test_three_deaths(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_1.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_1.csv')
 
     json_data = spoof_death.spoof_death("Danbis")
     result = dink.parse_death(json_data)
@@ -50,8 +50,8 @@ def test_three_deaths(client):
 
 def test_different_player_name_deaths(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_1.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_1.csv')
 
     json_data = spoof_death.spoof_death("Danbis")
     result = dink.parse_death(json_data)

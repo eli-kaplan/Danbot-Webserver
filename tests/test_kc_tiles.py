@@ -25,8 +25,8 @@ def client(app):
 
 def test_single_player_kc_completion(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_3.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_3.csv')
 
     for i in range(10):
         team = db_entities.Team(database.get_team_by_id(1))
@@ -44,8 +44,8 @@ def test_single_player_kc_completion(client):
 
 def test_multiplayer_kc_completion(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_3.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_3.csv')
 
     for i in range(4):
         team = db_entities.Team(database.get_team_by_id(1))
@@ -75,8 +75,8 @@ def test_multiplayer_kc_completion(client):
 def test_multiple_completions(client):
 
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_3.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_3.csv')
 
     for i in range(10):
         team = db_entities.Team(database.get_team_by_id(1))
@@ -109,8 +109,8 @@ def test_multiple_completions(client):
 def test_multiple_completions_multiple_players(client):
 
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_3.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_3.csv')
 
     for i in range(6):
         team = db_entities.Team(database.get_team_by_id(1))
@@ -164,8 +164,8 @@ def test_multiple_completions_multiple_players(client):
 
 def test_single_player_overcompletion(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_3.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_3.csv')
 
     for i in range(30):
         json_data = spoof_kc.kc_spoof_json("Danbis", "Vardorvis")
@@ -181,8 +181,8 @@ def test_single_player_overcompletion(client):
 
 def test_multiplayer_overcompletion(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_3.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_3.csv')
 
     for i in range(15):
         json_data = spoof_kc.kc_spoof_json("Danbis", "Vardorvis")

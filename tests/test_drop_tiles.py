@@ -26,8 +26,8 @@ def client(app):
 
 def test_relevant_drop_occurred(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_1.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_1.csv')
 
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Coin pouch", 1)
@@ -37,8 +37,8 @@ def test_relevant_drop_occurred(client):
 
 def test_tile_completed(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_1.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_1.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Coin pouch", 1)
     result = dink.parse_loot(json_data, None)
@@ -55,8 +55,8 @@ def test_tile_completed(client):
 
 def test_complex_trigger_weights(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_1.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_1.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Coins", 6)
     result = dink.parse_loot(json_data, None)
@@ -67,8 +67,8 @@ def test_complex_trigger_weights(client):
 
 def test_multiple_completions(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_1.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_1.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Coins", 10)
     result = dink.parse_loot(json_data, None)
@@ -99,8 +99,8 @@ def test_multiple_completions(client):
 
 def test_drops_shared_by_team(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_1.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_1.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Coins", 5)
     result = dink.parse_loot(json_data, None)
@@ -119,8 +119,8 @@ def test_drops_shared_by_team(client):
 
 def test_collections(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_1.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_1.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Air Rune", 1)
     result = dink.parse_loot(json_data, None)
@@ -172,8 +172,8 @@ def test_collections(client):
 
 def test_cross_team_drops(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_1.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_1.csv')
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Air Rune", 1)
     result = dink.parse_loot(json_data, None)

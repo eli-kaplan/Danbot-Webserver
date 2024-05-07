@@ -11,6 +11,20 @@ def tile_names():
         tile_names.append(tile.tile_name)
     return tile_names
 
+def niche_tile_names():
+    niche_tile_names = []
+    for tile in database.get_niche_tiles():
+        niche_tile = db_entities.Tile(tile)
+        niche_tile_names.append(niche_tile.tile_name)
+    return niche_tile_names
+
+def tile_names():
+    tile_names = []
+    for tile in database.get_tiles():
+        tile = db_entities.Tile(tile)
+        tile_names.append(tile.tile_name)
+    return tile_names
+
 def team_names():
     team_names = []
     for team in database.get_teams():

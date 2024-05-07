@@ -21,8 +21,8 @@ def client(app):
 
 def test_single_pet_drop(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_4.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_4.csv')
 
     json_data = spoof_pet("Danbis", "Lil-zuk")
     result = dink.parse_pet(json_data, None)
@@ -39,8 +39,8 @@ def test_single_pet_drop(client):
 
 def test_two_pet_drops(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_4.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_4.csv')
 
     json_data = spoof_pet("Danbis", "Lil-zuk")
     result = dink.parse_pet(json_data, None)
@@ -70,8 +70,8 @@ def test_two_pet_drops(client):
 
 def test_two_pet_drops_different_players(client):
     database.reset_tables()
-    database.read_teams('tests/test_csvs/default_team_1.csv')
-    database.read_tiles('tests/test_csvs/default_tiles_4.csv')
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_4.csv')
 
     json_data = spoof_pet("Danbis", "Lil-zuk")
     result = dink.parse_pet(json_data, None)

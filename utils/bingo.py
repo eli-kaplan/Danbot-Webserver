@@ -5,9 +5,6 @@ from db_entities import Drop
 def check_progress(tile, team):
     tile_completion_count = len(database.get_completed_tiles_by_team_id_and_tile_id(team.team_id, tile.tile_id))
 
-    if tile_completion_count >= tile.tile_repetition:
-        return None
-
     if tile.tile_type == "DROP":
 
         # Check if the tile was completed or if it was just progressing the tile
@@ -70,4 +67,10 @@ def check_progress(tile, team):
                 for item in sets:
                     result = result + item + ", "
                 result = result + "\n"
+    if tile.tile_type == "NICHE":
+        niche_progress = database.get_niche_progress_by_tile_name_and_team_name(tile.tile_name, team.team_name)
+        if tile_completion_count >= tile.tile_repetition:
+            result = f"You have fully completed {tile.tile_name}"
+        else:
+            result = f"You have completed {tile.tile_name} {tile_completion_count} times. You are {int(niche_progress % tile.tile_triggers_required)}/{tile.tile_triggers_required} from your next completion"
     return result
