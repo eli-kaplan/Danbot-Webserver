@@ -210,6 +210,7 @@ class UserCog(commands.Cog):
                     response = response + f"{tile.tile_name}: "
                     for i in range(0, tile.tile_repetition - complete_tile_dict[tile.tile_id]):
                         response = response + ":x:"
+                    response = response + "\n"
         elif board_type == "Partial Tiles":
             for tile in tiles:
                 tile = db_entities.Tile(tile)
