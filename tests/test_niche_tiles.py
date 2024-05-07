@@ -28,25 +28,25 @@ def test_single_player_niche_progress(client):
     database.read_teams('test_csvs/default_team_1.csv')
     database.read_tiles('test_csvs/default_tiles_5.csv')
 
-    database.add_niche_progress("Test Niche Tile", "Danbis", 1)
-    assert database.get_niche_progress_by_tile_name_and_team_name("Test Niche Tile", "Team 1") == 1
+    database.add_manual_progress("Test Niche Tile", "Danbis", 1)
+    assert database.get_manual_progress_by_tile_name_and_team_name("Test Niche Tile", "Team 1") == 1
 
 def test_single_player_multiple_progress(client):
     database.reset_tables()
     database.read_teams('test_csvs/default_team_1.csv')
     database.read_tiles('test_csvs/default_tiles_5.csv')
 
-    database.add_niche_progress("Test Niche Tile", "Danbis", 1)
-    assert database.get_niche_progress_by_tile_name_and_team_name("Test Niche Tile", "Team 1") == 1
+    database.add_manual_progress("Test Niche Tile", "Danbis", 1)
+    assert database.get_manual_progress_by_tile_name_and_team_name("Test Niche Tile", "Team 1") == 1
 
-    database.add_niche_progress("Test Niche Tile", "Danbis", 1)
-    assert database.get_niche_progress_by_tile_name_and_team_name("Test Niche Tile", "Team 1") == 2
+    database.add_manual_progress("Test Niche Tile", "Danbis", 1)
+    assert database.get_manual_progress_by_tile_name_and_team_name("Test Niche Tile", "Team 1") == 2
 
-    database.add_niche_progress("Test Niche Tile", "Danbis", 1)
-    assert database.get_niche_progress_by_tile_name_and_team_name("Test Niche Tile", "Team 1") == 3
+    database.add_manual_progress("Test Niche Tile", "Danbis", 1)
+    assert database.get_manual_progress_by_tile_name_and_team_name("Test Niche Tile", "Team 1") == 3
 
-    database.add_niche_progress("Test Niche Tile", "Danbis", 1)
-    assert database.get_niche_progress_by_tile_name_and_team_name("Test Niche Tile", "Team 1") == 4
+    database.add_manual_progress("Test Niche Tile", "Danbis", 1)
+    assert database.get_manual_progress_by_tile_name_and_team_name("Test Niche Tile", "Team 1") == 4
 
-    database.add_niche_progress("Test Niche Tile", "Danbis", 1)
-    assert database.get_niche_progress_by_tile_name_and_team_name("Test Niche Tile", "Team 1") == 5
+    database.add_manual_progress("Test Niche Tile", "Danbis", 1)
+    assert database.get_manual_progress_by_tile_name_and_team_name("Test Niche Tile", "Team 1") == 5

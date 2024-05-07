@@ -6,11 +6,10 @@ def check_progress(tile, team):
     tile_completion_count = len(database.get_completed_tiles_by_team_id_and_tile_id(team.team_id, tile.tile_id))
 
     if tile.tile_type == "DROP":
-
         # Check if the tile was completed or if it was just progressing the tile
         triggers = tile.tile_triggers
         and_triggers = triggers.split(',')
-        trigger_value = 0
+        trigger_value = int(database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id))
         drops_found = []
         for i in range(0, len(and_triggers)):
             # Check the current trigger adding up any or triggers into a cumulative variable list called "drops"
@@ -32,8 +31,6 @@ def check_progress(tile, team):
                 for drop in drops:
                     drop = Drop(drop)
                     trigger_value = int(tile.tile_trigger_weights[i]) * int(drop.drop_quantity) + trigger_value
-        if trigger_value % tile.tile_triggers_required == 0:
-            return None
         result = f"{tile.tile_name} is {trigger_value % tile.tile_triggers_required} / {tile.tile_triggers_required} from being completed!\n"
         if tile.tile_unique_drops == "TRUE":
             result = result + f"You have already found "
@@ -69,7 +66,7 @@ def check_progress(tile, team):
                     result = result + item + ", "
                 result = result + "\n"
     if tile.tile_type == "NICHE":
-        niche_progress = database.get_niche_progress_by_tile_name_and_team_name(tile.tile_name, team.team_name)
+        niche_progress = database.get_manual_progress_by_tile_name_and_team_name(tile.tile_name, team.team_name)
         if tile_completion_count >= tile.tile_repetition:
             result = f"You have fully completed {tile.tile_name}"
         else:

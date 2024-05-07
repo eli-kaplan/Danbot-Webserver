@@ -99,6 +99,8 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
         player = Player(player)
         player_id = player.player_id
         team_id = player.team_id
+        team = Team(database.get_team_by_id(team_id))
+        send_webhook(team.team_webhook, f"Alt detected! I've added {rsn} to your team.", "If this is a mistake get in contact with Admin immediately.", color=16711680, image=None)
 
 
     # Get item source
@@ -145,7 +147,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                 # Check if the tile was completed or if it was just progressing the tile
                 triggers = tile.tile_triggers
                 and_triggers = triggers.split(',')
-                trigger_value = 0
+                trigger_value = database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id)
                 for i in range(0, len(and_triggers)):
                     # Check the current trigger adding up any or triggers into a cumulative variable list called "drops"
                     trigger = and_triggers[i].strip()

@@ -41,6 +41,7 @@ class Completed_Tile:
     def __init__(self, completed_tile_tuple):
         self.tile_id = completed_tile_tuple[0]
         self.team_id = completed_tile_tuple[1]
+        self.completed_tile_pk = completed_tile_tuple[2]
 
 class Tile:
     def __init__(self, tile_tuple):
@@ -60,3 +61,9 @@ class Killcount:
         self.team_id = killcount_tuple[1]
         self.boss_name = killcount_tuple[2]
         self.kills = killcount_tuple[3]
+
+class Request:
+    def __init__(self, request_tuple):
+        self.request_id = request_tuple[0],
+        self.team_name = request_tuple[1],
+        self.evidence = request_tuple[2]

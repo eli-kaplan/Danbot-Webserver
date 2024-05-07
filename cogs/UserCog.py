@@ -219,3 +219,5 @@ class UserCog(commands.Cog):
                     response = response + progress + "\n"
 
         await ctx.respond(response)
+
+        

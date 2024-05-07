@@ -39,6 +39,59 @@ class AdminCog(commands.Cog):
         else:
             await ctx.respond(f"Something went wrong. Check my console or contact Danbis before attempting again.")
 
+    @discord.slash_command(name="add_team_points", description="Add points to a team")
+    @default_permissions(manage_webhooks=True)
+    @guild_only()
+    async def add_team_points(self,
+                              ctx:discord.ApplicationContext,
+                              team_name: discord.Option(str, "What team are you awarding points to?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names())),
+                              points: discord.Option(int, "How many points would you like to award?")):
+        await ctx.defer()
+        team = db_entities.Team(database.get_team_by_name(team_name))
+        database.add_team_points(team.team_id, points)
+        await ctx.respond(f"Successfully awarded {team.team_name} {points} points!")
+
+    @discord.slash_command(name="remove_team_points", description="Add points to a team")
+    @default_permissions(manage_webhooks=True)
+    @guild_only()
+    async def remove_team_points(self,
+                              ctx:discord.ApplicationContext,
+                              team_name: discord.Option(str, "What team are you removing points from?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names())),
+                              points: discord.Option(int, "How many points would you like to remove?")):
+        await ctx.defer()
+        team = db_entities.Team(database.get_team_by_name(team_name))
+        database.add_team_points(team.team_id, -points)
+        await ctx.respond(f"Successfully removed {team.team_name} {points} points!")
+
+    @discord.slash_command(name="add_tile_completion", description="Mark a tile as completed for a team")
+    @default_permissions(manage_webhooks=True)
+    @guild_only()
+    async def add_tile_completion(self,
+                                  ctx:discord.ApplicationContext,
+                                  team_name: discord.Option(str, "What team is completing a tile?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names())),
+                                  tile_name: discord.Option(str, "What tile are they completing", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, tile_names()))):
+        await ctx.defer()
+        team = db_entities.Team(database.get_team_by_name(team_name))
+        tile = db_entities.Tile(database.get_tile_by_name(tile_name))
+        database.add_completed_tile(tile.tile_id, team.team_id)
+        await ctx.respond(f"I've added a tile completion for {team.team_name} on tile {tile.tile_name}. "
+                          f"NOTE: I did not add any points during this operation! Please use /add_team_points if required")
+
+    @discord.slash_command(name="remove_tile_completion", description="Mark a tile as completed for a team")
+    @default_permissions(manage_webhooks=True)
+    @guild_only()
+    async def remove_tile_completion(self,
+                                  ctx:discord.ApplicationContext,
+                                  team_name: discord.Option(str, "What team is completing a tile?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names())),
+                                  tile_name: discord.Option(str, "What tile are they completing", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, tile_names()))):
+        await ctx.defer()
+        team = db_entities.Team(database.get_team_by_name(team_name))
+        tile = db_entities.Tile(database.get_tile_by_name(tile_name))
+        database.remove_completed_tile(tile.tile_id, team.team_id)
+        await ctx.respond(f"I've remove a tile completion for {team.team_name} on tile {tile.tile_name}."
+                          f"NOTE: I did not remove any points during this operation! Please use /remove_team_points if required")
+
+
     @discord.slash_command(name="run_query", description="DANGER! IF YOU'RE NOT DANBIS OR DON'T KNOW WHAT YOUR DOING DON'T RUN THIS COMMAND")
     @default_permissions(manage_webhooks=True)
     @guild_only()
@@ -50,16 +103,32 @@ class AdminCog(commands.Cog):
             cursor.execute(query)
             await ctx.respond(f"Executed query: ```{query}```\nResponse data: ```{cursor.fetchall()}```")
 
-    @discord.slash_command(name="award_niche_progress", description="Add tile progress to a niche tile")
+    @discord.slash_command(name="remove_manual_progress", description="Remove tile progress from a tile")
     @default_permissions(manage_webhooks=True)
     @guild_only()
-    async def award_niche_progress(self,
-                                   ctx: discord.ApplicationContext,
-                                   player_name: discord.Option(str, "What is the players name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, player_names())),
-                                   tile_name: discord.Option(str, "What is the tile_name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, niche_tile_names())),
-                                   progress: discord.Option(int, "What trigger value would you like to add?")):
+    async def remove_manual_progress(self,
+                                     ctx: discord.ApplicationContext,
+                                     player_name: discord.Option(str, "What is the players name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, player_names())),
+                                     tile_name: discord.Option(str, "What is the tile_name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, tile_names())),
+                                     progress: discord.Option(int, "What trigger value would you like to remove?")):
         await ctx.defer()
-        database.add_niche_progress(tile_name, player_name, progress)
+        database.add_manual_progress(tile_name, player_name, -progress)
+        tile = db_entities.Tile(database.get_tile_by_name(tile_name))
+        player = db_entities.Player(database.get_player_by_name(player_name))
+        team = db_entities.Team(database.get_team_by_id(player.team_id))
+        database.add_player_tile_completions(player.player_id, -progress/tile.tile_triggers_required)
+        await ctx.respond(f"Successfully removed manual progress from {team.team_name} for tile {tile.tile_name}. I've also removed {progress/tile.tile_triggers_reuired} from {player.player_name}'s tile completions")
+
+    @discord.slash_command(name="award_manual_progress", description="Add tile progress to a tile")
+    @default_permissions(manage_webhooks=True)
+    @guild_only()
+    async def award_manual_progress(self,
+                                    ctx: discord.ApplicationContext,
+                                    player_name: discord.Option(str, "What is the players name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, player_names())),
+                                    tile_name: discord.Option(str, "What is the tile_name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, tile_names())),
+                                    progress: discord.Option(int, "What trigger value would you like to add?")):
+        await ctx.defer()
+        database.add_manual_progress(tile_name, player_name, progress)
         tile = db_entities.Tile(database.get_tile_by_name(tile_name))
         player = db_entities.Player(database.get_player_by_name(player_name))
         team = db_entities.Team(database.get_team_by_id(player.team_id))
@@ -71,7 +140,7 @@ class AdminCog(commands.Cog):
 
         database.add_player_tile_completions(player.player_id, progress/tile.tile_triggers_required)
         response = f"Successfully added {progress} trigger weight to {tile.tile_name} for {player.player_name}'s team. Additionally I've given {player.player_name} {round(progress/tile.tile_triggers_required, 2)} tile completions"
-        progress = database.get_niche_progress_by_tile_id_and_team_id(tile.tile_id, player.team_id)
+        progress = database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, player.team_id)
         if progress >= (tile_completions + 1) * tile.tile_triggers_required:
             database.add_completed_tile(tile.tile_id, player.team_id)
             database.add_team_points(player.team_id, tile.tile_points)
@@ -83,3 +152,4 @@ class AdminCog(commands.Cog):
             send_webhook(team.team_webhook, title=f"Request approved for {tile.tile_name}!", description=f"You are now {int(progress % tile.tile_triggers_required)}/{tile.tile_triggers_required} away from completing this tile", color=16776960, image=None)
 
         await ctx.respond(response)
+

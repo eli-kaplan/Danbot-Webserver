@@ -210,10 +210,11 @@ def add_completed_tile(tile_id, team_id):
         cursor.execute("INSERT INTO completed_tiles (tile_id, team_id) VALUES (%s, %s)",
                        (tile_id, team_id))
 
-def remove_completed_tile(tile_name):
+def remove_completed_tile(tile_id, team_id):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM completed_tiles WHERE tile_name = %s", (tile_name,))
+        completed_tile = db_entities.Completed_Tile(cursor.execute("SELECT * FROM completed_tiles WHERE tile_name = %s and team_id = %s", (tile_id, team_id)).fetchone())
+        cursor.execute("DELETE FROM completed_tiles WHERE completed_tile_pk = %s", (completed_tile.completed_tile_pk))
 
 def get_completed_tiles():
     with connect() as conn:
@@ -308,7 +309,7 @@ def get_killcount_by_player_id(player_id):
         cursor.execute("SELECT * FROM killcount WHERE player_id = %s", (player_id,))
         return cursor.fetchall()
 
-def add_niche_progress(tile_name, player_name, progress):
+def add_manual_progress(tile_name, player_name, progress):
     with connect() as conn:
         cursor = conn.cursor()
 
@@ -325,17 +326,17 @@ def add_niche_progress(tile_name, player_name, progress):
         tile = db_entities.Tile(cursor.fetchone())
 
         # Check if the row already exists
-        cursor.execute("SELECT * FROM niche_tile_progress WHERE team_id = %s AND tile_id = %s", (team.team_id, tile.tile_id))
+        cursor.execute("SELECT * FROM manual_tile_progress WHERE team_id = %s AND tile_id = %s", (team.team_id, tile.tile_id))
         row = cursor.fetchone()
 
         if row is not None:
             # If the row exists, update the kills
-            cursor.execute("UPDATE niche_tile_progress SET progress = progress + %s WHERE team_id = %s AND tile_id = %s", (progress, team.team_id, tile.tile_id))
+            cursor.execute("UPDATE manual_tile_progress SET progress = progress + %s WHERE team_id = %s AND tile_id = %s", (progress, team.team_id, tile.tile_id))
         else:
             # If the row doesn't exist, insert a new row
-            cursor.execute("INSERT INTO niche_tile_progress (tile_id, team_id, progress) VALUES (%s, %s, %s)", (tile.tile_id, team.team_id, progress))
+            cursor.execute("INSERT INTO manual_tile_progress (tile_id, team_id, progress) VALUES (%s, %s, %s)", (tile.tile_id, team.team_id, progress))
 
-def get_niche_progress_by_tile_name_and_team_name(tile_name, team_name):
+def get_manual_progress_by_tile_name_and_team_name(tile_name, team_name):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM teams where team_name = %s", (team_name,))
@@ -346,14 +347,33 @@ def get_niche_progress_by_tile_name_and_team_name(tile_name, team_name):
         tile = db_entities.Tile(cursor.fetchone())
 
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM niche_tile_progress WHERE team_id = %s AND tile_id = %s", (team.team_id, tile.tile_id,))
+        cursor.execute("SELECT * FROM manual_tile_progress WHERE team_id = %s AND tile_id = %s", (team.team_id, tile.tile_id,))
         return cursor.fetchone()[2]
 
-def get_niche_progress_by_tile_id_and_team_id(tile_id, team_id):
+def get_manual_progress_by_tile_id_and_team_id(tile_id, team_id):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM niche_tile_progress WHERE team_id = %s and tile_id = %s", (team_id, tile_id,))
-        return cursor.fetchone()[2]
+        cursor.execute("SELECT * FROM manual_tile_progress WHERE team_id = %s and tile_id = %s", (team_id, tile_id,))
+        try:
+            return cursor.fetchone()[2]
+        except:
+            return 0
+
+def add_request(team_name, evidence):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO requests (team_name, evidence) VALUES (%s, %s)", (team_name, evidence,))
+
+def get_request():
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM requests")
+        return cursor.fetchone()
+
+def delete_request(request_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM requests WHERE request_id = %s", (request_id,))
 
 def reset_tables():
     # Drop all tables
@@ -407,6 +427,7 @@ def reset_tables():
                 drop_quantity integer,
                 drop_source text,
                 discord_id text,
+                drops_pk SERIAL PRIMARY KEY,
                 FOREIGN KEY(player_id) REFERENCES players(player_id),
                 FOREIGN KEY(team_id) REFERENCES teams(team_id)
             )
@@ -418,6 +439,7 @@ def reset_tables():
                 team_id integer,
                 boss_name text,
                 kills integer,
+                killcount_pk SERIAL PRIMARY KEY,
                 FOREIGN KEY(player_id) REFERENCES players(player_id),
                 FOREIGN KEY (team_id) REFERENCES teams(team_id)
             )''')
@@ -447,18 +469,28 @@ def reset_tables():
             CREATE TABLE completed_tiles (
                 team_id integer,
                 tile_id integer,
+                completed_tile_pk SERIAL PRIMARY KEY,
                 FOREIGN KEY (tile_id) REFERENCES tiles(tile_id),
                 FOREIGN KEY (team_id) REFERENCES teams(team_id)
             )
             ''')
 
     cursor.execute('''
-            CREATE TABLE niche_tile_progress (
+            CREATE TABLE manual_tile_progress (
                 team_id integer,
                 tile_id integer,
                 progress real,
+                manual_tile_progress_pk SERIAL PRIMARY KEY,
                 FOREIGN KEY (team_id) REFERENCES teams(team_id),
                 FOREIGN KEY (tile_id) REFERENCES tiles(tile_id)
+            )
+            ''')
+
+    cursor.execute('''
+            CREATE TABLE requests (
+                request_id SERIAL PRIMARY KEY,
+                team_name text,
+                evidence text
             )
             ''')
 

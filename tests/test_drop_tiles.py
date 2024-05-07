@@ -4,6 +4,7 @@ import sys
 import pytest
 
 import db_entities
+from cogs import AdminCog
 from routes import dink
 
 sys.path.insert(0, os.path.abspath('..'))
