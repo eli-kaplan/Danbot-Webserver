@@ -198,7 +198,6 @@ class UserCog(commands.Cog):
         elif board_type == "Completed Tiles":
             for tile in tiles:
                 tile = db_entities.Tile(tile)
-                print(complete_tile_dict[tile.tile_id])
                 if complete_tile_dict[tile.tile_id] > 0:
                     response = response + f"{tile.tile_name}: "
                     for i in range(min(complete_tile_dict[tile.tile_id], tile.tile_repetition)):
