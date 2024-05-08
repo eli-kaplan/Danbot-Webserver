@@ -21,7 +21,7 @@ def check_progress(tile, team):
                     drops.append(drop)
 
             # If the tile is unique ignore quantity / duplicates
-            if tile.tile_unique_drops == "TRUE":
+            if tile.tile_unique_drops == "True":
                 if len(drops) > tile_completion_count:
                     trigger_value = trigger_value + int(tile.tile_trigger_weights[i])
                     drops_found.append(or_trigger)
@@ -32,12 +32,12 @@ def check_progress(tile, team):
                     drop = Drop(drop)
                     trigger_value = int(tile.tile_trigger_weights[i]) * int(drop.drop_quantity) + trigger_value
         if trigger_value % tile.tile_triggers_required == 0:
-            return None
+            return f"You have no progress on {tile.tile_name}"
         result = f"{tile.tile_name} is {trigger_value % tile.tile_triggers_required} / {tile.tile_triggers_required} from being completed!\n"
-        if tile.tile_unique_drops == "TRUE":
+        if tile.tile_unique_drops == "True":
             result = result + f"You have already found "
             if len(drops_found) == 0:
-                result = result + "None"
+                result = result + "- None"
             else:
                 for found in drops_found:
                     result = result + "\n- " + found
@@ -69,7 +69,7 @@ def check_progress(tile, team):
                 result = result + "\n"
     if tile.tile_type == "NICHE":
         niche_progress = database.get_manual_progress_by_tile_name_and_team_name(tile.tile_name, team.team_name)
-        if tile_completion_count >= tile.tile_repetition:
+        if tile_completion_count >= int(tile.tile_repetition):
             result = f"You have fully completed {tile.tile_name}\n"
         else:
             result = f"You have completed {tile.tile_name} {tile_completion_count} times. You are {int(niche_progress % tile.tile_triggers_required)}/{tile.tile_triggers_required} from your next completion\n"
