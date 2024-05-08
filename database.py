@@ -60,16 +60,21 @@ def get_team_by_name(team_name):
         return cursor.fetchone()
 
 # Functions for 'players' table
-def add_player(player_name, deaths, gp_gained, tiles_completed, team_id, discord_id):
+def add_player(player_name, deaths, gp_gained, tiles_completed, team_id, discord_id, pet_count):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO players (player_name, deaths, gp_gained, tiles_completed, team_id, discord_id) VALUES (%s, %s, %s, %s, %s, %s)",
-                       (player_name, deaths, gp_gained, tiles_completed, team_id, discord_id))
+        cursor.execute("INSERT INTO players (player_name, deaths, gp_gained, tiles_completed, team_id, discord_id, pet_count) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                       (player_name, deaths, gp_gained, tiles_completed, team_id, discord_id, pet_count))
 
 def add_death_by_playername(rsn):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("UPDATE Players SET deaths = deaths + 1 WHERE player_name = %s", (rsn,))
+        cursor.execute("UPDATE players SET deaths = deaths + 1 WHERE player_name = %s", (rsn,))
+
+def add_pet_by_playername(rsn):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE players SET pet_count = pet_count + 1 WHERE player_name = %s", (rsn,))
 
 def add_player_tile_completions(player_id, tiles_completed):
     with connect() as conn:
@@ -231,10 +236,11 @@ def get_completed_tiles_by_team_id_and_tile_id(team_id, tile_id):
 def add_tile(tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required, tile_repetition, tile_points):
     with connect() as conn:
         cursor = conn.cursor()
-        if tile_unique_drops == "N/A":
+        if tile_unique_drops == "N/A" or tile_unique_drops == "":
             tile_unique_drops = "FALSE"
-        if tile_triggers_required == "N/A":
+        if tile_triggers_required == "N/A" or tile_triggers_required == "":
             tile_triggers_required = 0
+
         cursor.execute("INSERT INTO tiles (tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required, tile_repetition, tile_points) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",
                        (tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required, tile_repetition, tile_points))
 
@@ -413,6 +419,7 @@ def reset_tables():
                 tiles_completed real,
                 team_id integer,
                 discord_id text,
+                pet_count integer,
                 FOREIGN KEY(team_id) REFERENCES teams(team_id)
             )
             ''')
@@ -529,6 +536,8 @@ def read_tiles(file_name):
         add_tile(tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops,tile_triggers_required, tile_repetition, tile_points)
         tile = Tile(get_tile_by_name(tile_name))
         for item in whitelist_items:
+            if item.strip() == "":
+                continue
             add_drop_whitelist(item.strip(), tile.tile_id)
 
 def read_teams(file_name):
@@ -548,7 +557,7 @@ def read_teams(file_name):
         for player in players:
             if player == "":
                 continue
-            add_player(player, 0, 0, 0, team_obj.team_id, 0)
+            add_player(player, 0, 0, 0, team_obj.team_id, 0, 0)
 
     return teams
 

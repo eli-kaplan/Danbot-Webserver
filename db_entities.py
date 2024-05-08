@@ -7,6 +7,7 @@ class Player:
         self.tiles_completed = player_tuple[4]
         self.team_id = player_tuple[5]
         self.discord_id = player_tuple[6]
+        self.pet_count = player_tuple[7]
 
 class Team:
     def __init__(self, team_tuple):

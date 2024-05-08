@@ -423,8 +423,10 @@ def parse_pet(data, img_file) -> dict[str, list[str]]:
         player = db_entities.Player(player)
     else:
         return False
+
     team = database.get_team_by_id(player.team_id)
     team = db_entities.Team(team)
+    database.add_pet_by_playername(rsn)
 
     if pet in tile.tile_triggers:
         send_webhook(team.team_webhook, f"{player.player_name} is being followed by {pet}!", description="Too bad its not worth any points....", color=16776960, image=img_file)
