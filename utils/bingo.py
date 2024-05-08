@@ -31,6 +31,8 @@ def check_progress(tile, team):
                 for drop in drops:
                     drop = Drop(drop)
                     trigger_value = int(tile.tile_trigger_weights[i]) * int(drop.drop_quantity) + trigger_value
+        if trigger_value % tile.tile_triggers_required == 0:
+            return None
         result = f"{tile.tile_name} is {trigger_value % tile.tile_triggers_required} / {tile.tile_triggers_required} from being completed!\n"
         if tile.tile_unique_drops == "TRUE":
             result = result + f"You have already found "

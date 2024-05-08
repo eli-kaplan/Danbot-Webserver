@@ -18,6 +18,7 @@ def home():
 app.register_blueprint(drop_submission_route, url_prefix='/dink')
 app.register_blueprint(database_routes, url_prefix="/db")
 
+
 def start_bot():
     bot.run()
 
