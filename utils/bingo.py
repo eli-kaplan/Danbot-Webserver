@@ -42,7 +42,7 @@ def check_progress(tile, team):
                 for found in drops_found:
                     result = result + "\n- " + found
         if tile_completion_count > 0:
-            result = result + f"You have completed this tile {tile_completion_count} times.\n"
+            result = result + f"- You have completed this tile {tile_completion_count} times.\n"
     if tile.tile_type == "SET":
         # Each set is separated by a '/' character
         result = ""
