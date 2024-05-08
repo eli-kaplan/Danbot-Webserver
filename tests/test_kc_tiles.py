@@ -23,6 +23,68 @@ def app():
 def client(app):
     return app.test_client()
 
+def test_inferno_fire_cape(client):
+    database.reset_tables()
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_6.csv')
+
+    json_data = spoof_kc.kc_spoof_json("Danbis", "TzTok-Jad")
+    result = dink.parse_kill_count(json_data, None)
+    assert result == True
+
+    player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
+    assert round(player_danbis.tiles_completed, 2) == round(1/9, 2)
+
+    json_data = spoof_kc.kc_spoof_json("Danbis", "TzTok-Zuk")
+    result = dink.parse_kill_count(json_data, None)
+    assert result == True
+
+    player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
+    assert round(player_danbis.tiles_completed, 2) == round(4/9, 2)
+
+def test_inferno_fire_cape_completion(client):
+    database.reset_tables()
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_6.csv')
+
+    json_data = spoof_kc.kc_spoof_json("Danbis", "TzTok-Jad")
+    result = dink.parse_kill_count(json_data, None)
+    assert result == True
+
+    player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
+    assert round(player_danbis.tiles_completed, 2) == round(1/9, 2)
+
+    json_data = spoof_kc.kc_spoof_json("Danbis", "TzTok-Zuk")
+    result = dink.parse_kill_count(json_data, None)
+    assert result == True
+
+    player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
+    assert round(player_danbis.tiles_completed, 2) == round(4/9, 2)
+
+    json_data = spoof_kc.kc_spoof_json("Danbis", "TzTok-Zuk")
+    result = dink.parse_kill_count(json_data, None)
+    assert result == True
+
+    player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
+    assert round(player_danbis.tiles_completed, 2) == round(7/9, 2)
+
+    json_data = spoof_kc.kc_spoof_json("Danbis", "TzTok-Jad")
+    result = dink.parse_kill_count(json_data, None)
+    assert result == True
+
+    player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
+    assert round(player_danbis.tiles_completed, 2) == round(8/9, 2)
+
+    json_data = spoof_kc.kc_spoof_json("Danbis", "TzTok-Jad")
+    result = dink.parse_kill_count(json_data, None)
+    assert result == True
+
+    player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
+    assert round(player_danbis.tiles_completed, 2) == round(9/9, 2)
+
+    team = db_entities.Team(database.get_team_by_id(1))
+    assert team.team_points == 1
+
 def test_single_player_kc_completion(client):
     database.reset_tables()
     database.read_teams('test_csvs/default_team_1.csv')
@@ -205,3 +267,4 @@ def test_multiplayer_overcompletion(client):
 
     team = db_entities.Team(database.get_team_by_id(1))
     assert team.team_points == 2
+

@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 
 import pytest
 from flask import Blueprint, jsonify, request
@@ -370,13 +371,17 @@ def parse_kill_count(data, img_file) -> dict[str, list[str]]:
         if tile_completion_count >= tile.tile_repetition:
             return True
 
-        database.add_player_tile_completions(player_id, 1 / tile.tile_triggers_required)
+        killcount_weights = defaultdict(int)
+        for i in range(len(tile.tile_trigger_weights)):
+            killcount_weights[tile.tile_triggers.split(',')[i].strip()] = int(tile.tile_trigger_weights[i])
 
-        team_killcount = 0
-        killcounts = database.get_killcount_by_team_id_and_boss_name(team.team_id, boss_name)
-        for killcount in killcounts:
-            killcount = db_entities.Killcount(killcount)
-            team_killcount = team_killcount + killcount.kills
+        database.add_player_tile_completions(player_id, killcount_weights[boss_name] / tile.tile_triggers_required)
+        team_killcount = database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id)
+        for boss_trigger in tile.tile_triggers.split(','):
+            killcounts = database.get_killcount_by_team_id_and_boss_name(team.team_id, boss_trigger.strip())
+            for killcount in killcounts:
+                killcount = db_entities.Killcount(killcount)
+                team_killcount = team_killcount + (killcount.kills * killcount_weights[killcount.boss_name])
 
         if team_killcount >= tile.tile_triggers_required * (tile_completion_count + 1):
             database.add_completed_tile(tile.tile_id, team_id)
@@ -389,7 +394,6 @@ def parse_kill_count(data, img_file) -> dict[str, list[str]]:
                 player_ = db_entities.Player(player_)
                 description = description + f"- {player_.player_name} with {killcount.kills} kills\n"
             send_webhook(team.team_webhook, f"{tile.tile_name} completed!", description=description, color=65280, image=img_file)
-
     return True
 
 

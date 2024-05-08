@@ -3,6 +3,7 @@ from werkzeug.utils import secure_filename
 import sqlite3
 import os
 import database
+from utils import autocomplete
 
 database_routes = Blueprint("database_routes", __name__)
 
