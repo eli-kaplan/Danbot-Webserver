@@ -539,7 +539,7 @@ def parse_json_data(json_data, img_file) -> dict[str, list[str]]:
         elif type == 'CLUE':
             return parse_clue(data)
         elif type == 'KILL_COUNT':
-            return parse_kill_count(data)
+            return parse_kill_count(data, img_file)
         elif type == 'COMBAT_ACHIEVEMENT':
             return parse_combat_achievement(data)
         elif type == 'PET':
@@ -579,12 +579,9 @@ def handle_request():
         img_file = request.files['file']
     except:
         img_file = None
-    print('here1')
     print(data)
     if 'payload_json' in data:
-        print("here2")
         json_data = data['payload_json']
-        print('here2')
         try:
             result = parse_json_data(json_data, img_file)
         except Exception as e:
