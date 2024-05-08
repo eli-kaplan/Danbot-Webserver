@@ -212,13 +212,13 @@ class UserCog(commands.Cog):
                     response = response + f"{tile.tile_name}: "
                     for i in range(0, tile.tile_repetition - complete_tile_dict[tile.tile_id]):
                         response = response + ":x:"
-                    response = response + "\n"
+                    response = response
         elif board_type == "Partial Tiles":
             for tile in tiles:
                 tile = db_entities.Tile(tile)
                 progress = bingo.check_progress(tile, team)
                 if progress is not None:
-                    response = response + progress + "\n"
+                    response = response + progress
 
         await ctx.respond(response)
 

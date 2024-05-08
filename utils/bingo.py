@@ -42,7 +42,7 @@ def check_progress(tile, team):
                 for found in drops_found:
                     result = result + "\n- " + found
         if tile_completion_count > 0:
-            result = result + f"\nYou have completed this tile {tile_completion_count} times."
+            result = result + f"You have completed this tile {tile_completion_count} times.\n"
     if tile.tile_type == "SET":
         # Each set is separated by a '/' character
         result = ""
@@ -70,7 +70,7 @@ def check_progress(tile, team):
     if tile.tile_type == "NICHE":
         niche_progress = database.get_manual_progress_by_tile_name_and_team_name(tile.tile_name, team.team_name)
         if tile_completion_count >= tile.tile_repetition:
-            result = f"You have fully completed {tile.tile_name}"
+            result = f"You have fully completed {tile.tile_name}\n"
         else:
-            result = f"You have completed {tile.tile_name} {tile_completion_count} times. You are {int(niche_progress % tile.tile_triggers_required)}/{tile.tile_triggers_required} from your next completion"
+            result = f"You have completed {tile.tile_name} {tile_completion_count} times. You are {int(niche_progress % tile.tile_triggers_required)}/{tile.tile_triggers_required} from your next completion\n"
     return result
