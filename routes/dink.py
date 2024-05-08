@@ -579,7 +579,6 @@ def handle_request():
         img_file = request.files['file']
     except:
         img_file = None
-    print(data)
     if 'payload_json' in data:
         json_data = data['payload_json']
         try:
