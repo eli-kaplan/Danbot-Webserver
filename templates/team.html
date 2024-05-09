@@ -2,157 +2,164 @@
 
 {% block content %}
 <title>{{ team.team_name }}</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            color: #FFFFFF; /* Light text */
-        }
-        th {
-            background-color: #333333; /* Darker background for navbar */
-            color: white;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 15px;
-            text-align: left;
-        }
-        tr:nth-child(even) {
-            background-color: #1E1E1E;
-        }
-        tr:hover {
-            background-color: #333333;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        color: #FFFFFF; /* Light text */
+    }
+    th {
+        background-color: #333333; /* Darker background for navbar */
+        color: white;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 15px;
+        text-align: left;
+    }
+    tr:nth-child(even) {
+        background-color: #1E1E1E;
+    }
+    tr:hover {
+        background-color: #333333;
+    }
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-        .search-bar {
-            display: flex;
-        }
+    .search-bar {
+        display: flex;
+    }
 
-        .search-bar input[type="text"] {
-            border: none;
-            padding: 10px;
-            color: #000;
-            background-color: #fff;
-        }
+    .search-bar select {
+        border: none;
+        padding: 10px;
+        color: #000;
+        background-color: #fff;
+    }
 
-        .search-bar input[type="submit"] {
-            border: none;
-            padding: 10px;
-            color: #fff;
-            background-color: #444;
-        }
+    .search-bar input[type="submit"] {
+        border: none;
+        padding: 10px;
+        color: #fff;
+        background-color: #444;
+    }
 
-        a {
-            color: white;
-        }
-    </style>
-    <script>
-        function submitForm(event) {
-            event.preventDefault();
-            var team = document.getElementById('searchbox').value;
-            window.location.href = '/user/team/' + team;
-        }
-    </script>
+    a {
+        color: white;
+    }
+</style>
+<script>
+    function submitForm(event) {
+        event.preventDefault();
+        var team = document.getElementById('teamselect').value;
+        window.location.href = '/user/team/' + team;
+    }
+</script>
 </head>
 <body>
-    <div class="content">
-        <div class="header">
-            <h1>{{team.team_name}}</h1>
-            <form onsubmit="submitForm(event)" class="search-bar">
-                <input type="text" id="searchbox" name="searchboxcontent" placeholder="Search..." list="team-names">
-                <datalist id="team-names">
-                    {% for teamname in teamnames %}
-                    <option value="{{teamname}}">
-                    {% endfor %}
-                </datalist>
-                <input type="submit" value="Search">
-            </form>
-        </div>
-        <h2>Team Gains</h2>
-        <table>
-            <tr>
-                <th>Total Gold</th>
-                <th>Total Deaths</th>
-                <th>Total Pets</th>
-                <th>Total Tiles</th>
-            </tr>
-            <tr>
-                <td>{{ total_gold }}</td>
-                <td>{{ total_deaths }} deaths</td>
-                <td>{{ total_pets }} pets</td>
-                <td>{{ total_tiles }} tiles</td>
-            </tr>
-        </table>
-        <h2>Top Players</h2>
-        <table>
-            <tr>
-                <th>Clan Thrall</th>
-                <th>Pet Collector</th>
-                <th>Top G</th>
-                <th>MVP</th>
-            </tr>
-            <tr>
-                <td><a href="/user/player/{{ most_deaths_player.player_name }}">{{ most_deaths_player.player_name }}</a> with {{ most_deaths_player.deaths }} deaths</td>
-                <td><a href="/user/player/{{ most_pets_player.player_name}}">{{ most_pets_player.player_name }}</a> with {{ most_pets_player.pet_count }} pets </td>
-                <td><a href="/user/player/{{ most_gold_player.player_name }}">{{ most_gold_player.player_name }}</a> with {{ most_gold_player.gp_gained }} gold </td>
-                <td><a href="/user/player/{{ most_tiles_player.player_name }}">{{ most_tiles_player.player_name }}</a> with {{ most_tiles_player.tiles_completed }} tiles </td>
-            </tr>
-        </table>
-        <h2>Killcount</h2>
-        <table>
-            <tr>
-                <th>Boss name</th>
-                <th>Kill count</th>
-            </tr>
-            {% for kills in killcount %}
-            <tr>
-                <td>{{ kills[0] }}</td>
-                <td>{{ kills[1] }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-        <h2>Player Ranks</h2>
-        <table>
-            <tr>
-                <th>Rank</th>
-                <th>Player Name</th>
-                <th>Total Deaths</th>
-                <th>Pets Gained</th>
-                <th>Gold Gained</th>
-                <th>Tiles Completed</th>
-            </tr>
-            {% for player in players %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td><a href="/user/player/{{player.player_name}}">{{ player.player_name }}</a></td>
-                <td>{{ player.deaths }}</td>
-                <td>{{ player.pet_count }}</td>
-                <td>{{ player.gp_gained }}</td>
-                <td>{{ player.tiles_completed }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-        <h2>Drops</h2>
-        <table>
-            <tr>
-                <th>Item name</th>
-                <th>Quantity</th>
-                <th>Gold gained</th>
-            </tr>
-            {% for drop in drops %}
-            <tr>
-                <td>{{ drop[0] }}</td>
-                <td>{{ drop[1] }}</td>
-                <td>{{ drop[2] }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+<div class="content">
+    <div class="header">
+        <h1>{{team.team_name}}</h1>
+        <form onsubmit="submitForm(event)" class="search-bar">
+            <select id="teamselect" name="teamsearch">
+                {% for teamname in teamnames %}
+                <option value="{{teamname}}">{{teamname}}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Search">
+        </form>
     </div>
+    <h2>Team Gains</h2>
+    <table>
+        <tr>
+            <th>Total Gold</th>
+            <th>Total Deaths</th>
+            <th>Total Pets</th>
+            <th>Total Tiles</th>
+        </tr>
+        <tr>
+            <td>{{ total_gold }}</td>
+            <td>{{ total_deaths }} deaths</td>
+            <td>{{ total_pets }} pets</td>
+            <td>{{ total_tiles }} tiles</td>
+        </tr>
+    </table>
+    <h2>Top Players</h2>
+    <table>
+        <tr>
+            <th>Clan Thrall</th>
+            <th>Pet Collector</th>
+            <th>Top G</th>
+            <th>MVP</th>
+        </tr>
+        <tr>
+            <td><a href="/user/player/{{ most_deaths_player.player_name }}">{{ most_deaths_player.player_name }}</a>
+                with {{ most_deaths_player.deaths }} deaths
+            </td>
+            <td><a href="/user/player/{{ most_pets_player.player_name}}">{{ most_pets_player.player_name }}</a> with {{
+                most_pets_player.pet_count }} pets
+            </td>
+            <td><a href="/user/player/{{ most_gold_player.player_name }}">{{ most_gold_player.player_name }}</a> with {{
+                most_gold_player.gp_gained }} gold
+            </td>
+            <td><a href="/user/player/{{ most_tiles_player.player_name }}">{{ most_tiles_player.player_name }}</a> with
+                {{ most_tiles_player.tiles_completed }} tiles
+            </td>
+        </tr>
+    </table>
+    <h2>Killcount</h2>
+    <table>
+        <tr>
+            <th>Boss name</th>
+            <th>Kill count</th>
+        </tr>
+        {% for kills in killcount %}
+        <tr>
+            <td>{{ kills[0] }}</td>
+            <td>{{ kills[1] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h2>Player Ranks</h2>
+    <table>
+        <tr>
+            <th>Rank</th>
+            <th>Player Name</th>
+            <th>Total Deaths</th>
+            <th>Pets Gained</th>
+            <th>Gold Gained</th>
+            <th>Tiles Completed</th>
+        </tr>
+        {% for player in players %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td><a href="/user/player/{{player.player_name}}">{{ player.player_name }}</a></td>
+            <td>{{ player.deaths }}</td>
+            <td>{{ player.pet_count }}</td>
+            <td>{{ player.gp_gained }}</td>
+            <td>{{ player.tiles_completed }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h2>Drops</h2>
+    <table>
+        <tr>
+            <th>Item name</th>
+            <th>Quantity</th>
+            <th>Gold gained</th>
+        </tr>
+        {% for drop in drops %}
+        <tr>
+            <td>{{ drop[0] }}</td>
+            <td>{{ drop[1] }}</td>
+            <td>{{ drop[2] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 </body>
 {% endblock %}

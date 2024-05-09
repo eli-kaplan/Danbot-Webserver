@@ -4,6 +4,7 @@ from flask import Flask, request, render_template
 from routes.user_routes import user_routes
 from routes.database_routes import database_routes
 from routes.dink import drop_submission_route
+from routes.board_routes import board_routes
 import os
 import threading
 import discord
@@ -19,7 +20,7 @@ def home():
 app.register_blueprint(drop_submission_route, url_prefix='/dink')
 app.register_blueprint(database_routes, url_prefix="/db")
 app.register_blueprint(user_routes, url_prefix="/user")
-
+app.register_blueprint(board_routes, url_prefix='/board')
 
 def start_bot():
     bot.run()
