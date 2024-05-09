@@ -118,8 +118,7 @@ def player(player_name):
     for key, value in drops_dict.items():
         drops.append((key, value[0], value[1]))
     drops = sorted(drops, key=lambda drop: drop[2], reverse=True)
-    for drop in drops:
-        drop[2] = scapify.int_to_gp(drop[2])
+    drops = [(drop[0], drop[1], scapify.int_to_gp(drop[2])) for drop in drops]
 
     killcount = []
     for kc in database.get_killcount_by_player_id(player.player_id):
