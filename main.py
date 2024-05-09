@@ -1,6 +1,7 @@
 from discord.ext import commands
 from flask import Flask, request, render_template
 
+from routes.user_routes import user_routes
 from routes.database_routes import database_routes
 from routes.dink import drop_submission_route
 import os
@@ -17,6 +18,7 @@ def home():
 
 app.register_blueprint(drop_submission_route, url_prefix='/dink')
 app.register_blueprint(database_routes, url_prefix="/db")
+app.register_blueprint(user_routes, url_prefix="/user")
 
 
 def start_bot():

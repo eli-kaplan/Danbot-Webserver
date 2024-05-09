@@ -1,3 +1,5 @@
+import os
+import socket
 from collections import defaultdict
 
 import discord
@@ -224,53 +226,6 @@ class UserCog(commands.Cog):
     @discord.slash_command(name="leaderboard", description="Show the current standings amongst teams and players")
     async def leaderboard(self, ctx: discord.ApplicationContext):
         await ctx.defer()
-        embed = discord.Embed(title="Leaderboard", colour=discord.Colour.yellow())
-
-        total_gp_earned = 0
-        total_deaths = 0
-        tile_contributions = 0
-
-        team_gp = defaultdict(int)
-
-        teams = []
-        for team in database.get_teams():
-            team = db_entities.Team(team)
-            teams.append(team)
-        players = []
-        for player in database.get_players():
-            player = db_entities.Player(player)
-            players.append(player)
-            team_gp[player.team_id] += player.gp_gained
-            total_gp_earned += player.gp_gained
-            total_deaths += player.deaths
-            tile_contributions += player.tiles_completed
-
-        embed.add_field(name="Total Gold Gained", value=scapify.int_to_gp(total_gp_earned), inline=True)
-        embed.add_field(name="Total deaths", value=f"{total_deaths}", inline=True)
-        embed.add_field(name="Tile Contributions (including partial completions)", value=f"{tile_contributions}", inline=True)
-
-        team_rankings = "```ansi\n"
-        i = 1
-        for team in sorted(teams, key=lambda team: team.team_points, reverse=True):
-            spaces_needed = 56 - len(f"Rank {i}: {team.team_name[:40]}") - len(
-                f"{team.team_points} points ({scapify.int_to_gp(team_gp[team.team_id])})")
-            result = f"{ftext + fred}Rank {i}:{fend} {team.team_name[:40]}{' ' * spaces_needed}{ftext + fblue}{team.team_points} points {fend}{ftext + fgreen}({scapify.int_to_gp(team_gp[team.team_id])}){fend}\n"
-            if len(team_rankings) + len(result) > 1021:
-                break
-            team_rankings += result
-        team_rankings += "```"
-        embed.add_field(name="Team Rankings", value=team_rankings, inline=False)
-
-        player_rankings = "```ansi\n"
-        i = 1
-        for player in sorted(players, key=lambda player: player.tiles_completed, reverse=True):
-            spaces_needed = 56 - len(f"Rank {i}: {player.player_name[:40]}") - len(
-                f"{player.tiles_completed} tiles ({scapify.int_to_gp(player.gp_gained)})")
-            result = f"{ftext + fred}Rank {i}: {fend}{player.player_name[:40]}{' ' * spaces_needed}{ftext + fblue}{player.tiles_completed} tiles {fend}{ftext + fgreen}({scapify.int_to_gp(player.gp_gained)})\n{fend}"
-            if len(player_rankings) + len(result) > 1021:
-                break
-            player_rankings += result
-        player_rankings += "```"
-        embed.add_field(name="Player Rankings", value=player_rankings, inline=False)
-
-        await ctx.respond(embed=embed)
+        server_ip = os.getenv('SERVER_IP')
+        leaderboard_url = f"http://{server_ip}/user/leaderboard"
+        await ctx.respond(leaderboard_url)

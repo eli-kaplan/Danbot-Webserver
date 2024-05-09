@@ -1,0 +1,100 @@
+<!-- leaderboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaderboard</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #121212; /* Dark background */
+            color: #FFFFFF; /* Light text */
+            font-family: Arial, sans-serif;
+        }
+        .content {
+            margin-top: 60px; /* Adjust as needed */
+            width: 80%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            color: #FFFFFF; /* Light text */
+        }
+        th {
+            background-color: #333333; /* Darker background for navbar */
+            color: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: left;
+        }
+        tr:nth-child(even) {
+            background-color: #1E1E1E;
+        }
+        tr:hover {
+            background-color: #333333;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Leaderboard</h1>
+        <h2>Team Ranks</h2>
+        <table>
+            <tr>
+                <th>Rank</th>
+                <th>Team Name</th>
+                <th>Points</th>
+            </tr>
+            {% for team in teams %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ team.team_name }}</td>
+                <td>{{ team.team_points }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <h2>Honorable Mentions</h2>
+        <table>
+            <tr>
+                <th>Clan Thrall</th>
+                <th>Pet Collector</th>
+                <th>Top G</th>
+                <th>MVP</th>
+            </tr>
+            <tr>
+                <td> {{ most_deaths_player.player_name }} with {{ most_deaths_player.deaths }} deaths </td>
+                <td> {{ most_pets_player.player_name }} with {{ most_pets_player.pet_count }} pets </td>
+                <td> {{ most_gold_player.player_name }} with {{ most_gold_player.gp_gained }} gold </td>
+                <td> {{ most_tiles_player.player_name }} with {{ most_tiles_player.tiles_completed }} tiles </td>
+            </tr>
+        </table>
+        <h2>Player Ranks</h2>
+        <table>
+            <tr>
+                <th>Rank</th>
+                <th>Player Name</th>
+                <th>Total Deaths</th>
+                <th>Pets Gained</th>
+                <th>Gold Gained</th>
+                <th>Tiles Completed</th>
+            </tr>
+            {% for player in players %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ player.player_name }}</td>
+                <td>{{ player.deaths }}</td>
+                <td>{{ player.pet_count }}</td>
+                <td>{{ player.gp_gained }}</td>
+                <td>{{ player.tiles_completed }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>
