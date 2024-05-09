@@ -29,7 +29,7 @@ def team(team_name):
             drops_dict[drop.drop_name] = (drop.drop_quantity, drop.drop_value * drop.drop_quantity)
     drops = []
     for key, value in drops_dict.items():
-        drops.append((key, value[0], scapify.int_to_gp(value[1])))
+        drops.append((key, value[0], value[1]))
     drops = sorted(drops, key=lambda drop: drop[2], reverse=True)
     drops = [(drop[0], drop[1], scapify.int_to_gp(drop[2])) for drop in drops]
 
@@ -89,7 +89,7 @@ def team(team_name):
 
     return render_template('team.html', team=team, players=players, most_tiles_player=most_tiles_player,
                            most_gold_player=most_gold_player, most_pets_player=most_pets_player,
-                           most_deaths_player=most_deaths_player, drops=drops,
+                           most_deaths_player=most_deaths_player, drops=drops, killcount=killcount,
                            total_pets=total_pets, total_tiles=total_tiles, total_gold=scapify.int_to_gp(total_gold),
                            total_deaths=total_deaths, teamnames=autocomplete.team_names())
 
