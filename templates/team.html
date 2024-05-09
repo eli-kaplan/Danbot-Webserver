@@ -112,8 +112,8 @@
             </tr>
             {% for kills in killcount %}
             <tr>
-                <td>{{ kills.boss_name }}</td>
-                <td>{{ kills.kills }}</td>
+                <td>{{ kills[0] }}</td>
+                <td>{{ kills[1] }}</td>
             </tr>
             {% endfor %}
         </table>
