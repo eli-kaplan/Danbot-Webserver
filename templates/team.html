@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-    <title>Leaderboard</title>
+<title>{{ team.team_name }}</title>
     <style>
         table {
             width: 100%;
@@ -25,32 +24,57 @@
         tr:hover {
             background-color: #333333;
         }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-bar {
+            display: flex;
+        }
+
+        .search-bar input[type="text"] {
+            border: none;
+            padding: 10px;
+            color: #000;
+            background-color: #fff;
+        }
+
+        .search-bar input[type="submit"] {
+            border: none;
+            padding: 10px;
+            color: #fff;
+            background-color: #444;
+        }
 
         a {
             color: white;
         }
-
     </style>
+    <script>
+        function submitForm(event) {
+            event.preventDefault();
+            var team = document.getElementById('searchbox').value;
+            window.location.href = '/user/team/' + team;
+        }
+    </script>
 </head>
 <body>
     <div class="content">
-        <h1>Leaderboard</h1>
-        <h2>Team Ranks</h2>
-        <table>
-            <tr>
-                <th>Rank</th>
-                <th>Team Name</th>
-                <th>Points</th>
-            </tr>
-            {% for team in teams %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td><a href="/user/team/{{team.team_name}}">{{ team.team_name }}</a></td>
-                <td>{{ team.team_points }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-        <h2>Clan Gains</h2>
+        <div class="header">
+            <h1>{{team.team_name}}</h1>
+            <form onsubmit="submitForm(event)" class="search-bar">
+                <input type="text" id="searchbox" name="searchboxcontent" placeholder="Search..." list="team-names">
+                <datalist id="team-names">
+                    {% for teamname in teamnames %}
+                    <option value="{{teamname}}">
+                    {% endfor %}
+                </datalist>
+                <input type="submit" value="Search">
+            </form>
+        </div>
+        <h2>Team Gains</h2>
         <table>
             <tr>
                 <th>Total Gold</th>
@@ -65,7 +89,7 @@
                 <td>{{ total_tiles }} tiles</td>
             </tr>
         </table>
-        <h2>Honorable Mentions</h2>
+        <h2>Top Players</h2>
         <table>
             <tr>
                 <th>Clan Thrall</th>
@@ -79,6 +103,19 @@
                 <td><a href="/user/player/{{ most_gold_player.player_name }}">{{ most_gold_player.player_name }}</a> with {{ most_gold_player.gp_gained }} gold </td>
                 <td><a href="/user/player/{{ most_tiles_player.player_name }}">{{ most_tiles_player.player_name }}</a> with {{ most_tiles_player.tiles_completed }} tiles </td>
             </tr>
+        </table>
+        <h2>Killcount</h2>
+        <table>
+            <tr>
+                <th>Boss name</th>
+                <th>Kill count</th>
+            </tr>
+            {% for kills in killcount %}
+            <tr>
+                <td>{{ kills.boss_name }}</td>
+                <td>{{ kills.kills }}</td>
+            </tr>
+            {% endfor %}
         </table>
         <h2>Player Ranks</h2>
         <table>
@@ -101,7 +138,22 @@
             </tr>
             {% endfor %}
         </table>
+        <h2>Drops</h2>
+        <table>
+            <tr>
+                <th>Item name</th>
+                <th>Quantity</th>
+                <th>Gold gained</th>
+            </tr>
+            {% for drop in drops %}
+            <tr>
+                <td>{{ drop[0] }}</td>
+                <td>{{ drop[1] }}</td>
+                <td>{{ drop[2] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
     </div>
 </body>
-
 {% endblock %}
