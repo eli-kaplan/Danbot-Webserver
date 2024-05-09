@@ -13,9 +13,11 @@ import bot
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'development secret')
 
+
 @app.route('/')
 def home():
     return render_template('home.html')
+
 
 app.register_blueprint(drop_submission_route, url_prefix='/dink')
 app.register_blueprint(database_routes, url_prefix="/db")
@@ -25,8 +27,10 @@ app.register_blueprint(board_routes, url_prefix='/board')
 def start_bot():
     bot.run()
 
+
 def create_app():
     return app
+
 
 if __name__ == "__main__":
     from waitress import serve
@@ -37,8 +41,6 @@ if __name__ == "__main__":
     print("Bot started!")
 
     print("Starting server...")
-
     port = os.environ.get('PORT', 80)
     print("Server started!")
     serve(app, host="0.0.0.0", port=port)
-
