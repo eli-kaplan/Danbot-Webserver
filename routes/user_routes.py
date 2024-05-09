@@ -117,7 +117,7 @@ def player(player_name):
     drops = []
     for key, value in drops_dict.items():
         drops.append((key, value[0], scapify.int_to_gp(value[1])))
-    drops = sorted(drops, key=lambda drop: drop[1], reverse=True)
+    drops = sorted(drops, key=lambda drop: drop[2], reverse=True)
 
 
     killcount = []
