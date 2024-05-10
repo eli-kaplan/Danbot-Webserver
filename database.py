@@ -9,10 +9,9 @@ import db_entities
 from db_entities import Player, Tile
 
 
-
 def connect():
-    return psycopg2.connect(dbname=os.getenv('PGDATABASE'), user=os.getenv('PGUSER'), password=os.getenv('PGPASSWORD'), host=os.getenv('PGHOST'), port=os.getenv('PGPORT'))
-
+    return psycopg2.connect(dbname=os.getenv('PGDATABASE'), user=os.getenv('PGUSER'), password=os.getenv('PGPASSWORD'),
+                            host=os.getenv('PGHOST'), port=os.getenv('PGPORT'))
 
 
 def add_team_points(team_id, team_points):
@@ -26,7 +25,6 @@ def add_team_points(team_id, team_points):
         cursor.execute(update_query, (team_points, team_id))
 
 
-
 # Functions for 'teams' table
 def add_team(team_name, team_points, team_webhook):
     with connect() as conn:
@@ -35,16 +33,19 @@ def add_team(team_name, team_points, team_webhook):
                        (team_name, team_points, team_webhook))
         return cursor.execute("SELECT team_id from teams where team_name = %s", (team_name,))
 
+
 def remove_team(team_id):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM teams WHERE team_id = %s", (team_id,))
+
 
 def get_teams():
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM teams")
         return cursor.fetchall()
+
 
 def get_team_by_id(team_id):
     with connect() as conn:
@@ -59,22 +60,27 @@ def get_team_by_name(team_name):
         cursor.execute("SELECT * FROM teams where team_name = %s", (team_name,))
         return cursor.fetchone()
 
+
 # Functions for 'players' table
 def add_player(player_name, deaths, gp_gained, tiles_completed, team_id, discord_id, pet_count):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO players (player_name, deaths, gp_gained, tiles_completed, team_id, discord_id, pet_count) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                       (player_name, deaths, gp_gained, tiles_completed, team_id, discord_id, pet_count))
+        cursor.execute(
+            "INSERT INTO players (player_name, deaths, gp_gained, tiles_completed, team_id, discord_id, pet_count) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (player_name, deaths, gp_gained, tiles_completed, team_id, discord_id, pet_count))
+
 
 def add_death_by_playername(rsn):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("UPDATE players SET deaths = deaths + 1 WHERE player_name = %s", (rsn,))
 
+
 def add_pet_by_playername(rsn):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("UPDATE players SET pet_count = pet_count + 1 WHERE player_name = %s", (rsn,))
+
 
 def add_player_tile_completions(player_id, tiles_completed):
     with connect() as conn:
@@ -85,10 +91,12 @@ def add_player_tile_completions(player_id, tiles_completed):
             WHERE player_id = %s
         ''', (tiles_completed, player_id))
 
+
 def attach_player_discord(player_id, discord_id):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("UPDATE players SET discord_id = %s WHERE player_id = %s", (discord_id, player_id))
+
 
 def add_alt_account(player_name, discord_id):
     with connect() as conn:
@@ -103,10 +111,12 @@ def add_alt_account(player_name, discord_id):
             "INSERT INTO players (player_name, deaths, gp_gained, tiles_completed, team_id, discord_id) VALUES (%s, %s, %s, %s, %s, %s)",
             (player_name, 0, 0, 0, main_account.team_id, discord_id))
 
+
 def remove_player(player_id):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM players WHERE player_id = %s", (player_id,))
+
 
 def get_players():
     with connect() as conn:
@@ -114,11 +124,13 @@ def get_players():
         cursor.execute("SELECT * FROM players")
         return cursor.fetchall()
 
+
 def get_players_by_team_id(team_id):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM players WHERE team_id = %s", (team_id,))
         return cursor.fetchall()
+
 
 def get_player_by_name(player_name):
     with connect() as conn:
@@ -126,24 +138,30 @@ def get_player_by_name(player_name):
         cursor.execute("SELECT * FROM players where player_name = %s", (player_name,))
         return cursor.fetchone()
 
+
 def get_player_by_id(player_id):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM players where player_id = %s", (player_id,))
         return cursor.fetchone()
 
+
 # Functions for 'drops' table
 def add_drop(team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source, discord_id):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO drops (team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source, discord_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                       (team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source, discord_id))
-        cursor.execute("UPDATE Players SET gp_gained = gp_gained + %s WHERE player_id = %s", (drop_value * drop_quantity, player_id))
+        cursor.execute(
+            "INSERT INTO drops (team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source, discord_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+            (team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source, discord_id))
+        cursor.execute("UPDATE Players SET gp_gained = gp_gained + %s WHERE player_id = %s",
+                       (drop_value * drop_quantity, player_id))
+
 
 def remove_drop(player_id, drop_name):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM drops WHERE player_id = %s AND drop_name = %s", (player_id, drop_name))
+
 
 def get_drops():
     with connect() as conn:
@@ -151,17 +169,20 @@ def get_drops():
         cursor.execute("SELECT * FROM drops")
         return cursor.fetchall()
 
+
 def get_drops_by_team_id(team_id):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM drops WHERE team_id = %s", (team_id,))
         return cursor.fetchall()
 
+
 def get_drops_by_player_id(player_id):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM drops WHERE player_id = %s", (player_id,))
         return cursor.fetchall()
+
 
 # Functions for 'killcount' table
 def add_killcount(player_id, team_id, boss_name, kills):
@@ -170,16 +191,19 @@ def add_killcount(player_id, team_id, boss_name, kills):
         cursor.execute("INSERT INTO killcount (player_id, team_id, boss_name, kills) VALUES (%s, %s, %s, %s)",
                        (player_id, team_id, boss_name, kills))
 
+
 def remove_killcount(player_id, boss_name):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM killcount WHERE player_id = %s AND boss_name = %s", (player_id, boss_name))
+
 
 def get_killcounts():
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM killcount")
         return cursor.fetchall()
+
 
 # Functions for 'drop_whitelist' table
 def add_drop_whitelist(drop_name, tile_id):
@@ -191,10 +215,12 @@ def add_drop_whitelist(drop_name, tile_id):
         except:
             print("Warning! Duplicate trigger found! " + drop_name)
 
+
 def remove_drop_whitelist(drop_name):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM drop_whitelist WHERE drop_name = %s", (drop_name,))
+
 
 def get_drop_whitelist():
     with connect() as conn:
@@ -202,11 +228,13 @@ def get_drop_whitelist():
         cursor.execute("SELECT * FROM drop_whitelist")
         return cursor.fetchall()
 
+
 def get_drop_whitelist_by_item_name(item_name):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM drop_whitelist WHERE drop_name = %s", (item_name, ))
+        cursor.execute("SELECT * FROM drop_whitelist WHERE drop_name = %s", (item_name,))
         return cursor.fetchone()
+
 
 # Functions for 'completed_tiles' table
 def add_completed_tile(tile_id, team_id):
@@ -215,11 +243,15 @@ def add_completed_tile(tile_id, team_id):
         cursor.execute("INSERT INTO completed_tiles (tile_id, team_id) VALUES (%s, %s)",
                        (tile_id, team_id))
 
+
 def remove_completed_tile(tile_id, team_id):
     with connect() as conn:
         cursor = conn.cursor()
-        completed_tile = db_entities.Completed_Tile(cursor.execute("SELECT * FROM completed_tiles WHERE tile_name = %s and team_id = %s", (tile_id, team_id)).fetchone())
+        completed_tile = db_entities.Completed_Tile(
+            cursor.execute("SELECT * FROM completed_tiles WHERE tile_name = %s and team_id = %s",
+                           (tile_id, team_id)).fetchone())
         cursor.execute("DELETE FROM completed_tiles WHERE completed_tile_pk = %s", (completed_tile.completed_tile_pk))
+
 
 def get_completed_tiles():
     with connect() as conn:
@@ -227,13 +259,16 @@ def get_completed_tiles():
         cursor.execute("SELECT * FROM completed_tiles")
         return cursor.fetchall()
 
+
 def get_completed_tiles_by_team_id_and_tile_id(team_id, tile_id):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM completed_tiles where team_id = %s and tile_id = %s", (team_id, tile_id))
         return cursor.fetchall()
 
-def add_tile(tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required, tile_repetition, tile_points):
+
+def add_tile(tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required,
+             tile_repetition, tile_points):
     with connect() as conn:
         cursor = conn.cursor()
         if tile_unique_drops == "N/A" or tile_unique_drops == "":
@@ -241,8 +276,11 @@ def add_tile(tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_uni
         if tile_triggers_required == "N/A" or tile_triggers_required == "":
             tile_triggers_required = 0
 
-        cursor.execute("INSERT INTO tiles (tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required, tile_repetition, tile_points) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",
-                       (tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required, tile_repetition, tile_points))
+        cursor.execute(
+            "INSERT INTO tiles (tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required, tile_repetition, tile_points) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",
+            (tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required,
+             tile_repetition, tile_points))
+
 
 # ... Repeat similar functions for 'drops', 'killcount', 'drop_whitelist', and 'completed_tiles' tables ...
 
@@ -252,11 +290,13 @@ def get_tiles():
         cursor.execute("SELECT * FROM tiles")
         return cursor.fetchall()
 
+
 def get_niche_tiles():
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM tiles WHERE tile_type = %s", ("NICHE",))
         return cursor.fetchall()
+
 
 def get_tile_by_drop(drop_name):
     with connect() as conn:
@@ -266,11 +306,13 @@ def get_tile_by_drop(drop_name):
         cursor.execute("SELECT * FROM tiles where tile_id = %s", (tile_id,))
         return cursor.fetchone()
 
+
 def get_tile_by_name(tile_name):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM tiles where tile_name = %s", (tile_name,))
         return cursor.fetchone()
+
 
 def get_drops_by_item_name_and_team_id(item_name, team_id):
     with connect() as conn:
@@ -278,24 +320,30 @@ def get_drops_by_item_name_and_team_id(item_name, team_id):
         cursor.execute("SELECT * FROM drops where team_id = %s and drop_name = %s", (team_id, item_name,))
         return cursor.fetchall()
 
+
 # Functions for 'killcount' table
 def add_killcount(player_id, team_id, bossname, kills):
     with connect() as conn:
         cursor = conn.cursor()
 
         # Check if the row already exists
-        cursor.execute("SELECT * FROM KillCount WHERE player_id = %s AND team_id = %s AND boss_name = %s", (player_id, team_id, bossname))
+        cursor.execute("SELECT * FROM KillCount WHERE player_id = %s AND team_id = %s AND boss_name = %s",
+                       (player_id, team_id, bossname))
         row = cursor.fetchone()
 
         if row is not None:
             # If the row exists, update the kills
-            cursor.execute("UPDATE KillCount SET kills = kills + %s WHERE player_id = %s AND team_id = %s AND boss_name = %s", (kills, player_id, team_id, bossname))
+            cursor.execute(
+                "UPDATE KillCount SET kills = kills + %s WHERE player_id = %s AND team_id = %s AND boss_name = %s",
+                (kills, player_id, team_id, bossname))
         else:
             # If the row doesn't exist, insert a new row
-            cursor.execute("INSERT INTO KillCount (player_id, team_id, boss_name, kills) VALUES (%s, %s, %s, %s)", (player_id, team_id, bossname, kills))
+            cursor.execute("INSERT INTO KillCount (player_id, team_id, boss_name, kills) VALUES (%s, %s, %s, %s)",
+                           (player_id, team_id, bossname, kills))
 
         # Commit the changes
         conn.commit()
+
 
 def get_killcount_by_team_id_and_boss_name(team_id, boss_name):
     with connect() as conn:
@@ -303,17 +351,20 @@ def get_killcount_by_team_id_and_boss_name(team_id, boss_name):
         cursor.execute("SELECT * FROM killcount WHERE team_id = %s AND boss_name = %s", (team_id, boss_name))
         return cursor.fetchall()
 
+
 def get_killcount_by_team_id(team_id):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM killcount WHERE team_id = %s", (team_id,))
         return cursor.fetchall()
 
+
 def get_killcount_by_player_id(player_id):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM killcount WHERE player_id = %s", (player_id,))
         return cursor.fetchall()
+
 
 def add_manual_progress(tile_name, player_name, progress):
     with connect() as conn:
@@ -324,7 +375,7 @@ def add_manual_progress(tile_name, player_name, progress):
         player = db_entities.Player(cursor.fetchone())
 
         # Find the team
-        cursor.execute("SELECT * FROM teams where team_id = %s", (player.team_id, ))
+        cursor.execute("SELECT * FROM teams where team_id = %s", (player.team_id,))
         team = db_entities.Team(cursor.fetchone())
 
         # Find the tile
@@ -332,15 +383,20 @@ def add_manual_progress(tile_name, player_name, progress):
         tile = db_entities.Tile(cursor.fetchone())
 
         # Check if the row already exists
-        cursor.execute("SELECT * FROM manual_tile_progress WHERE team_id = %s AND tile_id = %s", (team.team_id, tile.tile_id))
+        cursor.execute("SELECT * FROM manual_tile_progress WHERE team_id = %s AND tile_id = %s",
+                       (team.team_id, tile.tile_id))
         row = cursor.fetchone()
 
         if row is not None:
             # If the row exists, update the kills
-            cursor.execute("UPDATE manual_tile_progress SET progress = progress + %s WHERE team_id = %s AND tile_id = %s", (progress, team.team_id, tile.tile_id))
+            cursor.execute(
+                "UPDATE manual_tile_progress SET progress = progress + %s WHERE team_id = %s AND tile_id = %s",
+                (progress, team.team_id, tile.tile_id))
         else:
             # If the row doesn't exist, insert a new row
-            cursor.execute("INSERT INTO manual_tile_progress (tile_id, team_id, progress) VALUES (%s, %s, %s)", (tile.tile_id, team.team_id, progress))
+            cursor.execute("INSERT INTO manual_tile_progress (tile_id, team_id, progress) VALUES (%s, %s, %s)",
+                           (tile.tile_id, team.team_id, progress))
+
 
 def get_manual_progress_by_tile_name_and_team_name(tile_name, team_name):
     with connect() as conn:
@@ -353,11 +409,13 @@ def get_manual_progress_by_tile_name_and_team_name(tile_name, team_name):
         tile = db_entities.Tile(cursor.fetchone())
 
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM manual_tile_progress WHERE team_id = %s AND tile_id = %s", (team.team_id, tile.tile_id,))
+        cursor.execute("SELECT * FROM manual_tile_progress WHERE team_id = %s AND tile_id = %s",
+                       (team.team_id, tile.tile_id,))
         try:
             return cursor.fetchone()[2]
         except:
             return 0
+
 
 def get_manual_progress_by_tile_id_and_team_id(tile_id, team_id):
     with connect() as conn:
@@ -368,10 +426,12 @@ def get_manual_progress_by_tile_id_and_team_id(tile_id, team_id):
         except:
             return 0
 
+
 def add_request(team_name, evidence):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("INSERT INTO requests (team_name, evidence) VALUES (%s, %s)", (team_name, evidence,))
+
 
 def get_request():
     with connect() as conn:
@@ -379,10 +439,45 @@ def get_request():
         cursor.execute("SELECT * FROM requests")
         return cursor.fetchone()
 
+
 def delete_request(request_id):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM requests WHERE request_id = %s", (request_id,))
+
+
+def add_chats(team_id, tile_id, chat):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO chats (team_id, tile_id, chat) VALUES (%s, %s, %s)", (team_id, tile_id, chat))
+
+
+def get_chats(chats_pk):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM chats WHERE chats_pk = %s", (chats_pk,))
+        return cursor.fetchall()
+
+
+def get_chats_by_player_id_and_tile_id(player_id, tile_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM chats WHERE player_id = %s and tile_id = %s", (player_id, tile_id))
+        return cursor.fetchall()
+
+
+def get_chats_by_team_id_and_tile_id(team_id, tile_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM chats WHERE team_id = %s and tile_id = %s", (team_id, tile_id))
+        return cursor.fetchall()
+
+
+def delete_chat(chats_pk):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM chats WHERE chats_pk = %s", (chats_pk,))
+
 
 def reset_tables():
     # Drop all tables
@@ -504,15 +599,23 @@ def reset_tables():
             )
             ''')
 
+    cursor.execute('''
+            CREATE TABLE chats (
+                team_id integer,
+                tile_id integer,
+                chat text,
+                chats_pk SERIAL PRIMARY KEY,
+                FOREIGN KEY(team_id) REFERENCES teams(team_id),
+                FOREIGN KEY(tile_id) REFERENCES tiles(tile_id)                
+            )
+            ''')
+
     # Save (commit) the changes
     conn.commit()
     print("Finished creating!")
 
     # Close the connection
     conn.close()
-
-
-
 
 
 def read_tiles(file_name):
@@ -536,12 +639,14 @@ def read_tiles(file_name):
         tile_triggers_required = tile[5]
         tile_repetition = tile[6]
         tile_points = tile[7]
-        add_tile(tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops,tile_triggers_required, tile_repetition, tile_points)
+        add_tile(tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required,
+                 tile_repetition, tile_points)
         tile = Tile(get_tile_by_name(tile_name))
         for item in whitelist_items:
             if item.strip() == "":
                 continue
             add_drop_whitelist(item.strip(), tile.tile_id)
+
 
 def read_teams(file_name):
     teams = []
@@ -555,7 +660,7 @@ def read_teams(file_name):
         team_name = team[0]
         team_webhook = team[1]
         players = team[2:]
-        add_team(team_name,0, team_webhook)
+        add_team(team_name, 0, team_webhook)
         team_obj = db_entities.Team(get_team_by_name(team_name))
         for player in players:
             if player == "":
@@ -563,5 +668,3 @@ def read_teams(file_name):
             add_player(player, 0, 0, 0, team_obj.team_id, 0, 0)
 
     return teams
-
-

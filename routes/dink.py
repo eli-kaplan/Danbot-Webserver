@@ -20,9 +20,9 @@ def parse_death(data) -> dict[str, list[str]]:
     rsn = data['playerName']
     # Check if killerName exists
     if 'killerName' not in data['extra']:
-        print("DEATH - " + rsn)
+        print("DEATH: " + rsn)
     else:
-        print("DEATH - " + rsn + " died to " + data['extra']['killerName'])
+        print("DEATH: " + rsn + " died to " + data['extra']['killerName'])
     database.add_death_by_playername(rsn)
     # print data prettyfied
     # print(json.dumps(data, indent = 2))
@@ -121,7 +121,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
         item_each = item['priceEach']
 
         # Add the item to the database
-        print("Found loot " + player.player_name + ": " + str(item))
+        print(f"LOOT: {player.player_name} - {itemName} x {itemQuantity} ({itemQuantity * itemPrice})")
         database.add_drop(team_id, player_id, rsn, itemName, item_each, itemQuantity, itemSource, discordId)
 
         # If the item is relevant
@@ -331,6 +331,7 @@ def parse_clue(data) -> dict[str, list[str]]:
 def parse_kill_count(data, img_file) -> dict[str, list[str]]:
     rsn = data['playerName']
     boss_name = data['extra']['boss']
+    print(f"KILLCOUNT: {rsn} - {boss_name}")
 
     # Check if discordUser exists
     if 'discordUser' not in data:
@@ -393,7 +394,11 @@ def parse_kill_count(data, img_file) -> dict[str, list[str]]:
                 player_ = database.get_player_by_id(killcount.player_id)
                 player_ = db_entities.Player(player_)
                 description = description + f"- {player_.player_name} with {killcount.kills} kills\n"
-            send_webhook(team.team_webhook, f"{tile.tile_name} completed!", description=description, color=65280, image=img_file)
+            send_webhook(team.team_webhook, f"{tile.tile_name} completed!", description=description,
+                         color=65280, image=img_file)
+        elif boss_name == "TzTok-Jad" or boss_name == "TzTok-Zuk" or boss_name == "Sol-Heredit":
+            send_webhook(team.team_webhook, f"{player.player_name} killed {boss_name}! You are {(team_killcount % tile.tile_triggers_required) / tile.tile_triggers_required} from completing {tile.tile_name}",
+                         description="", color=16776960, image=img_file)
     return True
 
 
@@ -415,6 +420,7 @@ def parse_pet(data, img_file) -> dict[str, list[str]]:
     # print data prettyfied
     rsn = data['playerName']
     pet = data['extra']['petName']
+    print(f"PET: {rsn} - {pet}")
 
     tile = database.get_tile_by_name("Pet")
     tile = db_entities.Tile(tile)
@@ -486,6 +492,38 @@ def parse_trade(data) -> dict[str, list[str]]:
     # print(json.dumps(data, indent = 2))
     return False
 
+# function to delegate parsing to its own function basing on the 'type' data
+def parse_chat(data, img_file):
+    rsn = data['playerName']
+    chat_text = data['extra']['message']
+    print(f"CHAT: {rsn} - \"{chat_text}\"")
+
+    tile = database.get_tile_by_drop(chat_text)
+    tile = db_entities.Tile(tile)
+
+    player = database.get_player_by_name(rsn)
+    player = db_entities.Player(player)
+
+    team = database.get_team_by_id(player.team_id)
+    team = db_entities.Team(team)
+
+    database.add_chats(team.team_id, tile.tile_id, chat_text)
+    tile_completions = len(database.get_completed_tiles_by_team_id_and_tile_id(team.team_id, tile.tile_id))
+
+    if tile_completions >= tile.tile_repetition:
+        return False
+
+    database.add_player_tile_completions(player.player_id, int(tile.tile_trigger_weights[0]) / tile.tile_triggers_required)
+
+    total_chats = len(database.get_chats_by_team_id_and_tile_id(team.team_id, tile.tile_id))
+    if total_chats >= tile.tile_triggers_required * (tile_completions + 1):
+        database.add_completed_tile(tile.tile_id, team.team_id)
+        database.add_team_points(team.team_id, tile.tile_points)
+        send_webhook(team.team_webhook, title=f"{player.player_name} finished {tile.tile_name}!", description=f"", color=65280, image=img_file)
+    else:
+        send_webhook(team.team_webhook, title=f"{tile.tile_name} progress!", description=f"Thanks to {player.player_name}, you are {total_chats % tile.tile_triggers_required}/{tile.tile_triggers_required} from completing this tile", color=16776960, image=img_file )
+
+    return True
 
 # function to parse leagues area data
 def parse_leagues_area(data) -> dict[str, list[str]]:
@@ -519,7 +557,9 @@ def parse_login(data) -> dict[str, list[str]]:
     return False
 
 
-# function to delegate parsing to its own function basing on the 'type' data
+
+
+
 def parse_json_data(json_data, img_file) -> dict[str, list[str]]:
     data = json.loads(json_data)
 
@@ -562,6 +602,8 @@ def parse_json_data(json_data, img_file) -> dict[str, list[str]]:
             return parse_grand_exchange(data)
         elif type == 'TRADE':
             return parse_trade(data)
+        elif type == 'CHAT':
+            return parse_chat(data, img_file)
         elif type == 'LEAGUES_AREA':
             return parse_leagues_area(data)
         elif type == 'LEAGUES_RELIC':

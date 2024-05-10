@@ -93,6 +93,8 @@ def team(team_name):
                            total_pets=total_pets, total_tiles=total_tiles, total_gold=scapify.int_to_gp(total_gold),
                            total_deaths=total_deaths, teamnames=autocomplete.team_names())
 
+
+
 @user_routes.route('/player/<player_name>')
 def player(player_name):
     player = database.get_player_by_name(player_name)
