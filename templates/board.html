@@ -88,7 +88,7 @@
     </form>
 </div>
 {% if teamname in teamnames %}
-<h2>{{teamname}}'s Current Board</h2>
+<h2><a href="/user/team/{{teamname}}">{{teamname}}'s</a> Current Board</h2>
 {% else %}
 <h2>Bingo Board</h2>
 {% endif %}

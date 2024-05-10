@@ -63,6 +63,7 @@
 <body>
 <div class="content">
     <div class="header">
+        <h2><a href="/board/{{ team.team_name }}">View Board</a></h2>
         <h1>{{team.team_name}}</h1>
         <form onsubmit="submitForm(event)" class="search-bar">
             <select id="teamselect" name="teamsearch">
@@ -74,6 +75,7 @@
         </form>
     </div>
     <h2>Team Gains</h2>
+
     <table>
         <tr>
             <th>Total Gold</th>
