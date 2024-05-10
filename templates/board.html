@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        color: #FFFFFF; /* Light text */
+    }
+    th {
+        background-color: #333333; /* Darker background for navbar */
+        color: white;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 15px;
+        text-align: center;
+    }
+    tr:nth-child(even) {
+        background-color: #1E1E1E;
+    }
+    tr:hover {
+        background-color: #333333;
+    }
+    td:hover {
+            background-color: #ADD8E6;
+        }
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .search-bar {
+        display: flex;
+    }
+
+    .search-bar select {
+        border: none;
+        padding: 10px;
+        color: #000;
+        background-color: #fff;
+    }
+
+    .search-bar input[type="submit"] {
+        border: none;
+        padding: 10px;
+        color: #fff;
+        background-color: #444;
+    }
+
+    a {
+        color: white;
+    }
+</style>
+<script>
+    const teamnames = {{teamnames|tojson}}
+    function submitForm(event) {
+        event.preventDefault();
+        var team = document.getElementById('teamselect').value;
+        if (teamnames.includes(team)){
+            window.location.href = '/board/' + team;
+        }
+        else{
+            window.location.href = '/board';
+            console.log(team)
+        }
+    }
+</script>
+<div class="header">
+    <h1>Current Standings</h1>
+    <form class="search-bar" onsubmit="submitForm(event)">
+        <select id="teamselect">
+            <option value="emptyboard">Empty Board</option>
+            {% for name in teamnames %}
+            <option value="{{name}}"
+                    {% if name == teamname %}
+                    selected
+                    console.log(name)
+                    {% endif %}>
+                {{name}}
+            </option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Select">
+    </form>
+</div>
+{% if teamname in teamnames %}
+<h2>{{teamname}}'s Current Board</h2>
+{% else %}
+<h2>Bingo Board</h2>
+{% endif %}
+<table>
+    <tr>
+        {% for i in range(0, boardsize) %}
+        <!-- change values for column headers -->
+        <th>{{i+1}}</th>
+        {% endfor %}
+    </tr>
+    {% for x in range(0,boardsize) %}
+    {% set outerloopindex = loop.index0 %}
+    <tr>
+        {% for y in range(0, boardsize) %}
+        <td>
+            <button>{{tilenames[outerloopindex * boardsize + loop.index0]}}</button>
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+<form>
+
+</form>
+
+{% endblock %}
