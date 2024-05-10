@@ -1,10 +1,9 @@
 import pytest
 
-import database
-import db_entities
+from utils import database, db_entities
 from main import create_app
 from routes import dink
-from utils.spoof_pet import spoof_pet
+from utils.spoofed_jsons.spoof_pet import spoof_pet
 
 
 @pytest.fixture()

@@ -2,10 +2,8 @@
 from discord.ext import commands
 import discord
 
-import database
+from utils import database, db_entities
 from discord import default_permissions, guild_only
-
-import db_entities
 
 
 class SubmitRequestCog(commands.Cog):

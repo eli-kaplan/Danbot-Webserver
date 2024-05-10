@@ -1,13 +1,10 @@
 import os
-import socket
 from collections import defaultdict
 
 import discord
 from discord.ext import commands
 
-import database
-import db_entities
-from utils import scapify, bingo
+from utils import bingo, database, db_entities
 from utils.autocomplete import player_names, team_names, tile_names, fuzzy_autocomplete
 
 ftext = "\u001b["
@@ -30,6 +27,13 @@ class UserCog(commands.Cog):
     @discord.slash_command(name="help", description="A list of all my cool commands!")
     async def help(self, ctx: discord.ApplicationContext):
         await ctx.respond("I'm currently being updated. Most of my functionality isn't ready at the moment.")
+
+    @discord.slash_command(name="dink", description="Use this command to get help setting up your dink plugin")
+    async def dink(self, ctx:discord.ApplicationContext):
+        await ctx.defer()
+        server_ip = os.getenv('SERVER_IP')
+        player_url = f"http://{server_ip}/tutorial/dink"
+        await ctx.respond(player_url)
 
     @discord.slash_command(name="player", description="Get a bunch of data about a player in the bingo")
     async def player(self, ctx: discord.ApplicationContext,

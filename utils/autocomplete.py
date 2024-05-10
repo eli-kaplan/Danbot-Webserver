@@ -1,7 +1,6 @@
 import discord
 from fuzzywuzzy import process
-import database
-import db_entities
+from utils import database, db_entities
 
 
 def tile_names():

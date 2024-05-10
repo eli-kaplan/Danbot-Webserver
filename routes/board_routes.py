@@ -1,12 +1,6 @@
-from flask import Flask, request, render_template, Blueprint, flash, redirect, send_from_directory
-from werkzeug.utils import secure_filename
-import sqlite3
-import os
+from flask import render_template, Blueprint
 import math
-import database
-import db_entities
-from utils import autocomplete, scapify
-
+from utils import autocomplete, database, db_entities
 
 board_routes = Blueprint("board_routes", __name__)
 

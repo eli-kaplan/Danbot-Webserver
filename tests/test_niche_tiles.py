@@ -3,13 +3,10 @@ import sys
 
 import pytest
 
-import db_entities
-from routes import dink
-
 sys.path.insert(0, os.path.abspath('..'))
-import database
-from main import app, create_app
-from utils import spoof_kc
+from utils import database
+from main import create_app
+
 
 @pytest.fixture()
 def app():

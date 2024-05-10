@@ -14,12 +14,18 @@
         }
 
         nav {
+            display: flex;
+            justify-content: space-between; /* Aligns nav-left to the left and nav-right to the right */
             background-color: #333333; /* Darker background for navbar */
             height: 50px;
             padding: 0 16px;
             width: 100%;
             position: fixed;
             top: 0;
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
         }
 
         .content {
@@ -51,13 +57,16 @@
 </head>
 <body>
     <nav>
-        <button onclick="location.href='/'" type="button">Admin Panel</button>
-        <button onclick="location.href='/user/leaderboard'" type="button">Leaderboard</button>
-        <button onclick="location.href='/user/player/None'" type="button">Player</button>
-        <button onclick="location.href='/user/team/None'" type="button">Team</button>
-        <button onclick="location.href='/board'" type="button">Board</button>
+        <div class="nav-left">
+            <button onclick="location.href='/user/leaderboard'" type="button">Leaderboard</button>
+            <button onclick="location.href='/user/player/None'" type="button">Player</button>
+            <button onclick="location.href='/user/team/None'" type="button">Team</button>
+            <button onclick="location.href='/board'" type="button">Board</button>
+        </div>
+        <div class="nav-right">
+                <button onclick="location.href='/'" type="button">Admin Panel</button>
+        </div>
     </nav>
-
     <div class="content">
         {% block content %}
         {% endblock %}

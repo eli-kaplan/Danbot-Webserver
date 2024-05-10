@@ -1,9 +1,7 @@
-from flask import Flask, request, render_template, Blueprint, flash, redirect, send_from_directory
+from flask import request, render_template, Blueprint, flash, redirect
 from werkzeug.utils import secure_filename
-import sqlite3
 import os
-import database
-from utils import autocomplete
+from utils import database
 
 database_routes = Blueprint("database_routes", __name__)
 

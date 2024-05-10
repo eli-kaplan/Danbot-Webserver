@@ -1,12 +1,9 @@
 import os
-import shutil
-import sqlite3
 import csv
-from datetime import datetime
 import psycopg2
 
-import db_entities
-from db_entities import Player, Tile
+import utils.db_entities as db_entities
+from utils.db_entities import Player, Tile
 
 
 def connect():
@@ -22,8 +19,17 @@ def add_team_points(team_id, team_points):
             SET team_points = team_points + %s
             WHERE team_id = %s
         '''
-        cursor.execute(update_query, (team_points, team_id))
+        cursor.execute(update_query, (team_points, team_id,))
 
+def rename_team(old_team_name, new_team_name):
+    with connect() as conn:
+        cursor = conn.cursor()
+        update_query = '''
+            UPDATE teams
+            SET team_name = %s
+            WHERE team_name = %s
+            '''
+        cursor.execute(update_query, (new_team_name, old_team_name,))
 
 # Functions for 'teams' table
 def add_team(team_name, team_points, team_webhook):
@@ -91,6 +97,16 @@ def add_player_tile_completions(player_id, tiles_completed):
             WHERE player_id = %s
         ''', (tiles_completed, player_id))
 
+
+def rename_player(old_player_name, new_player_name):
+    with connect() as conn:
+        cursor = conn.cursor()
+        update_query = '''
+            UPDATE players
+            SET player_name = %s
+            WHERE player_name = %s
+            '''
+        cursor.execute(update_query, (new_player_name, old_player_name,))
 
 def attach_player_discord(player_id, discord_id):
     with connect() as conn:
@@ -668,3 +684,5 @@ def read_teams(file_name):
             add_player(player, 0, 0, 0, team_obj.team_id, 0, 0)
 
     return teams
+
+

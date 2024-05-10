@@ -3,14 +3,12 @@ import sys
 
 import pytest
 
-import db_entities
-from cogs import AdminCog
 from routes import dink
 
 sys.path.insert(0, os.path.abspath('..'))
-import database
-from main import app, create_app
-from utils import spoof_drop
+from utils import database, db_entities
+from main import create_app
+from utils.spoofed_jsons import spoof_drop
 
 
 @pytest.fixture()

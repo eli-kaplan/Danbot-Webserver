@@ -1,15 +1,10 @@
-import re
 from collections import defaultdict
 
-import pytest
 from flask import Blueprint, jsonify, request
-import os
-import requests
 import json
 
-import database
-import db_entities
-from db_entities import Player, Team, Tile, Drop
+from utils import database, db_entities
+from utils.db_entities import Player, Team, Tile, Drop
 from utils.send_webhook import send_webhook
 
 drop_submission_route = Blueprint("dink", __name__)
@@ -143,7 +138,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                 for i in range(len(tile.tile_triggers.split(','))):
                     for trigger in tile.tile_triggers.split(',')[i].split('/'):
                         if itemName == trigger.strip():
-                            database.add_player_tile_completions(player_id, (int(tile.tile_trigger_weights[i]) * int(itemQuantity))/tile.tile_triggers_required)
+                            database.add_player_tile_completions(player_id, (int(tile.tile_trigger_weights[i]) * int(itemQuantity)) / tile.tile_triggers_required)
 
                 # Check if the tile was completed or if it was just progressing the tile
                 triggers = tile.tile_triggers

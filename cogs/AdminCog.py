@@ -1,13 +1,11 @@
 import sqlite3
 
-import discord
 from discord.ext import commands
 from discord import default_permissions, guild_only
 
-import database
-import utils.autocomplete
 from routes import dink
-from utils import spoof_drop, scapify
+from utils import scapify
+from utils.spoofed_jsons import spoof_drop
 from utils.autocomplete import *
 from utils.send_webhook import send_webhook
 
@@ -110,7 +108,7 @@ class AdminCog(commands.Cog):
         tile = db_entities.Tile(database.get_tile_by_name(tile_name))
         player = db_entities.Player(database.get_player_by_name(player_name))
         team = db_entities.Team(database.get_team_by_id(player.team_id))
-        database.add_player_tile_completions(player.player_id, -progress/tile.tile_triggers_required)
+        database.add_player_tile_completions(player.player_id, -progress / tile.tile_triggers_required)
         await ctx.respond(f"Successfully removed manual progress from {team.team_name} for tile {tile.tile_name}. I've also removed {progress/tile.tile_triggers_reuired} from {player.player_name}'s tile completions")
 
     @discord.slash_command(name="award_manual_progress", description="Add tile progress to a tile")
@@ -132,7 +130,7 @@ class AdminCog(commands.Cog):
             ctx.respond(response)
             return
 
-        database.add_player_tile_completions(player.player_id, progress/tile.tile_triggers_required)
+        database.add_player_tile_completions(player.player_id, progress / tile.tile_triggers_required)
         response = f"Successfully added {progress} trigger weight to {tile.tile_name} for {player.player_name}'s team. Additionally I've given {player.player_name} {round(progress/tile.tile_triggers_required, 2)} tile completions"
         progress = database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, player.team_id)
         if progress >= (tile_completions + 1) * tile.tile_triggers_required:
@@ -147,3 +145,24 @@ class AdminCog(commands.Cog):
 
         await ctx.respond(response)
 
+    @discord.slash_command(name="rename_team", description="Rename a team")
+    @default_permissions(manage_webhooks=True)
+    @guild_only()
+    async def rename_team(self,
+                    ctx: discord.ApplicationContext,
+                    old_team_name: discord.Option(str, "What is the old team name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names())),
+                    new_team_name: discord.Option(str, "What is the new team name?")):
+        await ctx.defer()
+        database.rename_team(old_team_name, new_team_name)
+        await ctx.respond(f"Updated {old_team_name}'s name to {new_team_name}")
+
+    @discord.slash_command(name="rename_player", description="Rename a player")
+    @default_permissions(manage_webhooks=True)
+    @guild_only()
+    async def rename_player(self,
+                    ctx: discord.ApplicationContext,
+                    old_player_name: discord.Option(str, "What is the old player name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, player_names())),
+                    new_player_name: discord.Option(str, "What is the new player name?")):
+        await ctx.defer()
+        database.rename_player(old_player_name, new_player_name)
+        await ctx.respond(f"Updated {old_player_name}'s name to {new_player_name}")

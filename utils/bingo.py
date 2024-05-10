@@ -1,5 +1,5 @@
-import database
-from db_entities import Drop
+from utils import database
+from utils.db_entities import Drop
 
 
 def check_progress(tile, team):
