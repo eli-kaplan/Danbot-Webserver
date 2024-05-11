@@ -14,7 +14,7 @@
             background-color: #333333; /* Darker background for navbar */
             color: white;
             position: sticky; /* Makes the header sticky */
-            top: 0; /* Aligns the header to the top */
+            top: 50px; /* Aligns the header to the top */
         }
         th, td {
             border: 1px solid #ddd;
@@ -50,12 +50,12 @@
             {% for team in teams %}
             <td>{{ tile.tile_name }}</td>
             <td>
-                <span style="color: {% if completed_tiles[(team.team_id, tile.tile_id)] > 0 %}green{% else %}red{% endif %};">
-                    {{ completed_tiles[(team.team_id, tile.tile_id)] }}
+                <span style="color: {% if completed_tiles[tile.tile_id][team.team_id] > 0 %}green{% else %}red{% endif %};">
+                    {{ completed_tiles[tile.tile_id][team.team_id] }}
                 </span>
-                {% if partial_tiles[(team.team_id, tile.tile_id)] > 0 %}
+                {% if partial_tiles[tile.tile_id][team.team_id] > 0 %}
                 <span style="color: yellow;">
-                    ({{ partial_tiles[(team.team_id, tile.tile_id)] }})
+                    ({{ partial_tiles[tile.tile_id][team.team_id] }})
                 </span>
                 {% endif %}
             </td>
