@@ -4,6 +4,10 @@ from utils import autocomplete, database, db_entities
 
 board_routes = Blueprint("board_routes", __name__)
 
+@board_routes.route('/compare', methods=['GET'])
+def compare():
+
+    return render_template('board_templates/compare.html')
 
 @board_routes.route('/', methods=['GET'])
 def index():
@@ -15,7 +19,7 @@ def index():
     for tile in database.get_tiles():
         tiles.append(db_entities.Tile(tile))
 
-    return render_template('board.html', teams=teams, tiles=tiles, teamnames=autocomplete.team_names(), boardsize=get_board_size(), tilenames=autocomplete.tile_names())
+    return render_template('board_templates/board.html', teams=teams, tiles=tiles, teamnames=autocomplete.team_names(), boardsize=get_board_size(), tilenames=autocomplete.tile_names())
 
 
 @board_routes.route('/<team_name>', methods=['GET'])
@@ -37,7 +41,7 @@ def board(team_name):
     for tile in database.get_tiles():
         tiles.append(db_entities.Tile(tile))
 
-    return render_template('board.html', teams=teams, tiles=tiles, teamname=team_name,
+    return render_template('board_templates/board.html', teams=teams, tiles=tiles, teamname=team_name,
                            teamnames=autocomplete.team_names(),boardsize=get_board_size(), tilenames=autocomplete.tile_names())
 
 

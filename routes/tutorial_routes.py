@@ -6,4 +6,4 @@ tutorial_routes = Blueprint("tutorial_routes", __name__)
 
 @tutorial_routes.route('/dink')
 def dink():
-    return render_template("dink.html", playernames=player_names())
+    return render_template("tutorial_templates/dink.html", playernames=player_names())

@@ -3,9 +3,13 @@ from werkzeug.utils import secure_filename
 import os
 from utils import database
 
-database_routes = Blueprint("database_routes", __name__)
+admin_routes = Blueprint("admin_routes", __name__)
 
-@database_routes.route('/reset_database', methods=['GET', 'POST'])
+@admin_routes.route('/', methods=['GET'])
+def home():
+    return render_template('admin_templates/admin_home.html')
+
+@admin_routes.route('/reset_database', methods=['GET', 'POST'])
 def reset_database():
     if request.method == 'POST':
         password = request.form.get('password')
@@ -15,9 +19,9 @@ def reset_database():
             flash("Database reset successfully.")
         else:
             return redirect("https://www.youtube.com/watch?v=xvFZjo5PgG0")
-    return render_template('reset_database.html')
+    return render_template('admin_templates/reset_database.html')
 
-@database_routes.route('/upload_teams', methods=['GET', 'POST'])
+@admin_routes.route('upload_teams', methods=['GET', 'POST'])
 def upload_teams():
     if request.method == 'POST':
         password = request.form.get('password')
@@ -35,9 +39,9 @@ def upload_teams():
                 flash("No file selected.")
         else:
             return redirect("https://www.youtube.com/watch?v=xvFZjo5PgG0")
-    return render_template('upload_teams.html')
+    return render_template('admin_templates/upload_teams.html')
 
-@database_routes.route('/upload_tiles', methods=['GET', 'POST'])
+@admin_routes.route('/upload_tiles', methods=['GET', 'POST'])
 def upload_tiles():
     if request.method == 'POST':
         password = request.form.get('password')
@@ -55,6 +59,6 @@ def upload_tiles():
                 flash("No file selected.")
         else:
             return redirect("https://www.youtube.com/watch?v=xvFZjo5PgG0")
-    return render_template('upload_tiles.html')
+    return render_template('admin_templates/upload_tiles.html')
 
 

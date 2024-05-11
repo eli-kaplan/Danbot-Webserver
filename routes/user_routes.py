@@ -95,7 +95,7 @@ def team(team_name):
         player.tiles_completed = round(player.tiles_completed, 2)
         player_partials[player.player_id] = round(player_partials[player.player_id], 2)
 
-    return render_template('team.html', team=team, players=players, most_tiles_player=most_tiles_player,
+    return render_template('user_templates/team.html', team=team, players=players, most_tiles_player=most_tiles_player,
                            most_gold_player=most_gold_player, most_pets_player=most_pets_player,
                            most_deaths_player=most_deaths_player, drops=drops, killcount=killcount,
                            total_pets=total_pets, total_tiles=total_tiles, total_gold=scapify.int_to_gp(total_gold),
@@ -144,7 +144,7 @@ def player(player_name):
         partial_completions += partial_completion.partial_completion
     player.tiles_completed = round(player.tiles_completed, 2)
 
-    return render_template('player.html', player=player, drops=drops, killcount=killcount, team=team, playernames=autocomplete.player_names(), partial_completions=round(partial_completions, 2))
+    return render_template('user_templates/player.html', player=player, drops=drops, killcount=killcount, team=team, playernames=autocomplete.player_names(), partial_completions=round(partial_completions, 2))
 
 
 @user_routes.route('/leaderboard', methods=['GET'])
@@ -197,7 +197,7 @@ def leaderboard():
 
     teams = sorted(teams, key=lambda team: team.team_points, reverse=True)
 
-    return render_template('leaderboard.html', teams=teams, players=players, most_tiles_player=most_tiles_player,
+    return render_template('user_templates/leaderboard.html', teams=teams, players=players, most_tiles_player=most_tiles_player,
                            most_gold_player=most_gold_player, most_pets_player=most_pets_player,
                            most_deaths_player=most_deaths_player,
                            total_pets=total_pets, total_tiles=total_tiles, total_gold=scapify.int_to_gp(total_gold),

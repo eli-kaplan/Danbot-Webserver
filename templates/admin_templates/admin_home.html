@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <title>Admin Panel</title>
+    <div>
+        <h1>Welcome to Fatalis Bingo Management</h1>
+        <button onclick="location.href='/admin/reset_database'" type="button">Reset Bingo</button>
+        <button onclick="location.href='/admin/upload_teams'" type="button">Upload Teams</button>
+        <button onclick="location.href='/admin/upload_tiles'" type="button">Upload Tiles</button>
+    </div>
+{% endblock %}
+
+
