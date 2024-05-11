@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from flask import render_template, Blueprint
 import math
 from utils import autocomplete, database, db_entities
@@ -6,8 +8,25 @@ board_routes = Blueprint("board_routes", __name__)
 
 @board_routes.route('/compare', methods=['GET'])
 def compare():
+    teams = []
+    for team in database.get_teams():
+        teams.append(db_entities.Team(team))
 
-    return render_template('board_templates/compare.html')
+    tiles = []
+    for tile in database.get_tiles():
+        tiles.append(db_entities.Tile(tile))
+
+    completed_tiles = defaultdict(int)
+    for completed_tile in database.get_completed_tiles():
+        completed_tile = db_entities.Completed_Tile(completed_tile)
+        completed_tiles[(completed_tile.team_id, completed_tile.tile_id)] = completed_tiles[(completed_tile.team_id, completed_tile.tile_id)] + 1
+
+    partial_tiles = defaultdict(int)
+    for partial_tile in database.get_partial_completions():
+        partial_tile = db_entities.PartialCompletion(partial_tile)
+        partial_tiles[(partial_tile.team_id, partial_tile.tile_id)] = partial_tiles[(partial_tile.team_id, partial_tile.tile_id)] + partial_tile.partial_completion
+
+    return render_template('board_templates/compare.html', teams=teams, tiles=tiles, completed_tiles=completed_tiles, partial_tiles=partial_tiles)
 
 @board_routes.route('/', methods=['GET'])
 def index():

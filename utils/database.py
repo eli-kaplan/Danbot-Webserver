@@ -360,6 +360,13 @@ def add_killcount(player_id, team_id, bossname, kills):
         # Commit the changes
         conn.commit()
 
+def get_partial_completions():
+    with connect() as conn:
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM partial_completions")
+        return cursor.fetchall()
+
 def add_player_partial_completions(player_id, team_id, tile_id, value):
     with connect() as conn:
         cursor = conn.cursor()

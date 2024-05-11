@@ -1,6 +1,64 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <title>Compare Boards</title>
+<style>
+        table {
+            display: flex;
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            color: #FFFFFF; /* Light text */
+        }
+        th {
+            flex: 1;
+            background-color: #333333; /* Darker background for navbar */
+            color: white;
+            position: sticky; /* Makes the header sticky */
+            top: 0; /* Aligns the header to the top */
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+        }
+        tr:nth-child(even) {
+            background-color: #1E1E1E;
+        }
+        tr:hover {
+            background-color: #333333;
+        }
+        a {
+            color: white;
+        }
+</style>
 
+<title>Compare Boards</title>
+    <table>
+        <tr>
+            {% for team in teams %}
+            <th colspan="2"><a href="/user/team/{{ team.team_name }}">{{ team.team_name }}</a></th>
+            {% endfor %}
+        </tr>
+        <tr>
+            {% for team in teams %}
+            <td>Tile Name</td>
+            <td>Tile Completions</td>
+            {% endfor %}
+        </tr>
+        {% for tile in tiles %}
+        <tr>
+            {% for team in teams %}
+            <td>{{ tile.tile_name }}</td>
+            <td>
+                <span style="color: {% if completed_tiles[(team.team_id, tile.tile_id)] > 0 %}green{% else %}red{% endif %};">
+                    {{ completed_tiles[(team.team_id, tile.tile_id)] }}
+                </span>
+                <span style="color: yellow;">
+                    ({{ partial_tiles[(team.team_id, tile.tile_id)] }})
+                </span>
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
 {% endblock %}
