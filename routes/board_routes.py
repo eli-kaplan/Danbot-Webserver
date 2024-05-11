@@ -28,7 +28,9 @@ def compare():
     partial_tiles = defaultdict(lambda: defaultdict(int))
     for partial_tile in database.get_partial_completions():
         partial_tile = db_entities.PartialCompletion(partial_tile)
-        partial_tiles[partial_tile.tile_id][partial_tile.team_id] = partial_tiles[partial_tile.tile_id][partial_tile.team_id] + partial_tile.partial_completion
+        partial_tiles[partial_tile.tile_id][partial_tile.team_id] = round(partial_tiles[partial_tile.tile_id][partial_tile.team_id] + partial_tile.partial_completion, 2)
+
+
 
     return render_template('board_templates/compare.html', teams=teams, tiles=tiles, completed_tiles=completed_tiles, partial_tiles=partial_tiles)
 
