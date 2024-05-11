@@ -83,13 +83,13 @@
             <th>Total Gold</th>
             <th>Total Deaths</th>
             <th>Total Pets</th>
-            <th>Total Tiles (Partial Tiles)</th>
+            <th>Total Tiles</th>
         </tr>
         <tr>
             <td>{{ total_gold }}</td>
             <td>{{ total_deaths }} deaths</td>
             <td>{{ total_pets }} pets</td>
-            <td>{{ total_tiles }} tiles ({{ partial_tiles }} partial)</td>
+            <td>{{ total_tiles }} tiles {% if partial_tiles > 0 %}({{ partial_tiles }} partial){% endif %}</td>
         </tr>
     </table>
     <h2>Top Players</h2>
@@ -136,7 +136,7 @@
             <th>Total Deaths</th>
             <th>Pets Gained</th>
             <th>Gold Gained</th>
-            <th>Tiles Completed (Partial Tiles)</th>
+            <th>Tiles Completed</th>
         </tr>
         {% for player in players %}
         <tr>
@@ -145,7 +145,7 @@
             <td>{{ player.deaths }}</td>
             <td>{{ player.pet_count }}</td>
             <td>{{ player.gp_gained }}</td>
-            <td>{{ player.tiles_completed }} ({{ player_partials[player.player_id] }})</td>
+            <td>{{ player.tiles_completed }} {% if player_partials[player.player_id] > 0 %}({{ player_partials[player.player_id] }}) {% endif %}</td>
         </tr>
         {% endfor %}
     </table>
