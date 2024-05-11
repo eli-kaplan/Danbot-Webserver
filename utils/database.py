@@ -360,6 +360,48 @@ def add_killcount(player_id, team_id, bossname, kills):
         # Commit the changes
         conn.commit()
 
+def add_player_partial_completions(player_id, team_id, tile_id, value):
+    with connect() as conn:
+        cursor = conn.cursor()
+
+        # Check if the row already exists
+        cursor.execute("SELECT * FROM partial_completions WHERE player_id = %s AND team_id = %s AND tile_id = %s",
+                       (player_id, team_id, tile_id))
+        row = cursor.fetchone()
+
+        if row is not None:
+            # If the row exists, update the kills
+            cursor.execute(
+                "UPDATE partial_completions SET partial_completion = partial_completion + %s WHERE player_id = %s AND team_id = %s AND tile_id = %s",
+                (value, player_id, team_id, tile_id))
+        else:
+            cursor.execute("INSERT INTO partial_completions (player_id, team_id, tile_id, partial_completion) VALUES (%s, %s, %s, %s)",
+                           (player_id, team_id, tile_id, value))
+
+        conn.commit()
+
+def get_partial_completions_by_team_id_and_tile_id(team_id, tile_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM partial_completions WHERE team_id = %s AND tile_id = %s", (team_id, tile_id))
+        return cursor.fetchall()
+
+def get_partial_completions_by_team_id(team_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM partial_completions WHERE team_id = %s", (team_id,))
+        return cursor.fetchall()
+
+def get_partial_completions_by_player_id(player_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM partial_completions WHERE player_id = %s", (player_id,))
+        return cursor.fetchall()
+
+def remove_partial_completion(partial_completion_pk):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM partial_completions WHERE partial_completion_pk = %s", (partial_completion_pk,))
 
 def get_killcount_by_team_id_and_boss_name(team_id, boss_name):
     with connect() as conn:
@@ -623,6 +665,19 @@ def reset_tables():
                 chats_pk SERIAL PRIMARY KEY,
                 FOREIGN KEY(team_id) REFERENCES teams(team_id),
                 FOREIGN KEY(tile_id) REFERENCES tiles(tile_id)                
+            )
+            ''')
+
+    cursor.execute('''
+            CREATE TABLE partial_completions (
+                team_id integer,
+                tile_id integer,
+                player_id integer,
+                partial_completion real,
+                partial_completion_pk SERIAL PRIMARY KEY,
+                FOREIGN KEY(team_id) REFERENCES teams(team_id),
+                FOREIGN KEY(tile_id) REFERENCES tiles(tile_id),
+                FOREIGN KEY(player_id) REFERENCES players(player_id)
             )
             ''')
 

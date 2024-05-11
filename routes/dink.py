@@ -138,8 +138,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                 for i in range(len(tile.tile_triggers.split(','))):
                     for trigger in tile.tile_triggers.split(',')[i].split('/'):
                         if itemName == trigger.strip():
-                            database.add_player_tile_completions(player_id, (int(tile.tile_trigger_weights[i]) * int(itemQuantity)) / tile.tile_triggers_required)
-
+                            database.add_player_partial_completions(player.player_id, team.team_id, tile.tile_id, (int(tile.tile_trigger_weights[i]) * int(itemQuantity)) / tile.tile_triggers_required)
                 # Check if the tile was completed or if it was just progressing the tile
                 triggers = tile.tile_triggers
                 and_triggers = triggers.split(',')
@@ -171,7 +170,18 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                     description = description + f"\nYou have completed this tile {tile_completion_count + 1} times."
                     color = 65280 # Green
                     database.add_team_points(team.team_id, tile.tile_points)
-
+                    current_trigger_rewards = 0
+                    # Award partial_completions as full tile completions
+                    for partial_completion in database.get_partial_completions_by_team_id_and_tile_id(team.team_id,
+                                                                                                      tile.tile_id):
+                        partial_completion = db_entities.PartialCompletion(partial_completion)
+                        database.remove_partial_completion(partial_completion.partial_completion_pk)
+                        database.add_player_tile_completions(partial_completion.player_id,
+                                                             min(partial_completion.partial_completion, 1 - current_trigger_rewards))
+                        if round(partial_completion.partial_completion,2) > round(1 - current_trigger_rewards, 2) and tile_completion_count + 1 < tile.tile_repetition:
+                            database.add_player_partial_completions(player.player_id, team.team_id, tile.tile_id, partial_completion.partial_completion - (1 - current_trigger_rewards))
+                        else:
+                            current_trigger_rewards += partial_completion.partial_completion
                 # Otherwise this drop only progressed the tile and didn't complete it
                 else:
                     description = f"{tile.tile_name} is {trigger_value % tile.tile_triggers_required} / {tile.tile_triggers_required} from being completed!"
@@ -193,7 +203,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                 for set in tile.tile_triggers.split('/'):
                     # If the item belongs to the current set, add 1 / the set length to the players tile completions
                     if itemName in set:
-                        database.add_player_tile_completions(player.player_id, 1 / len(set.split(',')))
+                        database.add_player_partial_completions(player.player_id, team.team_id, tile.tile_id, 1 / len(set.split(',')))
 
                     # If every item from the set is found in the db is_complete will remain True
                     # Iterate through every item in the set (separated by ',') and check if the players team has at least one in the db
@@ -216,6 +226,12 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                         color = 65280 # Green
                         database.add_team_points(team.team_id, tile.tile_points)
                         database.add_completed_tile(tile.tile_id, team.team_id)
+                        for partial_completion in database.get_partial_completions_by_team_id_and_tile_id(team.team_id,
+                                                                                                          tile.tile_id):
+                            partial_completion = db_entities.PartialCompletion(partial_completion)
+                            database.remove_partial_completion(partial_completion.partial_completion_pk)
+                            database.add_player_tile_completions(partial_completion.player_id,
+                                                                 partial_completion.partial_completion)
                         break
                     else:
                         description = "You are still missing\n"
@@ -371,12 +387,14 @@ def parse_kill_count(data, img_file) -> dict[str, list[str]]:
         for i in range(len(tile.tile_trigger_weights)):
             killcount_weights[tile.tile_triggers.split(',')[i].strip()] = int(tile.tile_trigger_weights[i])
 
-        database.add_player_tile_completions(player_id, killcount_weights[boss_name] / tile.tile_triggers_required)
+        database.add_player_partial_completions(player_id, team.team_id, tile.tile_id, killcount_weights[boss_name] / tile.tile_triggers_required)
         team_killcount = database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id)
+        total_killcount = []
         for boss_trigger in tile.tile_triggers.split(','):
             killcounts = database.get_killcount_by_team_id_and_boss_name(team.team_id, boss_trigger.strip())
             for killcount in killcounts:
                 killcount = db_entities.Killcount(killcount)
+                total_killcount.append(killcount)
                 team_killcount = team_killcount + (killcount.kills * killcount_weights[killcount.boss_name])
 
         if team_killcount >= tile.tile_triggers_required * (tile_completion_count + 1):
@@ -384,15 +402,29 @@ def parse_kill_count(data, img_file) -> dict[str, list[str]]:
             database.add_team_points(team_id, tile.tile_points)
             description = (f"You have completed {tile.tile_name}! You have {tile_completion_count + 1} total completions"
                            f" with the following killcount\n")
-            for killcount in killcounts:
-                killcount = db_entities.Killcount(killcount)
+            for killcount in total_killcount:
                 player_ = database.get_player_by_id(killcount.player_id)
                 player_ = db_entities.Player(player_)
-                description = description + f"- {player_.player_name} with {killcount.kills} kills\n"
+                description = description + f"- {player_.player_name} with {killcount.kills} {killcount.boss_name} kills\n"
             send_webhook(team.team_webhook, f"{tile.tile_name} completed!", description=description,
                          color=65280, image=img_file)
+            # Todo update player tile completions based on partial tile completion table
+            current_trigger_rewards = 0
+            for partial_completion in database.get_partial_completions_by_team_id_and_tile_id(team.team_id,
+                                                                                              tile.tile_id):
+                partial_completion = db_entities.PartialCompletion(partial_completion)
+                database.remove_partial_completion(partial_completion.partial_completion_pk)
+                database.add_player_tile_completions(partial_completion.player_id,
+                                                     min(partial_completion.partial_completion,
+                                                         1 - current_trigger_rewards))
+                if round(partial_completion.partial_completion, 2) > round(1 - current_trigger_rewards,
+                                                                           2) and tile_completion_count + 1 < tile.tile_repetition:
+                    database.add_player_partial_completions(player.player_id, team.team_id, tile.tile_id,
+                                                            partial_completion.partial_completion - (1 - current_trigger_rewards))
+                else:
+                    current_trigger_rewards += partial_completion.partial_completion
         elif boss_name == "TzTok-Jad" or boss_name == "TzTok-Zuk" or boss_name == "Sol-Heredit":
-            send_webhook(team.team_webhook, f"{player.player_name} killed {boss_name}! You are {(team_killcount % tile.tile_triggers_required) / tile.tile_triggers_required} from completing {tile.tile_name}",
+            send_webhook(team.team_webhook, f"{player.player_name} killed {boss_name}! You are {(team_killcount % tile.tile_triggers_required)}/{tile.tile_triggers_required} from completing {tile.tile_name}",
                          description="", color=16776960, image=img_file)
     return True
 
@@ -494,12 +526,18 @@ def parse_chat(data, img_file):
     print(f"CHAT: {rsn} - \"{chat_text}\"")
 
     tile = database.get_tile_by_drop(chat_text)
+    if len(tile) == 0:
+        return False
     tile = db_entities.Tile(tile)
 
     player = database.get_player_by_name(rsn)
+    if len(player) == 0:
+        return False
     player = db_entities.Player(player)
 
     team = database.get_team_by_id(player.team_id)
+    if len(team) == 0:
+        return False
     team = db_entities.Team(team)
 
     database.add_chats(team.team_id, tile.tile_id, chat_text)
@@ -508,13 +546,17 @@ def parse_chat(data, img_file):
     if tile_completions >= tile.tile_repetition:
         return False
 
-    database.add_player_tile_completions(player.player_id, int(tile.tile_trigger_weights[0]) / tile.tile_triggers_required)
+    database.add_player_partial_completions(player.player_id, team.team_id, tile.tile_id, int(tile.tile_trigger_weights[0]) / tile.tile_triggers_required)
 
     total_chats = len(database.get_chats_by_team_id_and_tile_id(team.team_id, tile.tile_id))
     if total_chats >= tile.tile_triggers_required * (tile_completions + 1):
         database.add_completed_tile(tile.tile_id, team.team_id)
         database.add_team_points(team.team_id, tile.tile_points)
         send_webhook(team.team_webhook, title=f"{player.player_name} finished {tile.tile_name}!", description=f"", color=65280, image=img_file)
+        for partial_completion in database.get_partial_completions_by_team_id_and_tile_id(team.team_id, tile.tile_id):
+            partial_completion = db_entities.PartialCompletion(partial_completion)
+            database.remove_partial_completion(partial_completion.partial_completion_pk)
+            database.add_player_tile_completions(partial_completion.player_id, partial_completion.partial_completion)
     else:
         send_webhook(team.team_webhook, title=f"{tile.tile_name} progress!", description=f"Thanks to {player.player_name}, you are {total_chats % tile.tile_triggers_required}/{tile.tile_triggers_required} from completing this tile", color=16776960, image=img_file )
 

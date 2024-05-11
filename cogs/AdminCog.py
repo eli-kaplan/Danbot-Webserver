@@ -130,7 +130,7 @@ class AdminCog(commands.Cog):
             ctx.respond(response)
             return
 
-        database.add_player_tile_completions(player.player_id, progress / tile.tile_triggers_required)
+        database.add_player_partial_completions(player.player_id, team.team_id, tile.tile_id, progress / tile.tile_triggers_required)
         response = f"Successfully added {progress} trigger weight to {tile.tile_name} for {player.player_name}'s team. Additionally I've given {player.player_name} {round(progress/tile.tile_triggers_required, 2)} tile completions"
         progress = database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, player.team_id)
         if progress >= (tile_completions + 1) * tile.tile_triggers_required:
@@ -140,6 +140,20 @@ class AdminCog(commands.Cog):
                 progress = 0
             send_webhook(team.team_webhook, title=f"{tile.tile_name} completed!", description=f"You now have {tile_completions + 1} completions and are {int(progress % tile.tile_triggers_required)}/{tile.tile_triggers_required} from your next completion", color=65280, image=None)
             response = response + f"\nIt seems they have also completed this tile so I've awarded them {tile.tile_points} points and sent them a message letting them know! They now have {tile_completions + 1} completions for this tile"
+            current_trigger_rewards = 0
+            for partial_completion in database.get_partial_completions_by_team_id_and_tile_id(team.team_id,
+                                                                                              tile.tile_id):
+                partial_completion = db_entities.PartialCompletion(partial_completion)
+                database.remove_partial_completion(partial_completion.partial_completion_pk)
+                database.add_player_tile_completions(partial_completion.player_id,
+                                                     min(partial_completion.partial_completion,
+                                                         1 - current_trigger_rewards))
+                if round(partial_completion.partial_completion, 2) > round(1 - current_trigger_rewards,
+                                                                           2) and tile_completions + 1 < tile.tile_repetition:
+                    database.add_player_partial_completions(player.player_id, team.team_id, tile.tile_id,
+                                                            partial_completion.partial_completion - (1 - current_trigger_rewards))
+                else:
+                    current_trigger_rewards += partial_completion.partial_completion
         else:
             send_webhook(team.team_webhook, title=f"Request approved for {tile.tile_name}!", description=f"You are now {int(progress % tile.tile_triggers_required)}/{tile.tile_triggers_required} away from completing this tile", color=16776960, image=None)
 

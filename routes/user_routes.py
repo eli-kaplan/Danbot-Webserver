@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from flask import render_template, Blueprint
 from utils import autocomplete, scapify, database, db_entities
 
@@ -82,11 +84,22 @@ def team(team_name):
         player.gp_gained = scapify.int_to_gp(player.gp_gained)
     players = sorted(players, key=lambda player: player.tiles_completed, reverse=True)
 
+    player_partials = defaultdict(int)
+    partial_tiles = 0
+    for partial_completion in database.get_partial_completions_by_team_id(team.team_id):
+        partial_completion = db_entities.PartialCompletion(partial_completion)
+        partial_tiles += partial_completion.partial_completion
+        player_partials[partial_completion.player_id] = player_partials[partial_completion.player_id] + partial_completion.partial_completion
+
+    for player in players:
+        player.tiles_completed = round(player.tiles_completed, 2)
+        player_partials[player.player_id] = round(player_partials[player.player_id], 2)
+
     return render_template('team.html', team=team, players=players, most_tiles_player=most_tiles_player,
                            most_gold_player=most_gold_player, most_pets_player=most_pets_player,
                            most_deaths_player=most_deaths_player, drops=drops, killcount=killcount,
                            total_pets=total_pets, total_tiles=total_tiles, total_gold=scapify.int_to_gp(total_gold),
-                           total_deaths=total_deaths, teamnames=autocomplete.team_names())
+                           total_deaths=total_deaths, teamnames=autocomplete.team_names(), partial_tiles=partial_tiles, player_partials=player_partials)
 
 
 
@@ -125,8 +138,13 @@ def player(player_name):
         killcount.append(kc)
     killcount = sorted(killcount, key=lambda kc: kc.kills, reverse=True)
 
+    partial_completions = 0
+    for partial_completion in database.get_partial_completions_by_player_id(player.player_id):
+        partial_completion = db_entities.PartialCompletion(partial_completion)
+        partial_completions += partial_completion.partial_completion
+    player.tiles_completed = round(player.tiles_completed, 2)
 
-    return render_template('player.html', player=player, drops=drops, killcount=killcount, team=team, playernames=autocomplete.player_names())
+    return render_template('player.html', player=player, drops=drops, killcount=killcount, team=team, playernames=autocomplete.player_names(), partial_completions=round(partial_completions, 2))
 
 
 @user_routes.route('/leaderboard', methods=['GET'])

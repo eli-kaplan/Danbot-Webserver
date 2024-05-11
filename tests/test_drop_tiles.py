@@ -62,7 +62,10 @@ def test_complex_trigger_weights(client):
     assert result == True
 
     player = db_entities.Player(database.get_player_by_name("Danbis"))
-    assert player.tiles_completed == 12/20
+    assert player.tiles_completed == 0
+
+    partial = db_entities.PartialCompletion(database.get_partial_completions_by_player_id(player.player_id)[0])
+    assert round(partial.partial_completion, 2) == 0.60
 
 def test_multiple_completions(client):
     database.reset_tables()
@@ -83,16 +86,20 @@ def test_multiple_completions(client):
     assert result == True
 
     player = db_entities.Player(database.get_player_by_name("Danbis"))
-    assert player.tiles_completed == 42/20
+    assert player.tiles_completed == 2
+    partial = db_entities.PartialCompletion(database.get_partial_completions_by_player_id(player.player_id)[0])
+    assert round(partial.partial_completion, 2) == 0.10
     team = db_entities.Team(database.get_team_by_id(1))
     assert team.team_points == 2
 
-    json_data = spoof_drop.item_spoof_json("Danbis", "Bones", 1)
+    json_data = spoof_drop.item_spoof_json("Deidera", "Bones", 1)
     result = dink.parse_loot(json_data, None)
     assert result == True
 
     player = db_entities.Player(database.get_player_by_name("Danbis"))
-    assert player.tiles_completed == 62/20
+    assert round(player.tiles_completed, 2) == round(2.10, 2)
+    player = db_entities.Player(database.get_player_by_name("Deidera"))
+    assert round(player.tiles_completed, 2) == 0.9
     team = db_entities.Team(database.get_team_by_id(1))
     assert team.team_points == 3
 
@@ -113,6 +120,8 @@ def test_drops_shared_by_team(client):
     player_deidera = db_entities.Player(database.get_player_by_name("Deidera"))
     assert player_danbis.tiles_completed == 0.5
     assert player_deidera.tiles_completed == 0.5
+    assert len(database.get_partial_completions_by_player_id(player_danbis.player_id)) == 0
+    assert len(database.get_partial_completions_by_player_id(player_deidera.player_id)) == 0
     team = db_entities.Team(database.get_team_by_id(1))
     assert team.team_points == 1
 
@@ -126,14 +135,18 @@ def test_collections(client):
     assert result == True
 
     player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
-    assert round(player_danbis.tiles_completed, 2) == round(1/3, 2)
+    assert round(player_danbis.tiles_completed, 2) == 0
+    partial_danbis = db_entities.PartialCompletion(database.get_partial_completions_by_player_id(player_danbis.player_id)[0])
+    assert round(partial_danbis.partial_completion, 2) == round(1/3, 2)
 
     json_data = spoof_drop.item_spoof_json("Deidera", "Iron bolts", 1)
     result = dink.parse_loot(json_data, None)
     assert result == True
 
     player_deidera = db_entities.Player(database.get_player_by_name("Deidera"))
-    assert round(player_deidera.tiles_completed, 2) == round(1/3, 2)
+    assert round(player_deidera.tiles_completed, 2) == 0
+    partial_deidera = db_entities.PartialCompletion(database.get_partial_completions_by_player_id(player_deidera.player_id)[0])
+    assert round(partial_deidera.partial_completion, 2) == round(1/3, 2)
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Bronze arrow", 1)
     result = dink.parse_loot(json_data, None)
@@ -141,6 +154,8 @@ def test_collections(client):
 
     player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
     assert round(player_danbis.tiles_completed,2) == round(2/3, 2)
+    assert len(database.get_partial_completions_by_player_id(player_danbis.player_id)) == 0
+    assert len(database.get_partial_completions_by_player_id(player_deidera.player_id)) == 0
 
     team = db_entities.Team(database.get_team_by_id(1))
     assert team.team_points == 1
@@ -150,21 +165,30 @@ def test_collections(client):
     assert result == True
 
     player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
-    assert player_danbis.tiles_completed == 1
+    assert round(player_danbis.tiles_completed, 2) == round(2/3, 2)
+    partial_danbis = db_entities.PartialCompletion(database.get_partial_completions_by_player_id(player_danbis.player_id)[0])
+    assert round(partial_danbis.partial_completion, 2) == round(1/3, 2)
 
     json_data = spoof_drop.item_spoof_json("Deidera", "Fire rune", 1)
     result = dink.parse_loot(json_data, None)
     assert result == True
 
     player_deidera = db_entities.Player(database.get_player_by_name("Deidera"))
-    assert round(player_deidera.tiles_completed,2) == round(2/3, 2)
+    assert round(player_deidera.tiles_completed,2) == round(1/3, 2)
+    partial_deidera = db_entities.PartialCompletion(database.get_partial_completions_by_player_id(player_deidera.player_id)[0])
+    assert round(partial_deidera.partial_completion, 2) == round(1/3, 2)
 
     json_data = spoof_drop.item_spoof_json("Deidera", "Steel arrow", 1)
     result = dink.parse_loot(json_data, None)
     assert result == True
 
+    player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
     player_deidera = db_entities.Player(database.get_player_by_name("Deidera"))
     assert player_deidera.tiles_completed == 1
+    assert player_danbis.tiles_completed == 1
+
+    assert len(database.get_partial_completions_by_player_id(player_danbis.player_id)) == 0
+    assert len(database.get_partial_completions_by_player_id(player_deidera.player_id)) == 0
 
     team = db_entities.Team(database.get_team_by_id(1))
     assert team.team_points == 2
@@ -179,21 +203,26 @@ def test_cross_team_drops(client):
     assert result == True
 
     player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
-    assert round(player_danbis.tiles_completed, 2) == round(1/3, 2)
+    assert round(player_danbis.tiles_completed, 2) == 0
+    partial_danbis = db_entities.PartialCompletion(database.get_partial_completions_by_player_id(player_danbis.player_id)[0])
+    assert round(partial_danbis.partial_completion, 2) == round(1/3, 2)
 
     json_data = spoof_drop.item_spoof_json("Max uwu", "Iron bolts", 1)
     result = dink.parse_loot(json_data, None)
     assert result == True
 
     player_muwu = db_entities.Player(database.get_player_by_name("Max uwu"))
-    assert round(player_muwu.tiles_completed, 2) == round(1/3, 2)
+    partial_muwu = db_entities.PartialCompletion(database.get_partial_completions_by_player_id(player_muwu.player_id)[0])
+    assert round(partial_muwu.partial_completion, 2) == round(1/3, 2)
+    partial_danbis = db_entities.PartialCompletion(database.get_partial_completions_by_player_id(player_danbis.player_id)[0])
+    assert round(partial_danbis.partial_completion, 2) == round(1/3, 2)
 
     json_data = spoof_drop.item_spoof_json("Danbis", "Bronze arrow", 1)
     result = dink.parse_loot(json_data, None)
     assert result == True
 
-    player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
-    assert round(player_danbis.tiles_completed, 2) == round(2/3, 2)
+    partial_danbis = db_entities.PartialCompletion(database.get_partial_completions_by_player_id(player_danbis.player_id)[0])
+    assert round(partial_danbis.partial_completion, 2) == round(2/3, 2)
 
     team_1 = db_entities.Team(database.get_team_by_id(1))
     assert team_1.team_points == 0
@@ -207,14 +236,17 @@ def test_cross_team_drops(client):
     result = dink.parse_loot(json_data, None)
     assert result == True
 
-    player_muwu = db_entities.Player(database.get_player_by_name("Max uwu"))
-    assert player_muwu.tiles_completed == 1
+    partial_muwu_1 = db_entities.PartialCompletion(database.get_partial_completions_by_player_id(player_muwu.player_id)[0])
+    partial_muwu_2 = db_entities.PartialCompletion(database.get_partial_completions_by_player_id(player_muwu.player_id)[1])
+    assert round(partial_muwu_1.partial_completion + partial_muwu_2.partial_completion, 2) == round(1, 2)
 
     result = dink.parse_loot(json_data, None)
     assert result == True
 
     player_muwu = db_entities.Player(database.get_player_by_name("Max uwu"))
-    assert round(player_muwu.tiles_completed, 2) == round(4/3, 2)
+    partial_muwu = db_entities.PartialCompletion(database.get_partial_completions_by_player_id(player_muwu.player_id)[0])
+    assert round(partial_muwu.partial_completion, 2) == round(1/3, 2)
+    assert round(player_muwu.tiles_completed, 2) == 1
 
     team_2 = db_entities.Team(database.get_team_by_id(2))
     assert team_2.team_points == 1

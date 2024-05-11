@@ -68,3 +68,11 @@ class Request:
         self.request_id = request_tuple[0],
         self.team_name = request_tuple[1],
         self.evidence = request_tuple[2]
+
+class PartialCompletion:
+    def __init__(self, partial_completion_tuple):
+        self.team_id = partial_completion_tuple[0]
+        self.tile_id = partial_completion_tuple[1]
+        self.player_id = partial_completion_tuple[2]
+        self.partial_completion = partial_completion_tuple[3]
+        self.partial_completion_pk = partial_completion_tuple[4]
