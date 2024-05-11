@@ -53,9 +53,11 @@
                 <span style="color: {% if completed_tiles[(team.team_id, tile.tile_id)] > 0 %}green{% else %}red{% endif %};">
                     {{ completed_tiles[(team.team_id, tile.tile_id)] }}
                 </span>
+                {% if partial_tiles[(team.team_id, tile.tile_id)] > 0 %}
                 <span style="color: yellow;">
                     ({{ partial_tiles[(team.team_id, tile.tile_id)] }})
                 </span>
+                {% endif %}
             </td>
             {% endfor %}
         </tr>
