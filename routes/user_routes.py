@@ -102,6 +102,8 @@ def team(team_name):
     if len(relevant_drops) > 0:
         relevant_drops = sorted(relevant_drops, key=lambda relevant_drop: relevant_drop.tile_name, reverse=True)
 
+    total_tiles = round(total_tiles, 2)
+
     return render_template('user_templates/team.html', team=team, players=players, most_tiles_player=most_tiles_player,
                            most_gold_player=most_gold_player, most_pets_player=most_pets_player,
                            most_deaths_player=most_deaths_player, drops=drops, killcount=killcount,
