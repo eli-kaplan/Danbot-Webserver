@@ -56,7 +56,10 @@ class Tile:
         self.tile_name = tile_tuple[1]
         self.tile_type = tile_tuple[2]
         self.tile_triggers = tile_tuple[3]
-        self.tile_trigger_weights = tile_tuple[4].split(',')
+        if tile_tuple[4] is not None:
+            self.tile_trigger_weights = tile_tuple[4].split(',')
+        else:
+            self.tile_trigger_weights = None
         self.tile_unique_drops = str(tile_tuple[5])
         self.tile_triggers_required = tile_tuple[6]
         self.tile_repetition = tile_tuple[7]
