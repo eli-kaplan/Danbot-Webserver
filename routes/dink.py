@@ -374,7 +374,6 @@ def parse_kill_count(data, img_file) -> dict[str, list[str]]:
         team_id = player.team_id
 
     database.add_killcount(player_id, team_id, boss_name, 1)
-    print(f"{rsn} has killed {boss_name}.")
     if database.get_drop_whitelist_by_item_name(boss_name) is not None:
         tile = Tile(database.get_tile_by_drop(boss_name))
         team = Team(database.get_team_by_id(team_id))
