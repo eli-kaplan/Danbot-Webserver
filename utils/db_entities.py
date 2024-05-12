@@ -9,12 +9,14 @@ class Player:
         self.discord_id = player_tuple[6]
         self.pet_count = player_tuple[7]
 
+
 class Team:
     def __init__(self, team_tuple):
         self.team_name = team_tuple[0]
         self.team_points = team_tuple[1]
         self.team_webhook = team_tuple[2]
         self.team_id = team_tuple[3]
+
 
 class Drop:
     def __init__(self, drop_tuple):
@@ -27,6 +29,7 @@ class Drop:
         self.drop_source = drop_tuple[6]
         self.discord_id = drop_tuple[7]
 
+
 class Killcount:
     def __init__(self, killcount_tuple):
         self.player_id = killcount_tuple[0]
@@ -34,15 +37,18 @@ class Killcount:
         self.boss_name = killcount_tuple[2]
         self.kills = killcount_tuple[3]
 
-class Drop_whitelist:
+
+class DropWhitelist:
     def __init__(self, drop_whitelist_tuple):
         self.drop_name = drop_whitelist_tuple[0]
 
-class Completed_Tile:
+
+class CompletedTile:
     def __init__(self, completed_tile_tuple):
         self.team_id = completed_tile_tuple[0]
         self.tile_id = completed_tile_tuple[1]
         self.completed_tile_pk = completed_tile_tuple[2]
+
 
 class Tile:
     def __init__(self, tile_tuple):
@@ -56,18 +62,13 @@ class Tile:
         self.tile_repetition = tile_tuple[7]
         self.tile_points = tile_tuple[8]
 
-class Killcount:
-    def __init__(self, killcount_tuple):
-        self.player_id = killcount_tuple[0]
-        self.team_id = killcount_tuple[1]
-        self.boss_name = killcount_tuple[2]
-        self.kills = killcount_tuple[3]
 
 class Request:
     def __init__(self, request_tuple):
         self.request_id = request_tuple[0],
         self.team_name = request_tuple[1],
         self.evidence = request_tuple[2]
+
 
 class PartialCompletion:
     def __init__(self, partial_completion_tuple):

@@ -22,7 +22,7 @@ def compare():
 
     completed_tiles = defaultdict(lambda: defaultdict(int))
     for completed_tile in database.get_completed_tiles():
-        completed_tile = db_entities.Completed_Tile(completed_tile)
+        completed_tile = db_entities.CompletedTile(completed_tile)
         completed_tiles[completed_tile.tile_id][completed_tile.team_id] = completed_tiles[completed_tile.tile_id][completed_tile.team_id] + 1
 
     partial_tiles = defaultdict(lambda: defaultdict(int))

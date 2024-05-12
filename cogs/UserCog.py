@@ -77,7 +77,7 @@ class UserCog(commands.Cog):
         completed_tiles = database.get_completed_tiles()
         complete_tile_dict = defaultdict(int)
         for tile in completed_tiles:
-            tile = db_entities.Completed_Tile(tile)
+            tile = db_entities.CompletedTile(tile)
             if tile.team_id == team.team_id:
                 complete_tile_dict[tile.tile_id] = complete_tile_dict[tile.tile_id] + 1
 

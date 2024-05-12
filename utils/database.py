@@ -263,7 +263,7 @@ def add_completed_tile(tile_id, team_id):
 def remove_completed_tile(tile_id, team_id):
     with connect() as conn:
         cursor = conn.cursor()
-        completed_tile = db_entities.Completed_Tile(
+        completed_tile = db_entities.CompletedTile(
             cursor.execute("SELECT * FROM completed_tiles WHERE tile_name = %s and team_id = %s",
                            (tile_id, team_id)).fetchone())
         cursor.execute("DELETE FROM completed_tiles WHERE completed_tile_pk = %s", (completed_tile.completed_tile_pk))
@@ -322,6 +322,12 @@ def get_tile_by_drop(drop_name):
         cursor.execute("SELECT * FROM tiles where tile_id = %s", (tile_id,))
         return cursor.fetchone()
 
+def get_tile_by_id(tile_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM tiles where tile_id = %s", (tile_id,))
+        return cursor.fetchone()
+    return None
 
 def get_tile_by_name(tile_name):
     with connect() as conn:

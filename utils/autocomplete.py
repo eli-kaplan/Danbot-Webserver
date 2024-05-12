@@ -60,7 +60,7 @@ def fuzzy_autocomplete(ctx: discord.AutocompleteContext, choices):
 def drop_names():
     drop_names = []
     for drop in database.get_drop_whitelist():
-        drop = db_entities.Drop_whitelist(drop)
+        drop = db_entities.DropWhitelist(drop)
         drop_names.append(drop.drop_name)
     return drop_names
 
