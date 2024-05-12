@@ -529,17 +529,17 @@ def parse_chat(data, img_file):
     print(f"CHAT: {rsn} - \"{chat_text}\"")
 
     tile = database.get_tile_by_drop(chat_text)
-    if len(tile) == 0:
+    if tile is not None:
         return False
     tile = db_entities.Tile(tile)
 
     player = database.get_player_by_name(rsn)
-    if len(player) == 0:
+    if player is not None:
         return False
     player = db_entities.Player(player)
 
     team = database.get_team_by_id(player.team_id)
-    if len(team) == 0:
+    if team is not None:
         return False
     team = db_entities.Team(team)
 
