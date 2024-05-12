@@ -197,8 +197,22 @@ def leaderboard():
 
     teams = sorted(teams, key=lambda team: team.team_points, reverse=True)
 
+    team_partial_tiles = defaultdict(int)
+    partial_tiles = 0
+    for team in teams:
+        for partial_tile in database.get_partial_completions_by_team_id(team.team_id):
+            partial_tile = db_entities.PartialCompletion(partial_tile)
+            team_partial_tiles[team.team_id] = team_partial_tiles[team.team_id] + partial_tile.partial_completion
+            partial_tiles = partial_tiles + partial_tile.partial_completion
+    partial_tiles = round(partial_tiles, 2)
+    for key, value in team_partial_tiles.items():
+        team_partial_tiles[key] = round(value, 2)
+
+
+    partial_tiles = round(partial_tiles, 2)
+
     return render_template('user_templates/leaderboard.html', teams=teams, players=players, most_tiles_player=most_tiles_player,
                            most_gold_player=most_gold_player, most_pets_player=most_pets_player,
                            most_deaths_player=most_deaths_player,
                            total_pets=total_pets, total_tiles=total_tiles, total_gold=scapify.int_to_gp(total_gold),
-                           total_deaths=total_deaths)
+                           total_deaths=total_deaths, partial_tiles=partial_tiles, team_partial_tiles=team_partial_tiles)

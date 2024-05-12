@@ -30,11 +30,18 @@
             color: white;
         }
 
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
     <div class="content">
-        <h1>Leaderboard</h1>
+        <div class="header" style="justify-content: center;">
+            <h1>Leaderboard</h1>
+        </div>
         <h2>Team Ranks</h2>
         <table>
             <tr>
@@ -46,7 +53,12 @@
             <tr>
                 <td>{{ loop.index }}</td>
                 <td><a href="/user/team/{{team.team_name}}">{{ team.team_name }}</a></td>
-                <td>{{ team.team_points }}</td>
+                <td>
+                    {{ team.team_points }}
+                    {% if team_partial_tiles[team.team_id] > 0 %}
+                    ({{ team_partial_tiles[team.team_id] }})
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </table>
@@ -62,7 +74,12 @@
                 <td>{{ total_gold }}</td>
                 <td>{{ total_deaths }} deaths</td>
                 <td>{{ total_pets }} pets</td>
-                <td>{{ total_tiles }} tiles</td>
+                <td>
+                    {{ total_tiles }} tiles
+                    {% if partial_tiles > 0 %}
+                    ({{ partial_tiles }} partials)
+                    {% endif %}
+                </td>
             </tr>
         </table>
         <h2>Honorable Mentions</h2>
