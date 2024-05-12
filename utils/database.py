@@ -549,6 +549,40 @@ def delete_chat(chats_pk):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM chats WHERE chats_pk = %s", (chats_pk,))
 
+def add_relevant_drop(team_id, player_id, tile_name, drop_name, player_name):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO relevant_drops (team_id, player_id, tile_name, drop_name, player_name)
+            VALUES (%s, %s, %s, %s, %s)
+            ''', (team_id, player_id, tile_name, drop_name, player_name))
+        conn.commit()
+
+def get_relevant_drop_by_player_id(player_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM relevant_drops WHERE player_id = %s", (player_id,))
+        return cursor.fetchall()
+
+def get_relevant_drop_by_team_id(team_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM relevant_drops WHERE team_id = %s", (team_id,))
+        return cursor.fetchall()
+
+def get_relevant_drop_by_team_id_and_tile_id(team_id, tile_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM relevant_drops WHERE team_id = %s AND tile_id = %s", (team_id, tile_id,))
+        return cursor.fetchall()
+
+def delete_relevant_drop(relevant_drops_pk):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM relevant_drops WHERE relevant_drops_pk = %s", (relevant_drops_pk,))
+        conn.commit()
+
+
 
 def reset_tables():
     # Drop all tables
@@ -691,6 +725,21 @@ def reset_tables():
                 FOREIGN KEY(team_id) REFERENCES teams(team_id),
                 FOREIGN KEY(tile_id) REFERENCES tiles(tile_id),
                 FOREIGN KEY(player_id) REFERENCES players(player_id)
+            )
+            ''')
+
+    cursor.execute('''
+            CREATE TABLE relevant_drops (
+                team_id integer,
+                player_id integer,
+                tile_id integer,
+                tile_name text,
+                drop_name text,
+                player_name text,
+                relevant_drops_pk SERIAL PRIMARY KEY,
+                FOREIGN KEY(team_id) REFERENCES teams(team_id),
+                FOREIGN KEY(tile_id) REFERENCES tiles(tile_id),
+                FOREIGN KEY(player_id) REFERENCES players(player_id)    
             )
             ''')
 

@@ -87,6 +87,19 @@
                 <th>Total Deaths: {{player.deaths}}</th>
             </tr>
         </table>
+        <h2>Relevant Drops</h2>
+        <table>
+            <tr>
+                <th>Tile name</th>
+                <th>Drop name</th>
+            </tr>
+            {% for relevant_drop in relevant_drops %}
+            <tr>
+                <td>{{ relevant_drop.tile_name }}</td>
+                <td>{{ relevant_drop.drop_name }}</td>
+            </tr>
+            {% endfor %}
+        </table>
         <h2>Killcount</h2>
         <table>
             <tr>

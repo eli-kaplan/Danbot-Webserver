@@ -134,6 +134,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                 if tile_completion_count >= tile.tile_repetition:
                     continue
 
+                database.add_relevant_drop(team.team_id, player.player_id, tile.tile_name, itemName, player.player_name)
                 # Find the weight of the trigger and add the proportion to the players tile completions
                 for i in range(len(tile.tile_triggers.split(','))):
                     for trigger in tile.tile_triggers.split(',')[i].split('/'):
@@ -194,6 +195,8 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                 # If the tile has been completed too many times do nothing
                 if tile_completion_count >= tile.tile_repetition:
                     continue
+
+                database.add_relevant_drop(team.team_id, player.player_id, tile.tile_name, itemName, player.player_name)
                 color = 16776960 # Yellow by default
                 description = "You are still missing\n" # Assume set is not completed
                 missing_items = []
@@ -425,6 +428,7 @@ def parse_kill_count(data, img_file) -> dict[str, list[str]]:
         elif boss_name == "TzTok-Jad" or boss_name == "TzTok-Zuk" or boss_name == "Sol-Heredit":
             send_webhook(team.team_webhook, f"{player.player_name} killed {boss_name}! You are {(team_killcount % tile.tile_triggers_required)}/{tile.tile_triggers_required} from completing {tile.tile_name}",
                          description="", color=16776960, image=img_file)
+            database.add_relevant_drop(team.team_id, player.player_id, tile.tile_name, boss_name, player.player_name)
     return True
 
 
