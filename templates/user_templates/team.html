@@ -80,16 +80,16 @@
 
     <table>
         <tr>
+            <th>Total Tiles</th>
             <th>Total Gold</th>
             <th>Total Deaths</th>
             <th>Total Pets</th>
-            <th>Total Tiles</th>
         </tr>
         <tr>
+            <td>{{ total_tiles }} tiles {% if partial_tiles > 0 %}({{ partial_tiles }} partial){% endif %}</td>
             <td>{{ total_gold }}</td>
             <td>{{ total_deaths }} deaths</td>
             <td>{{ total_pets }} pets</td>
-            <td>{{ total_tiles }} tiles {% if partial_tiles > 0 %}({{ partial_tiles }} partial){% endif %}</td>
         </tr>
     </table>
     <h2>Top Players</h2>
