@@ -26,79 +26,43 @@ def parse_death(data) -> dict[str, list[str]]:
 
 # function to parse collection data
 def parse_collection(data) -> dict[str, list[str]]:
-    print("COLLECTION")
-    # print data prettyfied
-    # print(json.dumps(data, indent = 2))
-    return False
+    rsn = data['playerName']
+    itemName = data['extra']['itemName']
+    print(f"COLLECTION - {rsn} got a new collection log {itemName}")
+    return True
 
 
 # function to parse level data
 def parse_level(data) -> dict[str, list[str]]:
-    print("LEVEL")
-    # print data prettyfied
-    # print(json.dumps(data, indent = 2))
-    return False
+    rsn = data['playerName']
+    levelledSkills = data['extra']['levelledSkills']
+    print(f"LEVEL - {rsn} levelled up {levelledSkills}")
+    return True
 
 
-# function to parse loot data
-# example data:
-# {
-#   "content": "%USERNAME% has looted: \n\n%LOOT%\nFrom: %SOURCE%",
-#   "extra": {
-#     "items": [
-#       {
-#         // type of this object is SerializedItemStack
-#         "id": 1234,
-#         "quantity": 1,
-#         "priceEach": 42069,
-#         // priceEach is the GE price of the item
-#         "name": "Some item"
-#       }
-#     ],
-#     "source": "Giant rat",
-#     "category": "NPC",
-#     "killCount": 60
-#   },
-#   "type": "LOOT",
-#   "playerName": "your rsn",
-#   "embeds": []
-# }
 def parse_loot(data, img_file) -> dict[str, list[str]]:
 
     # Get rsn
     rsn = data['playerName']
+
+    # Handle discord attachment
+    player = database.get_player_by_name(rsn)
+    if player is None:
+        return False
+    player = db_entities.Player(player)
+
+    team = database.get_team_by_id(player.team_id)
+    if team is None:
+        return False
+    team = db_entities.Team(team)
+
     # Check if discordUser exists
     if 'discordUser' not in data:
         discordId = "None"
     else:
         discordId = data['discordUser']['id']
+
     source = data['extra']['source']
-
-    # Handle discord attachment
-    player = database.get_player_by_name(rsn)
-    if player is not None:
-        player = Player(player)
-        player_id = player.player_id
-        team_id = player.team_id
-
-        if player.discord_id == 0:
-            database.attach_player_discord(player_id, discordId)
-    else:
-        # Todo send discord alert that an alt was detected and we've linked the account
-        print("Alt detected: " + rsn)
-        database.add_alt_account(rsn, discordId)
-        player = database.get_player_by_name(rsn)
-        if player is None:
-            print("Player unknown: " + rsn)
-            # Player is not a part of the bingo / we don't know who owns this account
-            return False
-        player = Player(player)
-        player_id = player.player_id
-        team_id = player.team_id
-        team = Team(database.get_team_by_id(team_id))
-        send_webhook(team.team_webhook, f"Alt detected! I've added {rsn} to your team.", "If this is a mistake get in contact with Admin immediately.", color=16711680, image=None)
-
-
     # Get item source
     itemSource = data['extra']['source']
 
@@ -117,15 +81,15 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
 
         # Add the item to the database
         print(f"LOOT: {player.player_name} - {itemName} x {itemQuantity} ({itemQuantity * itemPrice})")
-        database.add_drop(team_id, player_id, rsn, itemName, item_each, itemQuantity, itemSource, discordId)
+        database.add_drop(team.team_id, player.player_id, rsn, itemName, item_each, itemQuantity, itemSource, discordId)
 
         # If the item is relevant
         if database.get_drop_whitelist_by_item_name(itemName) is not None:
             # Find the tile and team associated with this player / drop
             tile = Tile(database.get_tile_by_drop(itemName))
-            team = Team(database.get_team_by_id(team_id))
+            team = Team(database.get_team_by_id(team.team_id))
             description = ""
-            tile_completion_count = len(database.get_completed_tiles_by_team_id_and_tile_id(team_id, tile.tile_id))
+            tile_completion_count = len(database.get_completed_tiles_by_team_id_and_tile_id(team.team_id, tile.tile_id))
             color = 0
 
             # Drop tile logic
@@ -150,7 +114,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                     drops = []
                     for or_trigger in trigger.split('/'):
                         or_trigger = or_trigger.strip()
-                        for drop in database.get_drops_by_item_name_and_team_id(or_trigger, team_id):
+                        for drop in database.get_drops_by_item_name_and_team_id(or_trigger, team.team_id):
                             drops.append(drop)
 
                     # If the tile is unique ignore quantity / duplicates
@@ -167,7 +131,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                 # If the trigger value is greater than triggers required multiplied by tile completion count then the tile has been completed an additional time
                 if trigger_value >= tile.tile_triggers_required * (tile_completion_count + 1) or (tile.tile_unique_drops == "True" and trigger_value >= tile.tile_triggers_required):
                     description = f"{tile.tile_name} completed! Congratulations! Your team has been awarded {tile.tile_points} point(s)!"
-                    database.add_completed_tile(tile.tile_id, team_id)
+                    database.add_completed_tile(tile.tile_id, team.team_id)
                     description = description + f"\nYou have completed this tile {tile_completion_count + 1} times."
                     color = 65280 # Green
                     database.add_team_points(team.team_id, tile.tile_points)
@@ -215,7 +179,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                     for item in set.split(','):
                         # Get the item name from the set and check if it exists in the db with the given team id
                         item = item.strip()
-                        drops = database.get_drops_by_item_name_and_team_id(item, team_id)
+                        drops = database.get_drops_by_item_name_and_team_id(item, team.team_id)
 
                         # If drops has a length of 0 nobody on the team has gotten this drop yet
                         if len(drops) <= tile_completion_count:
@@ -253,7 +217,11 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
 
 # function to parse slayer data
 def parse_slayer(data) -> dict[str, list[str]]:
-    print("SLAYER")
+    rsn = data['playerName']
+    slayer_monster = data['extra']['monster']
+    kc_required = data['extra']['killcount']
+
+    print(f"SLAYER - {rsn} finished their {slayer_monster} task ({kc_required} kill(s))")
     # print data prettyfied
     # print(json.dumps(data, indent = 2))
     return False
@@ -261,47 +229,12 @@ def parse_slayer(data) -> dict[str, list[str]]:
 
 # function to parse quest data
 def parse_quest(data) -> dict[str, list[str]]:
-    # questList = [
-    #   "Monkey Madness II",
-    #   "Dragon Slayer II",
-    #   "Song of the Elves",
-    #   "Desert Treasure II - The Fallen Empire",
-    #   "Legends' Quest",
-    #   "Monkey Madness I",
-    #   "Desert Treasure I",
-    #   "Mourning's End Part I",
-    #   "Mourning's End Part II",
-    #   "Swan Song",
-    #   "Dream Mentor",
-    #   "Grim Tales",
-    #   "Making Friends with My Arm",
-    #   "The Fremennik Exiles",
-    #   "Sins of the Father",
-    #   "A Night at the Theatre",
-    #   "Beneath Cursed Sands",
-    #   "Secrets of the North",
-    # ]
-
-    screenshotItems: dict[str, list[str]] = {}
-
     rsn = data['playerName']
-    # Check if discordUser exists
-    if 'discordUser' not in data:
-        discordId = "None"
-    else:
-        discordId = data['discordUser']['id']
-
     questName = data['extra']['questName']
 
-    # threadIds = submit(rsn, discordId, "QUEST", questName, 0, 1, "QUEST")
-    # for threadId in threadIds:
-    #     if threadId not in screenshotItems:
-    #         screenshotItems[threadId] = []
-    #     screenshotItems[threadId].append(questName)
+    print(f"QUEST - {rsn} completed {questName}")
 
-    # print data prettyfied
-    # print(json.dumps(data, indent = 2))
-    return screenshotItems
+    return True
 
 
 # function to parse clue data
@@ -477,7 +410,7 @@ def parse_pet(data, img_file) -> dict[str, list[str]]:
 
 # function to parse speedrun data
 def parse_speedrun(data) -> dict[str, list[str]]:
-    print("SPEEDRUN")
+    # print("SPEEDRUN")
     # print data prettyfied
     # print(json.dumps(data, indent = 2))
     return False
@@ -485,42 +418,54 @@ def parse_speedrun(data) -> dict[str, list[str]]:
 
 # function to parse barbarian assault gamble data
 def parse_barbarian_assault_gamble(data) -> dict[str, list[str]]:
-    print("BARBARIAN_ASSAULT_GAMBLE")
+    # print("BARBARIAN_ASSAULT_GAMBLE")
     # print data prettyfied
     # print(json.dumps(data, indent = 2))
-    return False
+    return True
 
 
 # function to parse player kill data
 def parse_player_kill(data) -> dict[str, list[str]]:
-    print("PLAYER_KILL")
+    rsn = data['playerName']
+    victim = data['extra']['victimName']
+    print(f"PLAYER_KILL - {rsn} killed {victim}")
     # print data prettyfied
     # print(json.dumps(data, indent = 2))
-    return False
+    return True
 
 
 # function to parse group storage data
 def parse_group_storage(data) -> dict[str, list[str]]:
-    print("GROUP_STORAGE")
+    # print("GROUP_STORAGE")
     # print data prettyfied
     # print(json.dumps(data, indent = 2))
-    return False
+    return True
 
 
 # function to parse grand exchange data
 def parse_grand_exchange(data) -> dict[str, list[str]]:
-    print("GRAND_EXCHANGE")
+    # print("GRAND_EXCHANGE")
     # print data prettyfied
     # print(json.dumps(data, indent = 2))
-    return False
+    return True
 
 
 # function to parse trade data
 def parse_trade(data) -> dict[str, list[str]]:
-    print("TRADE")
-    # print data prettyfied
-    # print(json.dumps(data, indent = 2))
-    return False
+    rsn = data['playerName']
+    other_rsn = data['extra']['counterparty']
+
+    print(f"TRADE - {rsn} and {other_rsn}")
+    rsn_recieved_list = []
+    for receivedItem in data['extra']['receivedItems']:
+        rsn_recieved_list.append(f"{receivedItem['name']} x {receivedItem['quantity']},")
+    print(f"{rsn} received: {rsn_recieved_list}")
+    other_received_list = []
+    for other_received in data['extra']['givenItems']:
+        other_received_list.append(f"{other_received['name']} x {other_received['quantity']},")
+    print(f"{other_rsn} received: {other_received_list}")
+
+    return True
 
 # function to delegate parsing to its own function basing on the 'type' data
 def parse_chat(data, img_file):
@@ -529,17 +474,17 @@ def parse_chat(data, img_file):
     print(f"CHAT: {rsn} - \"{chat_text}\"")
 
     tile = database.get_tile_by_drop(chat_text)
-    if tile is not None:
+    if tile is None:
         return False
     tile = db_entities.Tile(tile)
 
     player = database.get_player_by_name(rsn)
-    if player is not None:
+    if player is None:
         return False
     player = db_entities.Player(player)
 
     team = database.get_team_by_id(player.team_id)
-    if team is not None:
+    if team is None:
         return False
     team = db_entities.Team(team)
 
@@ -567,34 +512,65 @@ def parse_chat(data, img_file):
 
 # function to parse leagues area data
 def parse_leagues_area(data) -> dict[str, list[str]]:
-    print("LEAGUES_AREA")
+    # print("LEAGUES_AREA")
     # print data prettyfied
     # print(json.dumps(data, indent = 2))
-    return False
+    return True
 
 
 # function to parse leagues relic data
 def parse_leagues_relic(data) -> dict[str, list[str]]:
-    print("LEAGUES_RELIC")
+    # print("LEAGUES_RELIC")
     # print data prettyfied
     # print(json.dumps(data, indent = 2))
-    return False
+    return True
 
 
 # function to parse leagues task data
 def parse_leagues_task(data) -> dict[str, list[str]]:
-    print("LEAGUES_TASK")
+    # print("LEAGUES_TASK")
     # print data prettyfied
     # print(json.dumps(data, indent = 2))
-    return False
+    return True
 
 
 # function to parse login data
 def parse_login(data) -> dict[str, list[str]]:
-    print("LOGIN")
-    # print data prettyfied
-    # print(json.dumps(data, indent = 2))
-    return False
+    rsn = data['playerName']
+    print(f"LOGIN - {rsn}")
+
+    # Check if discordUser exists
+    if 'discordUser' not in data:
+        discordId = "None"
+    else:
+        discordId = data['discordUser']['id']
+    source = data['extra']['source']
+
+    player = database.get_player_by_name(rsn)
+    if player is not None:
+        player = Player(player)
+        player_id = player.player_id
+        team_id = player.team_id
+
+        if player.discord_id == 0:
+            database.attach_player_discord(player_id, discordId)
+    else:
+        # Todo send discord alert that an alt was detected and we've linked the account
+        print("Alt detected: " + rsn)
+        database.add_alt_account(rsn, discordId)
+        player = database.get_player_by_name(rsn)
+        if player is None:
+            print("Player unknown: " + rsn)
+            # Player is not a part of the bingo / we don't know who owns this account
+            return False
+        player = Player(player)
+        player_id = player.player_id
+        team_id = player.team_id
+        team = Team(database.get_team_by_id(team_id))
+        print(f"Attached alt to {player.player_name} and placed them on team {team.team_name}")
+        send_webhook(team.team_webhook, f"Alt detected! I've added {rsn} to your team.", "If this is a mistake get in contact with Admin immediately.", color=16711680, image=None)
+
+    return True
 
 
 
