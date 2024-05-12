@@ -65,7 +65,7 @@
 <body>
     <div class="content">
         <div class="header">
-            <h1>{{player.player_name}} - <a href="/user/team/{{ team.team_name }}">{{team.team_name}}</a></h1>
+            <h1><a href="/user/team/{{ team.team_name }}">{{team.team_name}}</a></h1>
             <form onsubmit="submitForm(event)" class="search-bar">
                 <datalist id="player-names">
                     {% for playername in playernames %}
@@ -75,6 +75,9 @@
                 <input type="text" id="searchbox" name="searchboxcontent" placeholder="Search..." list="player-names" autocomplete="off">
                 <input type="submit" value="Search">
             </form>
+        </div>
+        <div class="header" style="justify-content: center;">
+            <h1>{{player.player_name}}</h1>
         </div>
         <table>
             <tr>
