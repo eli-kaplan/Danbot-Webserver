@@ -86,6 +86,7 @@ class RelevantDrop:
     def __init__(self, relevant_drop_tuple):
         self.team_id = relevant_drop_tuple[0]
         self.player_id = relevant_drop_tuple[1]
-        self.tile_name = relevant_drop_tuple[2]
-        self.drop_name = relevant_drop_tuple[3]
-        self.player_name = relevant_drop_tuple[4]
+        self.tile_id = relevant_drop_tuple[2]
+        self.tile_name = relevant_drop_tuple[3]
+        self.drop_name = relevant_drop_tuple[4]
+        self.player_name = relevant_drop_tuple[5]

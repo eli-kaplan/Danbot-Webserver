@@ -549,13 +549,13 @@ def delete_chat(chats_pk):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM chats WHERE chats_pk = %s", (chats_pk,))
 
-def add_relevant_drop(team_id, player_id, tile_name, drop_name, player_name):
+def add_relevant_drop(team_id, player_id, tile_id, tile_name, drop_name, player_name):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO relevant_drops (team_id, player_id, tile_name, drop_name, player_name)
-            VALUES (%s, %s, %s, %s, %s)
-            ''', (team_id, player_id, tile_name, drop_name, player_name))
+            INSERT INTO relevant_drops (team_id, player_id, tile_id, tile_name, drop_name, player_name)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            ''', (team_id, player_id, tile_id, tile_name, drop_name, player_name))
         conn.commit()
 
 def get_relevant_drop_by_player_id(player_id):
