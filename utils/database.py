@@ -27,7 +27,7 @@ def rename_team(old_team_name, new_team_name):
         update_query = '''
             UPDATE teams
             SET team_name = %s
-            WHERE team_name = %s
+            WHERE lower(team_name) = lower(%s)
             '''
         cursor.execute(update_query, (new_team_name, old_team_name,))
 
@@ -37,7 +37,7 @@ def add_team(team_name, team_points, team_webhook):
         cursor = conn.cursor()
         cursor.execute("INSERT INTO teams (team_name, team_points, team_webhook) VALUES (%s, %s, %s)",
                        (team_name, team_points, team_webhook))
-        return cursor.execute("SELECT team_id from teams where team_name = %s", (team_name,))
+        return cursor.execute("SELECT team_id from teams where lower(team_name) = lower(%s)", (team_name,))
 
 
 def remove_team(team_id):
@@ -63,7 +63,7 @@ def get_team_by_id(team_id):
 def get_team_by_name(team_name):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM teams where team_name = %s", (team_name,))
+        cursor.execute("SELECT * FROM teams where lower(team_name) = lower(%s)", (team_name,))
         return cursor.fetchone()
 
 
@@ -79,13 +79,13 @@ def add_player(player_name, deaths, gp_gained, tiles_completed, team_id, pet_cou
 def add_death_by_playername(rsn):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("UPDATE players SET deaths = deaths + 1 WHERE player_name = %s", (rsn,))
+        cursor.execute("UPDATE players SET deaths = deaths + 1 WHERE lower(player_name) = lower(%s)", (rsn,))
 
 
 def add_pet_by_playername(rsn):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("UPDATE players SET pet_count = pet_count + 1 WHERE player_name = %s", (rsn,))
+        cursor.execute("UPDATE players SET pet_count = pet_count + 1 WHERE lower(player_name) = lower(%s)", (rsn,))
 
 
 def add_player_tile_completions(player_id, tiles_completed):
@@ -104,7 +104,7 @@ def rename_player(old_player_name, new_player_name):
         update_query = '''
             UPDATE players
             SET player_name = %s
-            WHERE player_name = %s
+            WHERE lower(player_name) = lower(%s)
             '''
         cursor.execute(update_query, (new_player_name, old_player_name,))
 
@@ -134,7 +134,7 @@ def get_players_by_team_id(team_id):
 def get_player_by_name(player_name):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM players where player_name = %s", (player_name,))
+        cursor.execute("SELECT * FROM players where lower(player_name) = lower(%s)", (player_name,))
         return cursor.fetchone()
 
 
@@ -159,7 +159,7 @@ def add_drop(team_id, player_id, player_name, drop_name, drop_value, drop_quanti
 def remove_drop(player_id, drop_name):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM drops WHERE player_id = %s AND drop_name = %s", (player_id, drop_name))
+        cursor.execute("DELETE FROM drops WHERE player_id = %s AND lower(drop_name) = lower(%s)", (player_id, drop_name))
 
 
 def get_drops():
@@ -194,7 +194,7 @@ def add_killcount(player_id, team_id, boss_name, kills):
 def remove_killcount(player_id, boss_name):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM killcount WHERE player_id = %s AND boss_name = %s", (player_id, boss_name))
+        cursor.execute("DELETE FROM killcount WHERE player_id = %s AND lower(boss_name) = lower(%s)", (player_id, boss_name))
 
 
 def get_killcounts():
@@ -218,7 +218,7 @@ def add_drop_whitelist(drop_name, tile_id):
 def remove_drop_whitelist(drop_name):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM drop_whitelist WHERE drop_name = %s", (drop_name,))
+        cursor.execute("DELETE FROM drop_whitelist WHERE lower(drop_name) = lower(%s)", (drop_name,))
 
 
 def get_drop_whitelist():
@@ -231,7 +231,7 @@ def get_drop_whitelist():
 def get_drop_whitelist_by_item_name(item_name):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM drop_whitelist WHERE drop_name = %s", (item_name,))
+        cursor.execute("SELECT * FROM drop_whitelist WHERE lower(drop_name) = lower(%s)", (item_name,))
         return cursor.fetchone()
 
 
@@ -247,7 +247,7 @@ def remove_completed_tile(tile_id, team_id):
     with connect() as conn:
         cursor = conn.cursor()
         completed_tile = db_entities.CompletedTile(
-            cursor.execute("SELECT * FROM completed_tiles WHERE tile_name = %s and team_id = %s",
+            cursor.execute("SELECT * FROM completed_tiles WHERE lower(tile_name) = lower(%s) and team_id = %s",
                            (tile_id, team_id)).fetchone())
         cursor.execute("DELETE FROM completed_tiles WHERE completed_tile_pk = %s", (completed_tile.completed_tile_pk))
 
@@ -300,7 +300,7 @@ def get_niche_tiles():
 def get_tile_by_drop(drop_name):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM drop_whitelist where drop_name = %s", (drop_name,))
+        cursor.execute("SELECT * FROM drop_whitelist where lower(drop_name) = lower(%s)", (drop_name,))
         try:
             tile_id = cursor.fetchone()[1]
         except:
@@ -317,14 +317,14 @@ def get_tile_by_id(tile_id):
 def get_tile_by_name(tile_name):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM tiles where tile_name = %s", (tile_name,))
+        cursor.execute("SELECT * FROM tiles where lower(tile_name) = lower(%s)", (tile_name,))
         return cursor.fetchone()
 
 
 def get_drops_by_item_name_and_team_id(item_name, team_id):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM drops where team_id = %s and drop_name = %s", (team_id, item_name,))
+        cursor.execute("SELECT * FROM drops where team_id = %s and lower(drop_name) = lower(%s)", (team_id, item_name,))
         return cursor.fetchall()
 
 
@@ -334,14 +334,14 @@ def add_killcount(player_id, team_id, bossname, kills):
         cursor = conn.cursor()
 
         # Check if the row already exists
-        cursor.execute("SELECT * FROM KillCount WHERE player_id = %s AND team_id = %s AND boss_name = %s",
+        cursor.execute("SELECT * FROM KillCount WHERE player_id = %s AND team_id = %s AND lower(boss_name) = lower(%s)",
                        (player_id, team_id, bossname))
         row = cursor.fetchone()
 
         if row is not None:
             # If the row exists, update the kills
             cursor.execute(
-                "UPDATE KillCount SET kills = kills + %s WHERE player_id = %s AND team_id = %s AND boss_name = %s",
+                "UPDATE KillCount SET kills = kills + %s WHERE player_id = %s AND team_id = %s AND lower(boss_name) = lower(%s)",
                 (kills, player_id, team_id, bossname))
         else:
             # If the row doesn't exist, insert a new row
@@ -404,7 +404,7 @@ def remove_partial_completion(partial_completion_pk):
 def get_killcount_by_team_id_and_boss_name(team_id, boss_name):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM killcount WHERE team_id = %s AND boss_name = %s", (team_id, boss_name))
+        cursor.execute("SELECT * FROM killcount WHERE team_id = %s AND lower(boss_name) = lower(%s)", (team_id, boss_name))
         return cursor.fetchall()
 
 
@@ -427,7 +427,7 @@ def add_manual_progress(tile_name, player_name, progress):
         cursor = conn.cursor()
 
         # Find the player
-        cursor.execute("SELECT * FROM players WHERE player_name = %s", (player_name,))
+        cursor.execute("SELECT * FROM players WHERE lower(player_name) = lower(%s)", (player_name,))
         player = db_entities.Player(cursor.fetchone())
 
         # Find the team
@@ -435,7 +435,7 @@ def add_manual_progress(tile_name, player_name, progress):
         team = db_entities.Team(cursor.fetchone())
 
         # Find the tile
-        cursor.execute("SELECT * FROM tiles WHERE tile_name = %s", (tile_name,))
+        cursor.execute("SELECT * FROM tiles WHERE lower(tile_name) = lower(%s)", (tile_name,))
         tile = db_entities.Tile(cursor.fetchone())
 
         # Check if the row already exists
@@ -457,20 +457,22 @@ def add_manual_progress(tile_name, player_name, progress):
 def get_manual_progress_by_tile_name_and_team_name(tile_name, team_name):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM teams where team_name = %s", (team_name,))
+        cursor.execute("SELECT * FROM teams where lower(team_name) = lower(%s)", (team_name,))
         team = db_entities.Team(cursor.fetchone())
 
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM tiles where tile_name = %s", (tile_name,))
+        cursor.execute("SELECT * FROM tiles where lower(tile_name) = lower(%s)", (tile_name,))
         tile = db_entities.Tile(cursor.fetchone())
 
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM manual_tile_progress WHERE team_id = %s AND tile_id = %s",
                        (team.team_id, tile.tile_id,))
-        try:
-            return cursor.fetchone()[2]
-        except:
-            return 0
+
+        progress = 0
+        for x in cursor.fetchall():
+            progress += x[3]
+
+        return progress
 
 
 def get_manual_progress_by_tile_id_and_team_id(tile_id, team_id):

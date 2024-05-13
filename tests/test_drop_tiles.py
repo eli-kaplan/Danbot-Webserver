@@ -23,6 +23,17 @@ def app():
 def client(app):
     return app.test_client()
 
+def test_case_insensitivity(client):
+    database.reset_tables()
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_1.csv')
+
+
+    json_data = spoof_drop.item_spoof_json("DaNbIs", "CoIn PoUcH", 1)
+    result = dink.parse_loot(json_data, None)
+    assert len(database.get_drops_by_item_name_and_team_id("COiN pOuCh", 1)) > 0
+    assert result == True
+
 def test_relevant_drop_occurred(client):
     database.reset_tables()
     database.read_teams('test_csvs/default_team_1.csv')

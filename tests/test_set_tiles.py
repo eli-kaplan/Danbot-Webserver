@@ -23,6 +23,26 @@ def app():
 def client(app):
     return app.test_client()
 
+
+def test_case_insensitivity(client):
+    database.reset_tables()
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_2.csv')
+
+    json_data = spoof_drop.item_spoof_json("DanBis", "OdiUm 1", 1)
+    result = dink.parse_loot(json_data, None)
+    assert result == True
+
+    player = db_entities.Player(database.get_player_by_name("Danbis"))
+    assert round(player.tiles_completed, 2) == 0
+
+    partial_danbis = db_entities.PartialCompletion(database.get_partial_completions_by_player_id(player.player_id)[0])
+    assert round(partial_danbis.partial_completion, 2) == round(1/3, 2)
+
+    team = db_entities.Team(database.get_team_by_id(1))
+    assert team.team_points == 0
+
+
 def test_single_set_piece(client):
     database.reset_tables()
     database.read_teams('test_csvs/default_team_1.csv')

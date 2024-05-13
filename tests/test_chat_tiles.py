@@ -18,6 +18,20 @@ def app():
 def client(app):
     return app.test_client()
 
+def test_single_chat_case_insensitivity(client):
+    database.reset_tables()
+    database.read_teams('test_csvs/default_team_1.csv')
+    database.read_tiles('test_csvs/default_tiles_6.csv')
+
+    json_data = spoof_chat.spoof_chat("Danbis", "YoU aRe ViCtOrIoUs!")
+    result = dink.parse_chat(json_data, None)
+    assert result == True
+
+    player = database.get_player_by_name("Danbis")
+    player = db_entities.Player(player)
+    partial_player = db_entities.PartialCompletion(database.get_partial_completions_by_player_id(player.player_id)[0])
+    assert round(partial_player.partial_completion, 2) == 1/5
+
 def test_single_chat(client):
     database.reset_tables()
     database.read_teams('test_csvs/default_team_1.csv')
