@@ -91,9 +91,11 @@ def team(team_name):
         partial_tiles += partial_completion.partial_completion
         player_partials[partial_completion.player_id] = player_partials[partial_completion.player_id] + partial_completion.partial_completion
 
+    for key, value in player_partials.items():
+        player_partials[key] = round(value, 2)
+
     for player in players:
         player.tiles_completed = round(player.tiles_completed, 2)
-        player_partials[player.player_id] = round(player_partials[player.player_id], 2)
 
     relevant_drops = []
     for relevant_drop in database.get_relevant_drop_by_team_id(team.team_id):
