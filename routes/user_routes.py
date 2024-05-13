@@ -97,6 +97,8 @@ def team(team_name):
     for player in players:
         player.tiles_completed = round(player.tiles_completed, 2)
 
+    partial_tiles = round(partial_tiles, 2)
+
     relevant_drops = []
     for relevant_drop in database.get_relevant_drop_by_team_id(team.team_id):
         relevant_drop = db_entities.RelevantDrop(relevant_drop)
