@@ -514,12 +514,12 @@ def parse_chat(data, img_file):
         return False
     team = db_entities.Team(team)
 
-    database.add_chats(team.team_id, tile.tile_id, chat_text)
     tile_completions = len(database.get_completed_tiles_by_team_id_and_tile_id(team.team_id, tile.tile_id))
 
     if tile_completions >= tile.tile_repetition:
         return False
 
+    database.add_chats(player.player_id, team.team_id, tile.tile_id, chat_text)
     database.add_player_partial_completions(player.player_id, team.team_id, tile.tile_id, int(tile.tile_trigger_weights[0]) / tile.tile_triggers_required)
 
     total_chats = len(database.get_chats_by_team_id_and_tile_id(team.team_id, tile.tile_id))
@@ -531,6 +531,8 @@ def parse_chat(data, img_file):
             partial_completion = db_entities.PartialCompletion(partial_completion)
             database.remove_partial_completion(partial_completion.partial_completion_pk)
             database.add_player_tile_completions(partial_completion.player_id, partial_completion.partial_completion)
+            if chat_text == "You are victorious!":
+                database.add_relevant_drop(team.team_id, player.player_id, tile.tile_id, tile.tile_name, "LMS Win", player.player_name)
     else:
         send_webhook(team.team_webhook, title=f"{tile.tile_name} progress!", description=f"Thanks to {player.player_name}, you are {total_chats % tile.tile_triggers_required}/{tile.tile_triggers_required} from completing this tile", color=16776960, image=img_file )
 

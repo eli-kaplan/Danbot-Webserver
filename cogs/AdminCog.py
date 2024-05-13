@@ -14,6 +14,26 @@ class AdminCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @discord.slash_command(name="change_player_team", description="Moves a player from one team to another")
+    @default_permissions(manage_webhooks=True)
+    @guild_only()
+    async def change_player_team(self, ctx:discord.ApplicationContext,
+                                 player_name: discord.Option(str, "What is the players username?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, player_names())),
+                                 new_team_name: discord.Option(str, "What team should this player be on?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names()))):
+        await ctx.defer()
+        player = database.get_player_by_name(player_name)
+        if player is None:
+            ctx.respond("Unable to find given player name")
+        player = db_entities.Player(player)
+
+        new_team = database.get_team_by_name(new_team_name)
+        if new_team is None:
+            ctx.respond("Unable to find given team name")
+        team = db_entities.Team(new_team)
+
+        database.change_player_team(player.player_id, team.team_id)
+        await ctx.respond(f"Succesfully moved all data from {player.player_name} to {team.team_name}")
+
     @discord.slash_command(name="award_drop", description="Manually award a drop")
     @default_permissions(manage_webhooks=True)
     @guild_only()

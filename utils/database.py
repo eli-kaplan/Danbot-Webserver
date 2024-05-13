@@ -456,19 +456,19 @@ def add_manual_progress(tile_name, player_name, progress):
         tile = db_entities.Tile(cursor.fetchone())
 
         # Check if the row already exists
-        cursor.execute("SELECT * FROM manual_tile_progress WHERE team_id = %s AND tile_id = %s",
-                       (team.team_id, tile.tile_id))
+        cursor.execute("SELECT * FROM manual_tile_progress WHERE team_id = %s AND tile_id = %s AND player_id = %s",
+                       (team.team_id, tile.tile_id, player.player_id))
         row = cursor.fetchone()
 
         if row is not None:
             # If the row exists, update the kills
             cursor.execute(
-                "UPDATE manual_tile_progress SET progress = progress + %s WHERE team_id = %s AND tile_id = %s",
-                (progress, team.team_id, tile.tile_id))
+                "UPDATE manual_tile_progress SET progress = progress + %s WHERE team_id = %s AND tile_id = %s AND player_id = %s",
+                (progress, team.team_id, tile.tile_id, player.player_id))
         else:
             # If the row doesn't exist, insert a new row
-            cursor.execute("INSERT INTO manual_tile_progress (tile_id, team_id, progress) VALUES (%s, %s, %s)",
-                           (tile.tile_id, team.team_id, progress))
+            cursor.execute("INSERT INTO manual_tile_progress (tile_id, team_id, progress, player_id) VALUES (%s, %s, %s, %s)",
+                           (tile.tile_id, team.team_id, progress, player.player_id))
 
 
 def get_manual_progress_by_tile_name_and_team_name(tile_name, team_name):
@@ -519,10 +519,10 @@ def delete_request(request_id):
         cursor.execute("DELETE FROM requests WHERE request_id = %s", (request_id,))
 
 
-def add_chats(team_id, tile_id, chat):
+def add_chats(player_id, team_id, tile_id, chat):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO chats (team_id, tile_id, chat) VALUES (%s, %s, %s)", (team_id, tile_id, chat))
+        cursor.execute("INSERT INTO chats (player_id, team_id, tile_id, chat) VALUES (%s, %s, %s, %s)", (player_id, team_id, tile_id, chat))
 
 
 def get_chats(chats_pk):
@@ -584,6 +584,18 @@ def delete_relevant_drop(relevant_drops_pk):
         cursor.execute("DELETE FROM relevant_drops WHERE relevant_drops_pk = %s", (relevant_drops_pk,))
         conn.commit()
 
+
+def change_player_team(player_id, new_team_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE chats SET team_id = %s WHERE player_id = %s", (new_team_id, player_id,))
+        cursor.execute("UPDATE drops SET team_id = %s WHERE player_id = %s", (new_team_id, player_id,))
+        cursor.execute("UPDATE killcount SET team_id = %s WHERE player_id = %s", (new_team_id, player_id,))
+        cursor.execute("UPDATE partial_completions SET team_id = %s WHERE player_id = %s", (new_team_id, player_id,))
+        cursor.execute("UPDATE relevant_drops SET team_id = %s WHERE player_id = %s", (new_team_id, player_id,))
+        cursor.execute("UPDATE players SET team_id = %s WHERE player_id = %s", (new_team_id, player_id,))
+        cursor.execute("UPDATE manual_tile_progress SET team_id = %s WHERE player_id = %s", (new_team_id, player_id,))
+        conn.commit()
 
 
 def reset_tables():
@@ -689,12 +701,14 @@ def reset_tables():
 
     cursor.execute('''
             CREATE TABLE manual_tile_progress (
+                player_id integer,
                 team_id integer,
                 tile_id integer,
                 progress real,
                 manual_tile_progress_pk SERIAL PRIMARY KEY,
                 FOREIGN KEY (team_id) REFERENCES teams(team_id),
-                FOREIGN KEY (tile_id) REFERENCES tiles(tile_id)
+                FOREIGN KEY (tile_id) REFERENCES tiles(tile_id),
+                FOREIGN KEY (player_id) REFERENCES players(player_id)
             )
             ''')
 
@@ -708,11 +722,13 @@ def reset_tables():
 
     cursor.execute('''
             CREATE TABLE chats (
+                player_id integer,
                 team_id integer,
                 tile_id integer,
                 chat text,
                 chats_pk SERIAL PRIMARY KEY,
                 FOREIGN KEY(team_id) REFERENCES teams(team_id),
+                FOREIGN KEY(player_id) REFERENCES players(player_id),
                 FOREIGN KEY(tile_id) REFERENCES tiles(tile_id)                
             )
             ''')
