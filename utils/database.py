@@ -318,7 +318,10 @@ def get_tile_by_drop(drop_name):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM drop_whitelist where drop_name = %s", (drop_name,))
-        tile_id = cursor.fetchone()[1]
+        try:
+            tile_id = cursor.fetchone()[1]
+        except:
+            return None
         cursor.execute("SELECT * FROM tiles where tile_id = %s", (tile_id,))
         return cursor.fetchone()
 
@@ -327,7 +330,6 @@ def get_tile_by_id(tile_id):
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM tiles where tile_id = %s", (tile_id,))
         return cursor.fetchone()
-    return None
 
 def get_tile_by_name(tile_name):
     with connect() as conn:

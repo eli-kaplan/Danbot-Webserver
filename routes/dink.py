@@ -56,11 +56,37 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
         return False
     team = db_entities.Team(team)
 
+
     # Check if discordUser exists
     if 'discordUser' not in data:
         discordId = "None"
     else:
         discordId = data['discordUser']['id']
+    source = data['extra']['source']
+
+    player = database.get_player_by_name(rsn)
+    if player is not None:
+        player = Player(player)
+        player_id = player.player_id
+        team_id = player.team_id
+
+        if player.discord_id == 0:
+            database.attach_player_discord(player_id, discordId)
+    else:
+        print("Alt detected: " + rsn)
+        database.add_alt_account(rsn, discordId)
+        player = database.get_player_by_name(rsn)
+        if player is None:
+            print("Player unknown: " + rsn)
+            # Player is not a part of the bingo / we don't know who owns this account
+            return False
+        player = Player(player)
+        player_id = player.player_id
+        team_id = player.team_id
+        team = Team(database.get_team_by_id(team_id))
+        print(f"Attached alt to {player.player_name} and placed them on team {team.team_name}")
+        send_webhook(team.team_webhook, f"Alt detected! I've added {rsn} to your team.", "If this is a mistake get in contact with Admin immediately.", color=16711680, image=None)
+
 
     source = data['extra']['source']
     # Get item source
@@ -538,37 +564,6 @@ def parse_leagues_task(data) -> dict[str, list[str]]:
 def parse_login(data) -> dict[str, list[str]]:
     rsn = data['playerName']
     print(f"LOGIN - {rsn}")
-
-    # Check if discordUser exists
-    if 'discordUser' not in data:
-        discordId = "None"
-    else:
-        discordId = data['discordUser']['id']
-    source = data['extra']['source']
-
-    player = database.get_player_by_name(rsn)
-    if player is not None:
-        player = Player(player)
-        player_id = player.player_id
-        team_id = player.team_id
-
-        if player.discord_id == 0:
-            database.attach_player_discord(player_id, discordId)
-    else:
-        # Todo send discord alert that an alt was detected and we've linked the account
-        print("Alt detected: " + rsn)
-        database.add_alt_account(rsn, discordId)
-        player = database.get_player_by_name(rsn)
-        if player is None:
-            print("Player unknown: " + rsn)
-            # Player is not a part of the bingo / we don't know who owns this account
-            return False
-        player = Player(player)
-        player_id = player.player_id
-        team_id = player.team_id
-        team = Team(database.get_team_by_id(team_id))
-        print(f"Attached alt to {player.player_name} and placed them on team {team.team_name}")
-        send_webhook(team.team_webhook, f"Alt detected! I've added {rsn} to your team.", "If this is a mistake get in contact with Admin immediately.", color=16711680, image=None)
 
     return True
 
