@@ -56,38 +56,6 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
         return False
     team = db_entities.Team(team)
 
-
-    # Check if discordUser exists
-    if 'discordUser' not in data:
-        discordId = "None"
-    else:
-        discordId = data['discordUser']['id']
-    source = data['extra']['source']
-
-    player = database.get_player_by_name(rsn)
-    if player is not None:
-        player = Player(player)
-        player_id = player.player_id
-        team_id = player.team_id
-
-        if player.discord_id == 0:
-            database.attach_player_discord(player_id, discordId)
-    else:
-        print("Alt detected: " + rsn)
-        database.add_alt_account(rsn, discordId)
-        player = database.get_player_by_name(rsn)
-        if player is None:
-            print("Player unknown: " + rsn)
-            # Player is not a part of the bingo / we don't know who owns this account
-            return False
-        player = Player(player)
-        player_id = player.player_id
-        team_id = player.team_id
-        team = Team(database.get_team_by_id(team_id))
-        print(f"Attached alt to {player.player_name} and placed them on team {team.team_name}")
-        send_webhook(team.team_webhook, f"Alt detected! I've added {rsn} to your team.", "If this is a mistake get in contact with Admin immediately.", color=16711680, image=None)
-
-
     source = data['extra']['source']
     # Get item source
     itemSource = data['extra']['source']
@@ -107,7 +75,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
 
         # Add the item to the database
         print(f"LOOT: {player.player_name} - {itemName} x {itemQuantity} ({itemQuantity * itemPrice})")
-        database.add_drop(team.team_id, player.player_id, rsn, itemName, item_each, itemQuantity, itemSource, discordId)
+        database.add_drop(team.team_id, player.player_id, rsn, itemName, item_each, itemQuantity, itemSource)
 
         # If the item is relevant
         if database.get_drop_whitelist_by_item_name(itemName) is not None:
@@ -269,11 +237,6 @@ def parse_clue(data) -> dict[str, list[str]]:
     # print data prettyfied
 
     rsn = data['playerName']
-    # Check if discordUser exists
-    if 'discordUser' not in data:
-        discordId = "None"
-    else:
-        discordId = data['discordUser']['id']
     clueType = data['extra']['clueType']
     items = data['extra']['items']
 
@@ -290,12 +253,6 @@ def parse_clue(data) -> dict[str, list[str]]:
         # Convert name to lowercase
         itemNameLower = itemName.lower()
 
-        # # Check if item is in the item list
-        # threadIds = submit(rsn, discordId, clueType, itemName, itemPrice, itemQuantity, "CLUE")
-        # for threadId in threadIds:
-        #     if threadId not in screenshotItems:
-        #         screenshotItems[threadId] = []
-        #     screenshotItems[threadId].append(itemName)
 
     return screenshotItems
 
@@ -306,34 +263,17 @@ def parse_kill_count(data, img_file) -> dict[str, list[str]]:
     boss_name = data['extra']['boss']
     print(f"KILLCOUNT: {rsn} - {boss_name}")
 
-    # Check if discordUser exists
-    if 'discordUser' not in data:
-        discordId = "None"
-    else:
-        discordId = data['discordUser']['id']
-
-
-    # Handle discord attachment
     player = database.get_player_by_name(rsn)
-    if player is not None:
-        player = Player(player)
-        player_id = player.player_id
-        team_id = player.team_id
+    if player is None:
+        return False
+    player = db_entities.Player(player)
+    player_id = player.player_id
 
-        if player.discord_id == 0:
-            database.attach_player_discord(player_id, discordId)
-    else:
-        # Todo send discord alert that an alt was detected and we've linked the account
-        print("Alt detected: " + rsn)
-        database.add_alt_account(rsn, discordId)
-        player = database.get_player_by_name(rsn)
-        if player is None:
-            print("Player unknown: " + rsn)
-            # Player is not a part of the bingo / we don't know who owns this account
-            return False
-        player = Player(player)
-        player_id = player.player_id
-        team_id = player.team_id
+    team = database.get_team_by_id(player.team_id)
+    if team is None:
+        return False
+    team = db_entities.Team(team)
+    team_id = team.team_id
 
     database.add_killcount(player_id, team_id, boss_name, 1)
     if database.get_drop_whitelist_by_item_name(boss_name) is not None:

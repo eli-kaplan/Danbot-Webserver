@@ -68,12 +68,12 @@ def get_team_by_name(team_name):
 
 
 # Functions for 'players' table
-def add_player(player_name, deaths, gp_gained, tiles_completed, team_id, discord_id, pet_count):
+def add_player(player_name, deaths, gp_gained, tiles_completed, team_id, pet_count):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO players (player_name, deaths, gp_gained, tiles_completed, team_id, discord_id, pet_count) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-            (player_name, deaths, gp_gained, tiles_completed, team_id, discord_id, pet_count))
+            "INSERT INTO players (player_name, deaths, gp_gained, tiles_completed, team_id, pet_count) VALUES (%s, %s, %s, %s, %s, %s)",
+            (player_name, deaths, gp_gained, tiles_completed, team_id, pet_count))
 
 
 def add_death_by_playername(rsn):
@@ -108,24 +108,7 @@ def rename_player(old_player_name, new_player_name):
             '''
         cursor.execute(update_query, (new_player_name, old_player_name,))
 
-def attach_player_discord(player_id, discord_id):
-    with connect() as conn:
-        cursor = conn.cursor()
-        cursor.execute("UPDATE players SET discord_id = %s WHERE player_id = %s", (discord_id, player_id))
 
-
-def add_alt_account(player_name, discord_id):
-    with connect() as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM players where discord_id = %s", (discord_id,))
-        main_account = cursor.fetchone()
-        if main_account is None:
-            return
-        else:
-            main_account = Player(main_account)
-        cursor.execute(
-            "INSERT INTO players (player_name, deaths, gp_gained, tiles_completed, team_id, discord_id) VALUES (%s, %s, %s, %s, %s, %s)",
-            (player_name, 0, 0, 0, main_account.team_id, discord_id))
 
 
 def remove_player(player_id):
@@ -163,12 +146,12 @@ def get_player_by_id(player_id):
 
 
 # Functions for 'drops' table
-def add_drop(team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source, discord_id):
+def add_drop(team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO drops (team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source, discord_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-            (team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source, discord_id))
+            "INSERT INTO drops (team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source))
         cursor.execute("UPDATE Players SET gp_gained = gp_gained + %s WHERE player_id = %s",
                        (drop_value * drop_quantity, player_id))
 
@@ -635,7 +618,6 @@ def reset_tables():
                 gp_gained integer,
                 tiles_completed real,
                 team_id integer,
-                discord_id text,
                 pet_count integer,
                 FOREIGN KEY(team_id) REFERENCES teams(team_id)
             )
@@ -650,7 +632,6 @@ def reset_tables():
                 drop_value real,
                 drop_quantity integer,
                 drop_source text,
-                discord_id text,
                 drops_pk SERIAL PRIMARY KEY,
                 FOREIGN KEY(player_id) REFERENCES players(player_id),
                 FOREIGN KEY(team_id) REFERENCES teams(team_id)
@@ -816,7 +797,7 @@ def read_teams(file_name):
         for player in players:
             if player == "":
                 continue
-            add_player(player, 0, 0, 0, team_obj.team_id, 0, 0)
+            add_player(player, 0, 0, 0, team_obj.team_id, 0)
 
     return teams
 

@@ -6,8 +6,7 @@ class Player:
         self.gp_gained = player_tuple[3]
         self.tiles_completed = player_tuple[4]
         self.team_id = player_tuple[5]
-        self.discord_id = player_tuple[6]
-        self.pet_count = player_tuple[7]
+        self.pet_count = player_tuple[6]
 
 
 class Team:
@@ -27,7 +26,6 @@ class Drop:
         self.drop_value = drop_tuple[4]
         self.drop_quantity = drop_tuple[5]
         self.drop_source = drop_tuple[6]
-        self.discord_id = drop_tuple[7]
 
 
 class Killcount:
