@@ -65,36 +65,36 @@
         <h2>Clan Gains</h2>
         <table>
             <tr>
+                <th>Total Tiles</th>
                 <th>Total Gold</th>
                 <th>Total Deaths</th>
                 <th>Total Pets</th>
-                <th>Total Tiles</th>
             </tr>
             <tr>
-                <td>{{ total_gold }}</td>
-                <td>{{ total_deaths }} deaths</td>
-                <td>{{ total_pets }} pets</td>
                 <td>
                     {{ total_tiles }} tiles
                     {% if partial_tiles > 0 %}
                     ({{ partial_tiles }} partials)
                     {% endif %}
                 </td>
+                <td>{{ total_gold }}</td>
+                <td>{{ total_deaths }} deaths</td>
+                <td>{{ total_pets }} pets</td>
             </tr>
         </table>
         <h2>Honorable Mentions</h2>
         <table>
             <tr>
+                <th>MVP</th>
+                <th>Top G</th>
                 <th>Clan Thrall</th>
                 <th>Pet Collector</th>
-                <th>Top G</th>
-                <th>MVP</th>
             </tr>
             <tr>
+                <td><a href="/user/player/{{ most_tiles_player.player_name }}">{{ most_tiles_player.player_name }}</a> with {{ most_tiles_player.tiles_completed }} tiles </td>
+                <td><a href="/user/player/{{ most_gold_player.player_name }}">{{ most_gold_player.player_name }}</a> with {{ most_gold_player.gp_gained }} gold </td>
                 <td><a href="/user/player/{{ most_deaths_player.player_name }}">{{ most_deaths_player.player_name }}</a> with {{ most_deaths_player.deaths }} deaths</td>
                 <td><a href="/user/player/{{ most_pets_player.player_name}}">{{ most_pets_player.player_name }}</a> with {{ most_pets_player.pet_count }} pets </td>
-                <td><a href="/user/player/{{ most_gold_player.player_name }}">{{ most_gold_player.player_name }}</a> with {{ most_gold_player.gp_gained }} gold </td>
-                <td><a href="/user/player/{{ most_tiles_player.player_name }}">{{ most_tiles_player.player_name }}</a> with {{ most_tiles_player.tiles_completed }} tiles </td>
             </tr>
         </table>
         <h2>Player Ranks</h2>
