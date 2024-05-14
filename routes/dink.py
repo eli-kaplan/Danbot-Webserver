@@ -163,7 +163,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                 # Each set is separated by a '/' character
                 for set in tile.tile_triggers.split('/'):
                     # If the item belongs to the current set, add 1 / the set length to the players tile completions
-                    if itemName in set:
+                    if itemName.lower() in set.lower():
                         database.add_player_partial_completions(player.player_id, team.team_id, tile.tile_id, 1 / len(set.split(',')))
 
                     # If every item from the set is found in the db is_complete will remain True
@@ -286,9 +286,9 @@ def parse_kill_count(data, img_file) -> dict[str, list[str]]:
 
         killcount_weights = defaultdict(int)
         for i in range(len(tile.tile_trigger_weights)):
-            killcount_weights[tile.tile_triggers.split(',')[i].strip()] = int(tile.tile_trigger_weights[i])
+            killcount_weights[tile.tile_triggers.split(',')[i].strip().lower()] = int(tile.tile_trigger_weights[i])
 
-        database.add_player_partial_completions(player_id, team.team_id, tile.tile_id, killcount_weights[boss_name] / tile.tile_triggers_required)
+        database.add_player_partial_completions(player_id, team.team_id, tile.tile_id, killcount_weights[boss_name.lower()] / tile.tile_triggers_required)
         team_killcount = database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id)
         total_killcount = []
         for boss_trigger in tile.tile_triggers.split(','):
@@ -296,7 +296,7 @@ def parse_kill_count(data, img_file) -> dict[str, list[str]]:
             for killcount in killcounts:
                 killcount = db_entities.Killcount(killcount)
                 total_killcount.append(killcount)
-                team_killcount = team_killcount + (killcount.kills * killcount_weights[killcount.boss_name])
+                team_killcount = team_killcount + (killcount.kills * killcount_weights[killcount.boss_name.lower()])
 
         if team_killcount >= tile.tile_triggers_required * (tile_completion_count + 1):
             database.add_completed_tile(tile.tile_id, team_id)
@@ -324,7 +324,7 @@ def parse_kill_count(data, img_file) -> dict[str, list[str]]:
                                                             partial_completion.partial_completion - (1 - current_trigger_rewards))
                 else:
                     current_trigger_rewards += partial_completion.partial_completion
-        elif boss_name == "TzTok-Jad" or boss_name == "TzTok-Zuk" or boss_name == "Sol-Heredit":
+        elif boss_name.lower() == "TzTok-Jad".lower() or boss_name.lower() == "TzTok-Zuk".lower() or boss_name.lower() == "Sol-Heredit".lower():
             send_webhook(team.team_webhook, f"{player.player_name} killed {boss_name}! You are {(team_killcount % tile.tile_triggers_required)}/{tile.tile_triggers_required} from completing {tile.tile_name}",
                          description="", color=16776960, image=img_file)
             database.add_relevant_drop(team.team_id, player.player_id, tile.tile_id, tile.tile_name, boss_name, player.player_name)

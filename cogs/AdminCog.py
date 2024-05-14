@@ -23,12 +23,14 @@ class AdminCog(commands.Cog):
         await ctx.defer()
         player = database.get_player_by_name(player_name)
         if player is None:
-            ctx.respond("Unable to find given player name")
+            await ctx.respond(f"Unable to find player, {player_name}")
+            return False
         player = db_entities.Player(player)
 
         new_team = database.get_team_by_name(new_team_name)
         if new_team is None:
-            ctx.respond("Unable to find given team name")
+            await ctx.respond(f"Unable to find team, {new_team_name}")
+            return False
         team = db_entities.Team(new_team)
 
         database.change_player_team(player.player_id, team.team_id)
@@ -43,11 +45,18 @@ class AdminCog(commands.Cog):
                          quantity: discord.Option(int, "How many drops did they get?", default=1),
                          drop_value: discord.Option(int, "How much is each drop worth?", default=0)):
         await ctx.defer()
-        json_data = spoof_drop.award_drop_json(player_name, drop_name, drop_value, quantity)
+
+        player = database.get_player_by_name(player_name)
+        if player is None:
+            await ctx.respond(f"Unable to find player, {player_name}")
+            return False
+        player = db_entities.Player(player)
+
+        json_data = spoof_drop.award_drop_json(player.player_name, drop_name, drop_value, quantity)
         result = dink.parse_loot(json_data, None)
 
         if result:
-            await ctx.respond(f"Successfully awarded {player_name} with {quantity} x {drop_name} at {scapify.int_to_gp(drop_value)} each")
+            await ctx.respond(f"Successfully awarded {player.player_name} with {quantity} x {drop_name} at {scapify.int_to_gp(drop_value)} each")
         else:
             await ctx.respond(f"Something went wrong. Check my console or contact Danbis before attempting again.")
 
@@ -59,7 +68,11 @@ class AdminCog(commands.Cog):
                               team_name: discord.Option(str, "What team are you awarding points to?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names())),
                               points: discord.Option(int, "How many points would you like to award?")):
         await ctx.defer()
-        team = db_entities.Team(database.get_team_by_name(team_name))
+        team = database.get_team_by_name(team_name)
+        if team is None:
+            await ctx.respond(f"Unable to find team, {team_name}")
+            return False
+        team = db_entities.Team(team)
         database.add_team_points(team.team_id, points)
         await ctx.respond(f"Successfully awarded {team.team_name} {points} points!")
 
@@ -71,7 +84,11 @@ class AdminCog(commands.Cog):
                               team_name: discord.Option(str, "What team are you removing points from?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names())),
                               points: discord.Option(int, "How many points would you like to remove?")):
         await ctx.defer()
-        team = db_entities.Team(database.get_team_by_name(team_name))
+        team = database.get_team_by_name(team_name)
+        if team is None:
+            await ctx.respond(f"Unable to find team, {team_name}")
+            return False
+        team = db_entities.Team(team)
         database.add_team_points(team.team_id, -points)
         await ctx.respond(f"Successfully removed {team.team_name} {points} points!")
 
@@ -83,8 +100,16 @@ class AdminCog(commands.Cog):
                                   team_name: discord.Option(str, "What team is completing a tile?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names())),
                                   tile_name: discord.Option(str, "What tile are they completing", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, tile_names()))):
         await ctx.defer()
-        team = db_entities.Team(database.get_team_by_name(team_name))
-        tile = db_entities.Tile(database.get_tile_by_name(tile_name))
+        team = database.get_team_by_name(team_name)
+        if team is None:
+            await ctx.respond(f"Unable to find team, {team_name}")
+            return False
+        team = db_entities.Team(team)
+        tile = database.get_tile_by_name(tile_name)
+        if tile is None:
+            await ctx.respond(f"Unable to find tile, {tile_name}")
+            return False
+        tile = db_entities.Tile(tile)
         database.add_completed_tile(tile.tile_id, team.team_id)
         await ctx.respond(f"I've added a tile completion for {team.team_name} on tile {tile.tile_name}. "
                           f"NOTE: I did not add any points during this operation! Please use /add_team_points if required")
@@ -97,8 +122,16 @@ class AdminCog(commands.Cog):
                                   team_name: discord.Option(str, "What team is completing a tile?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names())),
                                   tile_name: discord.Option(str, "What tile are they completing", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, tile_names()))):
         await ctx.defer()
-        team = db_entities.Team(database.get_team_by_name(team_name))
-        tile = db_entities.Tile(database.get_tile_by_name(tile_name))
+        team = database.get_team_by_name(team_name)
+        if team is None:
+            await ctx.respond(f"Unable to find team, {team_name}")
+            return False
+        team = db_entities.Team(team)
+        tile = database.get_tile_by_name(tile_name)
+        if tile is None:
+            await ctx.respond(f"Unable to find tile, {tile_name}")
+            return False
+        tile = db_entities.Tile(tile)
         database.remove_completed_tile(tile.tile_id, team.team_id)
         await ctx.respond(f"I've remove a tile completion for {team.team_name} on tile {tile.tile_name}."
                           f"NOTE: I did not remove any points during this operation! Please use /remove_team_points if required")
@@ -110,7 +143,7 @@ class AdminCog(commands.Cog):
     async def run_query(self, ctx:discord.ApplicationContext,
                         query: discord.Option(str)):
         await ctx.defer()
-        with sqlite3.connect('my_database.db') as conn:
+        with database.connect() as conn:
             cursor = conn.cursor()
             cursor.execute(query)
             await ctx.respond(f"Executed query: ```{query}```\nResponse data: ```{cursor.fetchall()}```")
@@ -124,10 +157,22 @@ class AdminCog(commands.Cog):
                                      tile_name: discord.Option(str, "What is the tile_name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, tile_names())),
                                      progress: discord.Option(int, "What trigger value would you like to remove?")):
         await ctx.defer()
-        database.add_manual_progress(tile_name, player_name, -progress)
-        tile = db_entities.Tile(database.get_tile_by_name(tile_name))
-        player = db_entities.Player(database.get_player_by_name(player_name))
+
+        tile = database.get_tile_by_name(tile_name)
+        if tile is None:
+            await ctx.respond(f"Unable to find tile, {tile_name}")
+            return False
+        tile = db_entities.Tile(tile)
+
+        player = database.get_player_by_name(player_name)
+        if player is None:
+            await ctx.respond(f"Unable to find player, {player_name}")
+            return False
+        player = db_entities.Player(player)
+
         team = db_entities.Team(database.get_team_by_id(player.team_id))
+
+        database.add_manual_progress(tile.tile_name, player.player_name, -progress)
         database.add_player_tile_completions(player.player_id, -progress / tile.tile_triggers_required)
         await ctx.respond(f"Successfully removed manual progress from {team.team_name} for tile {tile.tile_name}. I've also removed {progress/tile.tile_triggers_reuired} from {player.player_name}'s tile completions")
 
@@ -140,15 +185,27 @@ class AdminCog(commands.Cog):
                                     tile_name: discord.Option(str, "What is the tile_name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, tile_names())),
                                     progress: discord.Option(int, "What trigger value would you like to add?")):
         await ctx.defer()
-        database.add_manual_progress(tile_name, player_name, progress)
-        tile = db_entities.Tile(database.get_tile_by_name(tile_name))
-        player = db_entities.Player(database.get_player_by_name(player_name))
+
+        tile = database.get_tile_by_name(tile_name)
+        if tile is None:
+            await ctx.respond(f"Unable to find tile, {tile_name}")
+            return False
+        tile = db_entities.Tile(tile)
+
+        player = database.get_player_by_name(player_name)
+        if player is None:
+            await ctx.respond(f"Unable to find player, {player_name}")
+            return False
+        player = db_entities.Player(player)
         team = db_entities.Team(database.get_team_by_id(player.team_id))
+
         tile_completions = len(database.get_completed_tiles_by_team_id_and_tile_id(player.team_id, tile.tile_id))
         if tile_completions >= tile.tile_repetition:
             response = f"This tile has already been completed {tile.tile_repetition} times. There is no point in awarding more progress."
             ctx.respond(response)
             return
+
+        database.add_manual_progress(tile.tile_name, player.player_name, progress)
 
         database.add_player_partial_completions(player.player_id, team.team_id, tile.tile_id, progress / tile.tile_triggers_required)
         response = f"Successfully added {progress} trigger weight to {tile.tile_name} for {player.player_name}'s team. Additionally I've given {player.player_name} {round(progress/tile.tile_triggers_required, 2)} tile completions"
@@ -187,6 +244,13 @@ class AdminCog(commands.Cog):
                     old_team_name: discord.Option(str, "What is the old team name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names())),
                     new_team_name: discord.Option(str, "What is the new team name?")):
         await ctx.defer()
+
+        team = database.get_team_by_name(old_team_name)
+
+        if team is None:
+            await ctx.respond(f"Unable to find team, {old_team_name}")
+            return False
+
         database.rename_team(old_team_name, new_team_name)
         await ctx.respond(f"Updated {old_team_name}'s name to {new_team_name}")
 
@@ -198,5 +262,11 @@ class AdminCog(commands.Cog):
                     old_player_name: discord.Option(str, "What is the old player name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, player_names())),
                     new_player_name: discord.Option(str, "What is the new player name?")):
         await ctx.defer()
+
+        player = database.get_player_by_name(old_player_name)
+        if player is None:
+            await ctx.respond(f"Unable to find player, {old_player_name}")
+            return False
+
         database.rename_player(old_player_name, new_player_name)
         await ctx.respond(f"Updated {old_player_name}'s name to {new_player_name}")

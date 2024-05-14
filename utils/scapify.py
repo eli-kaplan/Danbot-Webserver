@@ -6,4 +6,4 @@ def int_to_gp(num):
     elif num >= 10 ** 3:  # Thousands
         return f"{num / 10 ** 3:.2f}K"
     else:
-        return str(num)
+        return str(num + " gp")
