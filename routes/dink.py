@@ -351,8 +351,9 @@ def parse_pet(data, img_file) -> dict[str, list[str]]:
     pet = data['extra']['petName']
     print(f"PET: {rsn} - {pet}")
 
-    tile = database.get_tile_by_name("Pet")
-    tile = db_entities.Tile(tile)
+    PET_POINTS = 0.5
+    black_listed_pets = []
+
     player = database.get_player_by_name(rsn)
     if player is not None:
         player = db_entities.Player(player)
@@ -363,13 +364,12 @@ def parse_pet(data, img_file) -> dict[str, list[str]]:
     team = db_entities.Team(team)
     database.add_pet_by_playername(rsn)
 
-    if pet in tile.tile_triggers:
+    if pet in black_listed_pets:
         send_webhook(team.team_webhook, f"{player.player_name} is being followed by {pet}!", description="Too bad its not worth any points....", color=16776960, image=img_file)
     else:
-        database.add_player_tile_completions(player.player_id, 0.5)
-        database.add_team_points(team.team_id, tile.tile_points)
-        database.add_completed_tile(tile.tile_id, team.team_id)
-        send_webhook(team.team_webhook, f"{player.player_name} is being followed by {pet}!", description=f"{team.team_name} has been awarded {tile.tile_points} points!", color=65280, image=img_file)
+        database.add_player_tile_completions(player.player_id, 1)
+        database.add_team_points(team.team_id, PET_POINTS)
+        send_webhook(team.team_webhook, f"{player.player_name} is being followed by {pet}!", description=f"{team.team_name} has been awarded {PET_POINTS} points!", color=65280, image=img_file)
 
     return True
 
