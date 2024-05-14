@@ -152,16 +152,10 @@ def player(player_name):
         killcount.append(kc)
     killcount = sorted(killcount, key=lambda kc: kc.kills, reverse=True)
 
-    player_partials = defaultdict(int)
     partial_completions = 0
     for partial_completion in database.get_partial_completions_by_player_id(player.player_id):
         partial_completion = db_entities.PartialCompletion(partial_completion)
         partial_completions += partial_completion.partial_completion
-        player_partials[partial_completion.player_id] = player_partials[
-                                                            partial_completion.player_id] + partial_completion.partial_completion
-
-    for key, value in player_partials.items():
-        player_partials[key] = round(value, 2)
     player.tiles_completed = round(player.tiles_completed, 2)
 
     relevant_drops = []
@@ -171,7 +165,7 @@ def player(player_name):
     if len(relevant_drops) > 0:
         relevant_drops = sorted(relevant_drops, key=lambda relevant_drop: relevant_drop.tile_name, reverse=True)
 
-    return render_template('user_templates/player.html', player=player, drops=drops, killcount=killcount, team=team, playernames=autocomplete.player_names(), partial_completions=round(partial_completions, 2), relevant_drops=relevant_drops, player_partials=player_partials)
+    return render_template('user_templates/player.html', player=player, drops=drops, killcount=killcount, team=team, playernames=autocomplete.player_names(), partial_completions=round(partial_completions, 2), relevant_drops=relevant_drops)
 
 
 @user_routes.route('/leaderboard', methods=['GET'])
@@ -225,15 +219,20 @@ def leaderboard():
     teams = sorted(teams, key=lambda team: team.team_points, reverse=True)
 
     team_partial_tiles = defaultdict(int)
+    player_partials = defaultdict(int)
     partial_tiles = 0
     for team in teams:
         for partial_tile in database.get_partial_completions_by_team_id(team.team_id):
             partial_tile = db_entities.PartialCompletion(partial_tile)
             team_partial_tiles[team.team_id] = team_partial_tiles[team.team_id] + partial_tile.partial_completion
             partial_tiles = partial_tiles + partial_tile.partial_completion
+            player_partials[partial_tile.player_id] = player_partials[
+                                                                partial_tile.player_id] + partial_tile.partial_completion
     partial_tiles = round(partial_tiles, 2)
     for key, value in team_partial_tiles.items():
         team_partial_tiles[key] = round(value, 2)
+    for key, value in player_partials.items():
+        player_partials[key] = round(value, 2)
 
 
     partial_tiles = round(partial_tiles, 2)
@@ -242,4 +241,4 @@ def leaderboard():
                            most_gold_player=most_gold_player, most_pets_player=most_pets_player,
                            most_deaths_player=most_deaths_player,
                            total_pets=total_pets, total_tiles=total_tiles, total_gold=scapify.int_to_gp(total_gold),
-                           total_deaths=total_deaths, partial_tiles=partial_tiles, team_partial_tiles=team_partial_tiles)
+                           total_deaths=total_deaths, partial_tiles=partial_tiles, team_partial_tiles=team_partial_tiles, player_partials=player_partials)
