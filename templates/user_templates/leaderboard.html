@@ -114,7 +114,7 @@
                 <td>{{ player.deaths }}</td>
                 <td>{{ player.pet_count }}</td>
                 <td>{{ player.gp_gained }}</td>
-                <td>{{ player.tiles_completed }}</td>
+                <td>{{ player.tiles_completed }} {% if player_partials[player.player_id] > 0 %}({{ player_partials[player.player_id] }}) {% endif %}</td>
             </tr>
             {% endfor %}
         </table>
