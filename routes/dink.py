@@ -232,29 +232,12 @@ def parse_quest(data) -> dict[str, list[str]]:
 
 
 # function to parse clue data
-def parse_clue(data) -> dict[str, list[str]]:
-    screenshotItems: dict[str, list[str]] = {}
-    # print data prettyfied
-
+def parse_clue(data):
     rsn = data['playerName']
     clueType = data['extra']['clueType']
-    items = data['extra']['items']
 
-    for item in items:
-        # Get item name
-        itemName = item['name']
-        # Get item price
-        itemPrice = item['priceEach']
-        # Get item quantity
-        itemQuantity = item['quantity']
-        # Get item total
-        itemTotal = item['priceEach'] * item['quantity']
-
-        # Convert name to lowercase
-        itemNameLower = itemName.lower()
-
-
-    return screenshotItems
+    print(f"CLUE: {rsn} - {clueType}")
+    return True
 
 
 # function to parse kill count data
