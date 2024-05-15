@@ -9,7 +9,6 @@ from utils.spoofed_jsons import spoof_drop
 from utils.autocomplete import *
 from utils.send_webhook import send_webhook
 
-
 class AdminCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -270,3 +269,47 @@ class AdminCog(commands.Cog):
 
         database.rename_player(old_player_name, new_player_name)
         await ctx.respond(f"Updated {old_player_name}'s name to {new_player_name}")
+
+    @discord.slash_command(name="rename_drop", description="Renames a drop if you input an incorrect trigger")
+    @default_permissions(manage_webhooks=True)
+    @guild_only()
+    async def rename_drop(self,
+                          ctx: discord.ApplicationContext,
+                          old_drop_name: discord.Option(str, "What is the incorrect drop name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, drop_names())),
+                          new_drop_name: discord.Option(str, "What is the new drop name?")):
+        await ctx.defer()
+
+        tile = database.get_tile_by_drop(old_drop_name)
+        if tile is None:
+            await ctx.respond(f"Unable to find drop, {old_drop_name}")
+            return False
+        tile[4] = tile[4].replace(old_drop_name, new_drop_name)
+        tile = db_entities.Tile(tile)
+
+        database.update_drop_whitelist_name(old_drop_name, new_drop_name)
+        database.update_tile_trigger(tile.tile_id, tile.tile_triggers)
+
+    @discord.slash_command(name="replace_trigger", description="Replaces a trigger if you input the trigger incorrectly")
+    @default_permissions(manage_webhooks=True)
+    @guild_only()
+    async def replace_trigger(self,
+                          ctx: discord.ApplicationContext,
+                          tile_name: discord.Option(str, "What is the tile name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, tile_names())),
+                          new_trigger: discord.Option(str, "What is the new trigger?")):
+        await ctx.defer()
+
+        tile = database.get_tile_by_name(tile_name)
+        if tile is None:
+            await ctx.respond(f"Unable to find tile, {tile_name}")
+            return False
+        tile[4] = new_trigger
+        tile = db_entities.Tile(tile)
+
+        database.remove_drop_whitelist_by_tile_id(tile.tile_id)
+        database.update_tile_trigger(tile.tile_id, tile.tile_triggers)
+
+        for i in new_trigger.split("/"):
+            for item in i.split(","):
+                if item.strip() == "":
+                    continue
+                database.add_drop_whitelist(item.strip(), tile.tile_id)

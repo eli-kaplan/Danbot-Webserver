@@ -214,12 +214,22 @@ def add_drop_whitelist(drop_name, tile_id):
         except:
             print("Warning! Duplicate trigger found! " + drop_name)
 
+def update_drop_whitelist_name(old_name, new_name):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE drop_whitelist SET drop_name = %s WHERE drop_name = %s",
+                     (new_name, old_name,))
+
 
 def remove_drop_whitelist(drop_name):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM drop_whitelist WHERE lower(drop_name) = lower(%s)", (drop_name,))
 
+def remove_drop_whitelist_by_tile_id(tile_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM drop_whitelist WHERE tile_id = %s", (tile_id,))
 
 def get_drop_whitelist():
     with connect() as conn:
@@ -241,6 +251,7 @@ def add_completed_tile(tile_id, team_id):
         cursor = conn.cursor()
         cursor.execute("INSERT INTO completed_tiles (tile_id, team_id) VALUES (%s, %s)",
                        (tile_id, team_id))
+
 
 
 def remove_completed_tile(tile_id, team_id):
@@ -280,6 +291,10 @@ def add_tile(tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_uni
             (tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required,
              tile_repetition, tile_points))
 
+def update_tile_trigger(tile_id, tile_trigger):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE tiles SET tile_triggers = %s WHERE tile_id = %s", (tile_trigger, tile_id))
 
 # ... Repeat similar functions for 'drops', 'killcount', 'drop_whitelist', and 'completed_tiles' tables ...
 
