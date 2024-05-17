@@ -213,7 +213,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
 def parse_slayer(data) -> dict[str, list[str]]:
     rsn = data['playerName']
     slayer_monster = data['extra']['monster']
-    kc_required = data['extra']['killcount']
+    kc_required = data['extra']['killCount']
 
     print(f"SLAYER - {rsn} finished their {slayer_monster} task ({kc_required} kill(s))")
     # print data prettyfied
