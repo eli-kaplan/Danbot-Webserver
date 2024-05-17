@@ -40,7 +40,7 @@ class UserCog(commands.Cog):
                      player_name: discord.Option(str, "What is the username?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, player_names()))):
         await ctx.defer()
         server_ip = os.getenv('SERVER_IP')
-        player_url = f"http://{server_ip}/user/player/{player_name}"
+        player_url = f"http://{server_ip}/user/player/{player_name.replace(' ', '%20')}"
         await ctx.respond(player_url)
 
     @discord.slash_command(name="team", description="Get a bunch of data about a team in the bingo")
@@ -48,7 +48,7 @@ class UserCog(commands.Cog):
                    team_name: discord.Option(str, "What is the team name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names()))):
         await ctx.defer()
         server_ip = os.getenv('SERVER_IP')
-        team_url = f"http://{server_ip}/user/team/{team_name}"
+        team_url = f"http://{server_ip}/user/team/{team_name.replace(' ', '%20')}"
         await ctx.respond(team_url)
 
 

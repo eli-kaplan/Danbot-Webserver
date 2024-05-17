@@ -495,7 +495,10 @@ def get_manual_progress_by_tile_id_and_team_id(tile_id, team_id):
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM manual_tile_progress WHERE team_id = %s and tile_id = %s", (team_id, tile_id,))
         try:
-            return cursor.fetchone()[2]
+            progress = 0
+            for item in cursor.fetchall():
+                progress = progress + item[3]
+            return progress
         except:
             return 0
 
