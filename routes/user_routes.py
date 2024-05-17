@@ -81,8 +81,9 @@ def team(team_name):
             most_deaths = player.deaths
             most_deaths_player = player
 
-        player.gp_gained = scapify.int_to_gp(player.gp_gained)
     players = sorted(players, key=lambda player: (player.tiles_completed, player.gp_gained), reverse=True)
+    for player in players:
+        player.gp_gained = scapify.int_to_gp(player.gp_gained)
 
     player_partials = defaultdict(int)
     partial_tiles = 0
@@ -208,9 +209,12 @@ def leaderboard():
             most_deaths = player.deaths
             most_deaths_player = player
 
-        player.gp_gained = scapify.int_to_gp(player.gp_gained)
 
     players = sorted(players, key=lambda player: (player.tiles_completed, player.gp_gained), reverse=True)
+
+    for player in players:
+        player.gp_gained = scapify.int_to_gp(player.gp_gained)
+
 
     teams = []
     for team in database.get_teams():
