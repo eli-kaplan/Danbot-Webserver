@@ -269,6 +269,11 @@ def get_completed_tiles():
         cursor.execute("SELECT * FROM completed_tiles")
         return cursor.fetchall()
 
+def get_completed_tiles_by_team_id(team_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM completed_tiles where team_id = %s", (team_id,))
+        return cursor.fetchall()
 
 def get_completed_tiles_by_team_id_and_tile_id(team_id, tile_id):
     with connect() as conn:

@@ -44,7 +44,10 @@ def index():
     for tile in database.get_tiles():
         tiles.append(db_entities.Tile(tile))
 
-    return render_template('board_templates/board.html', teams=teams, tiles=tiles, teamnames=autocomplete.team_names(), boardsize=get_board_size(), tilenames=autocomplete.tile_names())
+    completed_tiles = []
+    partial_tiles = []
+
+    return render_template('board_templates/board.html', teams=teams, tiles=tiles, teamnames=autocomplete.team_names(), boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles)
 
 
 @board_routes.route('/<team_name>', methods=['GET'])
@@ -66,8 +69,28 @@ def board(team_name):
     for tile in database.get_tiles():
         tiles.append(db_entities.Tile(tile))
 
+    completed_tiles = []
+    tile_completions = defaultdict(int)
+    for completed_tile in database.get_completed_tiles_by_team_id(team.team_id):
+        completed_tile = db_entities.CompletedTile(completed_tile)
+        tile_completions[completed_tile.tile_id] = tile_completions[completed_tile.tile_id] + 1
+
+    tile_progress = defaultdict(int)
+    for partial_completion in database.get_partial_completions_by_team_id(team.team_id):
+        partial_completion = db_entities.PartialCompletion(partial_completion)
+        tile_progress[partial_completion.tile_id] = tile_progress[partial_completion.tile_id] + 1
+
+    partial_tiles = []
+    for tile in tiles:
+        if tile_completions[tile.tile_id] >= tile.tile_repetition:
+            completed_tiles.append(tile.tile_name)
+        elif tile_completions[tile.tile_id] > 0 or tile_progress[tile.tile_id] > 0:
+            partial_tiles.append(tile.tile_name)
+
+
+
     return render_template('board_templates/board.html', teams=teams, tiles=tiles, teamname=team_name,
-                           teamnames=autocomplete.team_names(),boardsize=get_board_size(), tilenames=autocomplete.tile_names())
+                           teamnames=autocomplete.team_names(),boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles)
 
 
 def get_board_size():

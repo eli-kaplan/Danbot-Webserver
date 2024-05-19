@@ -4,7 +4,8 @@
 
 <style>
     table {
-        width: 100%;
+        width: 80%; /* Adjust this value */
+        margin: auto; /* Add this line to center the table */
         border-collapse: collapse;
         margin-top: 20px;
         color: #FFFFFF; /* Light text */
@@ -13,10 +14,15 @@
         background-color: #333333; /* Darker background for navbar */
         color: white;
     }
-    th, td {
+    th {
         border: 1px solid #ddd;
         padding: 15px;
         text-align: center;
+    }
+    td {
+        border: 1px solid #ddd;
+        text-align: center;
+        height: 80px;
     }
     tr:nth-child(even) {
         background-color: #1E1E1E;
@@ -28,9 +34,11 @@
             background-color: #ADD8E6;
         }
     .header {
+        width: 80%;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin: auto;
     }
 
     .search-bar {
@@ -53,6 +61,12 @@
 
     a {
         color: white;
+    }
+
+    td button {
+        display: block;
+        width: 100%; /* Set width to 100% */
+        height: 100%; /* Set height to 100% */
     }
 </style>
 <script>
@@ -87,11 +101,13 @@
         <input type="submit" value="Select">
     </form>
 </div>
-{% if teamname in teamnames %}
-<h2><a href="/user/team/{{teamname}}">{{teamname}}'s</a> Current Board</h2>
-{% else %}
-<h2>Bingo Board</h2>
-{% endif %}
+<div class="header">
+    {% if teamname in teamnames %}
+    <h2><a href="/user/team/{{teamname}}">{{teamname}}'s</a> Current Board</h2>
+    {% else %}
+    <h2>Bingo Board</h2>
+    {% endif %}
+</div>
 <table>
     <tr>
         {% for i in range(0, boardsize) %}
@@ -104,7 +120,13 @@
     <tr>
         {% for y in range(0, boardsize) %}
         <td>
-            <button>{{tilenames[outerloopindex * boardsize + loop.index0]}}</button>
+            {% if tilenames[outerloopindex * boardsize + loop.index0] in completed_tiles %}
+                <button style="background-color: #4CAF50;">{{tilenames[outerloopindex * boardsize + loop.index0]}}</button>
+            {% elif tilenames[outerloopindex * boardsize + loop.index0] in partial_tiles %}
+                <button style="background-color: yellow;color: black">{{tilenames[outerloopindex * boardsize + loop.index0]}}</button>
+            {% else %}
+                <button style="background-color: red;">{{tilenames[outerloopindex * boardsize + loop.index0]}}</button>
+            {% endif %}
         </td>
         {% endfor %}
     </tr>
