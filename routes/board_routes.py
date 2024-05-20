@@ -43,7 +43,7 @@ def index():
     tiles = []
     for tile in database.get_tiles():
         tiles.append(db_entities.Tile(tile))
-    tiles = sorted(tiles, key=lambda tile: tile.tile_id, reverse=False)
+    tiles = sorted(tiles, key=lambda tile: tile.tile_id)
 
 
     completed_tiles = []
@@ -70,7 +70,7 @@ def board(team_name):
     tiles = []
     for tile in database.get_tiles():
         tiles.append(db_entities.Tile(tile))
-    tiles = sorted(tiles, key=lambda tile: tile.tile_id, reverse=False)
+    tiles = sorted(tiles, key=lambda tile: tile.tile_id)
 
     completed_tiles = []
     tile_completions = defaultdict(int)
