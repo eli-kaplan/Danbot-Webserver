@@ -571,8 +571,6 @@ def handle_request():
             print("Error parsing JSON data: " + str(e))
             print(json.dumps(json_data, indent=2))
             return jsonify({"message": "Error parsing JSON data: " + str(e)})
-        if result:
-            image_required = True
 
     if result:
         return jsonify({"message": "Drop successfully submitted"})
