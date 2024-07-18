@@ -6,7 +6,7 @@ class TileProgress:
     def __init__(self):
         self.team = None
         self.tile = None
-        self.status_text = "Default status text"
+        self.status_text = "Something went wrong in calculating your progress. Please contact Danbis"
         self.progress_value = 0
         self.completions = 0
 
@@ -72,7 +72,7 @@ def get_progress(team_id, tile_id):
         tile_progress.tile = db_entities.Tile(tile)
 
     # Get the tile completions
-    tile_progress.completions = len(database.get_completed_tiles_by_team_id_and_tile_id(tile_progress.team_id, tile_progress.tile_id))
+    tile_progress.completions = len(database.get_completed_tiles_by_team_id_and_tile_id(tile_progress.team.team_id, tile_progress.tile.tile_id))
 
     # If the tile has been completed more or equal to max allowed, return tile progress stating as such
     if tile_progress.completions >= tile_progress.tile.tile_repetition:
