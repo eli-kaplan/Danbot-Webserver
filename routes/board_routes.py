@@ -97,7 +97,7 @@ def board(team_name):
         completed_tile = db_entities.CompletedTile(completed_tile)
         tile_completions[completed_tile.tile_id] = tile_completions[completed_tile.tile_id] + 1
         tileName = tile_id_to_name[completed_tile.tile_id]
-        panelData[tileName].tile_completions = tile_completions[completed_tile.tile_id]
+        panelData[tileName].completions = f"Completions: {tile_completions[completed_tile.tile_id]}"
 
     tile_progress = defaultdict(int)
     for partial_completion in database.get_partial_completions_by_team_id(team.team_id):
