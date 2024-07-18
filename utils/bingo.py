@@ -41,7 +41,7 @@ def get_drop_progress(tile_progress):
         tile_progress.status_text += "Your current drops are: <ul>"
         for drop in drops:
             drop = Drop(drop)
-            tile_progress.status_text = tile_progress.status_text + "<li>" + str(drop.drop_quantity) + " x " + drop.drop_name + "</li>"
+            tile_progress.status_text = tile_progress.status_text + "<li>" + str(drop.drop_quantity) + " x " + drop.drop_name.replace('\'', '') + "</li>"
         tile_progress.status_text = tile_progress.status_text + "</ul>"
     tile_progress.status_text += "</p>"
     return tile_progress
