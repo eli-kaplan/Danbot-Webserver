@@ -97,7 +97,7 @@ def board(team_name):
         tile = db_entities.Tile(tile)
         tiles.append(tile)
         pd = PanelData()
-        pd.progress = bingo.get_progress(team.team_id, tile.tile_id)
+        pd.progress = bingo.get_progress(team.team_id, tile.tile_id).status_text
         pd.repetition = f"Repetition: {tile.tile_repetition}"
         pd.rules = "Rules: WIP"
         panelData[tile.tile_name] = pd
