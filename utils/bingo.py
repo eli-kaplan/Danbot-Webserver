@@ -40,11 +40,30 @@ def get_drop_progress(tile_progress):
     if len(drops) > 0:
         tile_progress.status_text += "Your current drops are:\n"
     for drop in drops:
+        drop = Drop(drop)
         tile_progress.status_text = tile_progress.status_text + drop.drop_quantity + " x " + drop.drop_name + "\n"
     return tile_progress
 
 
 def get_set_progress(tile_progress):
+    missing_items = []
+    tile = tile_progress.tile
+    team = tile_progress.team
+    tile_completion_count = tile_progress.completions
+
+    tile_progress.status_text = f"You are missing the following items: "
+
+    for set in tile.tile_triggers.split('/'):
+        for item in set.split(','):
+            drops = database.get_drops_by_item_name_and_team_id(item, team.team_id)
+
+            if len(drops) <= tile_completion_count:
+                missing_items.append(item)
+        if len(missing_items) > 0:
+            tile_progress.status_text += f"\n- "
+            for item in missing_items:
+                tile_progress.status_text += item + " "
+
     return tile_progress
 
 
