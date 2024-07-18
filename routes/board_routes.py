@@ -34,30 +34,44 @@ def compare():
 
     return render_template('board_templates/compare.html', teams=teams, tiles=tiles, completed_tiles=completed_tiles, partial_tiles=partial_tiles)
 
-@board_routes.route('/', methods=['GET'])
-def index():
-    teams = []
-    for team in database.get_teams():
-        teams.append(db_entities.Team(team))
-
-    tiles = []
-    for tile in database.get_tiles():
-        tiles.append(db_entities.Tile(tile))
-    tiles = sorted(tiles, key=lambda tile: tile.tile_id)
-
-
-    completed_tiles = []
-    partial_tiles = []
-
-    return render_template('board_templates/board.html', teams=teams, tiles=tiles, teamnames=autocomplete.team_names(), boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles)
-
-
 class PanelData:
     def __init__(self):
         self.progress = None
         self.completions = "Completions: 0"
         self.repetitions = None
         self.rules = None
+
+
+@board_routes.route('/', methods=['GET'])
+def index():
+    teams = []
+    panelData = {}
+    tile_id_to_name = {}
+
+
+    for team in database.get_teams():
+        teams.append(db_entities.Team(team))
+
+    tiles = []
+    for tile in database.get_tiles():
+        tile = db_entities.Tile(tile)
+        tiles.append(tile)
+        pd = PanelData()
+        pd.progress = "Progress: Please select a team to see your progress"
+        pd.repetition = f"Repetition: {tile.tile_repetition}"
+        pd.rules = "Rules: WIP"
+        panelData[tile.tile_name] = pd
+        tile_id_to_name[tile.tile_id] = tile.tile_name
+    tiles = sorted(tiles, key=lambda tile: tile.tile_id)
+
+
+    completed_tiles = []
+    partial_tiles = []
+
+    return render_template('board_templates/board.html', teams=teams, tiles=tiles, teamnames=autocomplete.team_names(), boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles, panelData=panelData)
+
+
+
 
 @board_routes.route('/<team_name>', methods=['GET'])
 def board(team_name):

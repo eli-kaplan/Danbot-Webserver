@@ -56,7 +56,6 @@ def get_set_progress(tile_progress):
     for set in tile.tile_triggers.split('/'):
         for item in set.split(','):
             drops = database.get_drops_by_item_name_and_team_id(item, team.team_id)
-
             if len(drops) <= tile_completion_count:
                 missing_items.append(item)
         if len(missing_items) > 0:
@@ -68,6 +67,20 @@ def get_set_progress(tile_progress):
 
 
 def get_killcount_progress(tile_progress):
+
+    tile = tile_progress.tile
+    team = tile_progress.team
+    tile_completion_count = tile_progress.completions
+
+    trigger_value = 0
+    for i, boss in enumerate(tile.tile_triggers.split(',')):
+        kc_obj = db_entities.Killcount(database.get_killcount_by_team_id_and_boss_name(team.team_id, boss))
+        trigger_value += kc_obj.kills * tile.tile_trigger_weights[i]
+
+    trigger_value = trigger_value % tile.tile_triggers_required
+
+    tile_progress.status_text = f"You are {trigger_value}/{tile.tile_triggers_required} kills away from completing this tile."
+
     return tile_progress
 
 
