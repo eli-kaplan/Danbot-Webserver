@@ -60,9 +60,10 @@ def get_set_progress(tile_progress):
             if len(drops) <= tile_completion_count:
                 missing_items.append(item)
         if len(missing_items) > 0:
-            tile_progress.status_text += f"\n- "
+            tile_progress.status_text += f"<ul>"
             for item in missing_items:
-                tile_progress.status_text += item + " "
+                tile_progress.status_text += "<li>" + item + "</li>"
+            tile_progress.status_text += f"</ul>"
             missing_items = []
 
     return tile_progress
