@@ -74,8 +74,10 @@ def get_killcount_progress(tile_progress):
 
     trigger_value = 0
     for i, boss in enumerate(tile.tile_triggers.split(',')):
-        kc_obj = db_entities.Killcount(database.get_killcount_by_team_id_and_boss_name(team.team_id, boss))
-        trigger_value += kc_obj.kills * tile.tile_trigger_weights[i]
+        kills = database.get_killcount_by_team_id_and_boss_name(team.team_id, boss)
+        for kill in kills:
+            kill = db_entities.Killcount(kill)
+            trigger_value += kill.kills * tile.tile_trigger_weights[i]
 
     trigger_value = trigger_value % tile.tile_triggers_required
 
