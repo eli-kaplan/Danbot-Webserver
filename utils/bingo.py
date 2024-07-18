@@ -88,11 +88,9 @@ def get_niche_progress(tile_progress):
     tile = tile_progress.tile
     team = tile_progress.team
 
-    total_progress = 0
 
-    manual_progress = database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id)
-    for progress in manual_progress:
-        total_progress += progress
+    total_progress = database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id)
+
 
     tile_progress.status_text = f"You are {total_progress % tile.tile_triggers_required}/{tile.tile_triggers_required} away from completing this tile"
 
