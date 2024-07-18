@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from flask import render_template, Blueprint
 import math
-from utils import autocomplete, database, db_entities
+from utils import autocomplete, database, db_entities, bingo
 
 board_routes = Blueprint("board_routes", __name__)
 
@@ -83,7 +83,7 @@ def board(team_name):
         tile = db_entities.Tile(tile)
         tiles.append(tile)
         pd = PanelData()
-        pd.progress = "Progress: WIP"
+        pd.progress = bingo.get_progress(team.team_id, tile.tile_id)
         pd.repetition = f"Repetition: {tile.tile_repetition}"
         pd.rules = "Rules: WIP"
         panelData[tile.tile_name] = pd

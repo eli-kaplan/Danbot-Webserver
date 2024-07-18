@@ -13,7 +13,34 @@ class TileProgress:
 
 
 def get_drop_progress(tile_progress):
+    tile_completion_count = tile_progress.completions
+    tile = tile_progress.tile
+    team = tile_progress.team
+    triggers = tile.tile_triggers
+    and_triggers = triggers.split(',')
+    trigger_value = database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id)
+    for i in range(0, len(and_triggers)):
+        trigger = and_triggers[i].strip()
+        drops = []
+        for or_trigger in trigger.split('/'):
+            or_trigger = or_trigger.strip()
+            for drop in database.get_drops_by_item_name_and_team_id(or_trigger, team.team_id):
+                drops.append(drop)
 
+        if tile.tile_unique_drops == "True":
+            if len(drops) > tile_completion_count:
+                trigger_value = trigger_value + int(tile.tile_trigger_weights[i])
+            continue
+        else:
+            for drop in drops:
+                drop = Drop(drop)
+                trigger_value = int(tile.tile_trigger_weights[i]) * int(drop.drop_quantity) + trigger_value
+
+    tile_progress.status_text = f"You have {trigger_value % tile.tile_triggers_required} / {tile.tile_triggers_required} of the drops required to complete this tile\n"
+    if len(drops) > 0:
+        tile_progress.status_text += "Your current drops are:\n"
+    for drop in drops:
+        tile_progress.status_text = tile_progress.status_text + drop.drop_quantity + " x " + drop.drop_name + "\n"
     return tile_progress
 
 
