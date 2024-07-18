@@ -107,7 +107,7 @@
     }
 
     document.addEventListener('click', function(event) {
-        var isClickInside = document.getElementById('mySidePanel').contains(event.target) || document;
+        var isClickInside = document.getElementById('mySidePanel').contains(event.target);
         var isClickOnButton = event.target.tagName === 'BUTTON';
         if (!isClickInside && !isClickOnButton) {
             closePanel();
