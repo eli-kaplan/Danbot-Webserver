@@ -36,12 +36,13 @@ def get_drop_progress(tile_progress):
                 drop = Drop(drop)
                 trigger_value = int(tile.tile_trigger_weights[i]) * int(drop.drop_quantity) + trigger_value
 
-    tile_progress.status_text = f"You have {trigger_value % tile.tile_triggers_required} / {tile.tile_triggers_required} of the drops required to complete this tile.\n "
+    tile_progress.status_text = f"You have {trigger_value % tile.tile_triggers_required} / {tile.tile_triggers_required} of the drops required to complete this tile."
     if len(drops) > 0:
-        tile_progress.status_text += "Your current drops are: \n"
-    for drop in drops:
-        drop = Drop(drop)
-        tile_progress.status_text = tile_progress.status_text + str(drop.drop_quantity) + " x " + drop.drop_name + ".\n "
+        tile_progress.status_text += "Your current drops are: <ul>"
+        for drop in drops:
+            drop = Drop(drop)
+            tile_progress.status_text = tile_progress.status_text + "<li>" + str(drop.drop_quantity) + " x " + drop.drop_name + "</li>"
+        tile_progress.status_text = tile_progress.status_text + "</ul>"
     return tile_progress
 
 
