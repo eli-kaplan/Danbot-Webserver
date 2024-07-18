@@ -36,6 +36,8 @@ def get_drop_progress(tile_progress):
                 drop = Drop(drop)
                 trigger_value = int(tile.tile_trigger_weights[i]) * int(drop.drop_quantity) + trigger_value
 
+    trigger_value = trigger_value + database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id)
+
     tile_progress.status_text = f"<p>You have {trigger_value % tile.tile_triggers_required} / {tile.tile_triggers_required} of the drops required to complete this tile."
     if len(drops) > 0:
         tile_progress.status_text += "Your current drops are: <ul>"
@@ -84,6 +86,8 @@ def get_killcount_progress(tile_progress):
             kill = db_entities.Killcount(kill)
             trigger_value += int(kill.kills) * int(tile.tile_trigger_weights[i])
 
+    trigger_value += database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id)
+
     trigger_value = trigger_value % tile.tile_triggers_required
 
     tile_progress.status_text = f"You are {trigger_value}/{tile.tile_triggers_required} kills away from completing this tile."
@@ -111,7 +115,7 @@ def get_chat_progress(tile_progress):
 
     chats = database.get_chats_by_team_id_and_tile_id(team.team_id, tile.tile_id)
 
-    total_progress = len(chats)
+    total_progress = len(chats) + database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id)
 
     tile_progress.status_text = f"You are {total_progress % tile.tile_triggers_required}/{tile.tile_triggers_required} away from completing this tile"
 
