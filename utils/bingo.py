@@ -77,7 +77,7 @@ def get_killcount_progress(tile_progress):
         kills = database.get_killcount_by_team_id_and_boss_name(team.team_id, boss)
         for kill in kills:
             kill = db_entities.Killcount(kill)
-            trigger_value += kill.kills * tile.tile_trigger_weights[i]
+            trigger_value += int(kill.kills) * int(tile.tile_trigger_weights[i])
 
     trigger_value = trigger_value % tile.tile_triggers_required
 
