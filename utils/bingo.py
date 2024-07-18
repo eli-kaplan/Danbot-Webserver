@@ -62,6 +62,7 @@ def get_set_progress(tile_progress):
             tile_progress.status_text += f"\n- "
             for item in missing_items:
                 tile_progress.status_text += item + " "
+            missing_items = []
 
     return tile_progress
 
