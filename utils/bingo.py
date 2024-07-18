@@ -41,7 +41,7 @@ def get_drop_progress(tile_progress):
         tile_progress.status_text += "Your current drops are:\n"
     for drop in drops:
         drop = Drop(drop)
-        tile_progress.status_text = tile_progress.status_text + drop.drop_quantity + " x " + drop.drop_name + "\n"
+        tile_progress.status_text = tile_progress.status_text + str(drop.drop_quantity) + " x " + drop.drop_name + "\n"
     return tile_progress
 
 
