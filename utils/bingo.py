@@ -59,6 +59,7 @@ def get_set_progress(tile_progress):
 
     for set in tile.tile_triggers.split('/'):
         for item in set.split(','):
+            item = item.strip()
             drops = database.get_drops_by_item_name_and_team_id(item, team.team_id)
             if len(drops) <= tile_completion_count:
                 missing_items.append(item)
