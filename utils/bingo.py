@@ -19,9 +19,9 @@ def get_drop_progress(tile_progress):
     triggers = tile.tile_triggers
     and_triggers = triggers.split(',')
     trigger_value = database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id)
+    drops = []
     for i in range(0, len(and_triggers)):
         trigger = and_triggers[i].strip()
-        drops = []
         for or_trigger in trigger.split('/'):
             or_trigger = or_trigger.strip()
             for drop in database.get_drops_by_item_name_and_team_id(or_trigger, team.team_id):
