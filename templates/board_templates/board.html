@@ -206,7 +206,7 @@
     function openPanelHelper(tileName, completions, repetitions, rules) {
         // Make an AJAX request to get the progress data
         $.ajax({
-            url: '/get_progress',  // Replace with your Flask route
+            url: '/board/get_progress',  // Replace with your Flask route
             type: 'GET',
             data: {
                 'tileName': tileName,

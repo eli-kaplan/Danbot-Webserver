@@ -81,6 +81,9 @@ def get_progress():
 
     progress = bingo.get_progress(team.team_id, tile.tile_id)
 
+    if progress is None:
+        return None
+
     return jsonify(progress)
 
 @board_routes.route('/<team_name>', methods=['GET'])
