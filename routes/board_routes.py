@@ -68,7 +68,7 @@ def index():
     completed_tiles = []
     partial_tiles = []
 
-    return render_template('board_templates/board.html', teams=teams, tiles=tiles, teamnames=autocomplete.team_names(), boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles, panelData=panelData)
+    return render_template('board_templates/board.html', teams=teams, tiles=tiles, teamname="None Selected", teamnames=autocomplete.team_names(), boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles, panelData=panelData)
 
 
 @board_routes.route('/get_progress', methods=['GET'])
