@@ -209,21 +209,18 @@
             {% if tilenames[outerloopindex * boardsize + loop.index0] in completed_tiles %}
                 <button style="background-color: #4CAF50;"
                         onclick="openPanel('{{tilenames[outerloopindex * boardsize + loop.index0]}}',
-                                 '{{ panelData[tilenames[outerloopindex * boardsize + loop.index0]].progress | safe }}',
                                  '{{panelData[tilenames[outerloopindex * boardsize + loop.index0]].completions}}',
                                  '{{panelData[tilenames[outerloopindex * boardsize + loop.index0]].repetition}}',
                                  '{{panelData[tilenames[outerloopindex * boardsize + loop.index0]].rules}}')">{{tilenames[outerloopindex * boardsize + loop.index0]}}</button>
             {% elif tilenames[outerloopindex * boardsize + loop.index0] in partial_tiles %}
                 <button style="background-color: yellow;color: black"
                         onclick="openPanel('{{tilenames[outerloopindex * boardsize + loop.index0]}}',
-                                 '{{ panelData[tilenames[outerloopindex * boardsize + loop.index0]].progress | safe }}',
                                  '{{panelData[tilenames[outerloopindex * boardsize + loop.index0]].completions}}',
                                  '{{panelData[tilenames[outerloopindex * boardsize + loop.index0]].repetition}}',
                                  '{{panelData[tilenames[outerloopindex * boardsize + loop.index0]].rules}}')">{{tilenames[outerloopindex * boardsize + loop.index0]}}</button>
             {% else %}
                 <button style="background-color: red;"
                         onclick="openPanel('{{tilenames[outerloopindex * boardsize + loop.index0]}}',
-                                 '{{ panelData[tilenames[outerloopindex * boardsize + loop.index0]].progress | safe }}',
                                  '{{panelData[tilenames[outerloopindex * boardsize + loop.index0]].completions}}',
                                  '{{panelData[tilenames[outerloopindex * boardsize + loop.index0]].repetition}}',
                                  '{{panelData[tilenames[outerloopindex * boardsize + loop.index0]].rules}}')">{{tilenames[outerloopindex * boardsize + loop.index0]}}</button>
