@@ -95,15 +95,24 @@
     /* Add a function to open the side panel */
     function openPanel(tileName, progress, completions, repetitions, rules) {
         if (isOpen) {
-            closePanel()
+            closePanel();
+            // Wait for the closePanel animation to finish
+            setTimeout(function() {
+                openPanelHelper(tileName, progress, completions, repetitions, rules);
+            }, 250); // Adjust this value based on the duration of your closePanel animation
+        } else {
+            openPanelHelper(tileName, progress, completions, repetitions, rules);
         }
-        isOpen = True;
+    }
+
+    function openPanelHelper(tileName, progress, completions, repetitions, rules) {
+        isOpen = true;
         document.getElementById("mySidePanel").style.width = "400px";
-        document.getElementById("tileName").innerText = tileName
-        document.getElementById("completions").innerText = completions
-        document.getElementById("repetitions").innerText = repetitions
-        document.getElementById("rules").innerText = rules
-        document.getElementById("progress").innerHTML = progress
+        document.getElementById("tileName").innerText = tileName;
+        document.getElementById("completions").innerText = completions;
+        document.getElementById("repetitions").innerText = repetitions;
+        document.getElementById("rules").innerText = rules;
+        document.getElementById("progress").innerHTML = progress;
     }
 
     /* Add a function to close the side panel */
