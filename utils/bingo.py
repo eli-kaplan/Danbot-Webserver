@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from utils import database, db_entities
 from utils.db_entities import Drop
 
@@ -19,31 +21,39 @@ def get_drop_progress(tile_progress):
     triggers = tile.tile_triggers
     and_triggers = triggers.split(',')
     trigger_value = database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id)
-    drops = []
+    drops = defaultdict(int)
     for i in range(0, len(and_triggers)):
         trigger = and_triggers[i].strip()
         for or_trigger in trigger.split('/'):
             or_trigger = or_trigger.strip()
             for drop in database.get_drops_by_item_name_and_team_id(or_trigger, team.team_id):
-                drops.append(drop)
+                drop = db_entities.Drop(drop)
+                drops[drop.drop_name] = drop.drop_quantity + drops[drop.drop_name]
 
-        if tile.tile_unique_drops == "True":
-            if len(drops) > tile_completion_count:
-                trigger_value = trigger_value + int(tile.tile_trigger_weights[i])
-            continue
-        else:
-            for drop in drops:
-                drop = Drop(drop)
-                trigger_value = int(tile.tile_trigger_weights[i]) * int(drop.drop_quantity) + trigger_value
+
+        # if tile.tile_unique_drops == "True":
+        #     if len(drops) > tile_completion_count:
+        #         trigger_value = trigger_value + int(tile.tile_trigger_weights[i])
+        #     continue
+        # else:
+        #     for drop in drops:
+        #         drop = Drop(drop)
+        #         trigger_value = int(tile.tile_trigger_weights[i]) * int(drop.drop_quantity) + trigger_value
+
+    if tile.tile_unique_drops == "True":
+        trigger_value = int(len(drops.values()))
+    else:
+        i = 0
+        for name, quantity in drops.items():
+            trigger_value = int(tile.tile_trigger_weights[i]) * int(quantity) + trigger_value
 
     trigger_value = trigger_value + database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id)
 
     tile_progress.status_text = f"<p>You have {trigger_value % tile.tile_triggers_required} / {tile.tile_triggers_required} of the drops required to complete this tile."
     if len(drops) > 0:
         tile_progress.status_text += "Your current drops are: <ul>"
-        for drop in drops:
-            drop = Drop(drop)
-            tile_progress.status_text = tile_progress.status_text + "<li>" + str(drop.drop_quantity) + " x " + drop.drop_name.replace('\'', '') + "</li>"
+        for name, quantity in drops.items():
+            tile_progress.status_text = tile_progress.status_text + "<li>" + str(quantity) + " x " + name.replace('\'', '') + "</li>"
         tile_progress.status_text = tile_progress.status_text + "</ul>"
     tile_progress.status_text += "</p>"
     return tile_progress
