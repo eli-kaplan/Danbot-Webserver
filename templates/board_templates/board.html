@@ -90,7 +90,7 @@
 </style>
 <script>
     var tilenames = {{ tilenames | tojson }};
-    var isOpen = False;
+    var isOpen = false;
 
     /* Add a function to open the side panel */
     function openPanel(tileName, progress, completions, repetitions, rules) {
@@ -117,7 +117,7 @@
 
     /* Add a function to close the side panel */
     function closePanel() {
-        isOpen = False;
+        isOpen = false;
         document.getElementById("mySidePanel").style.width = "0";
     }
 
