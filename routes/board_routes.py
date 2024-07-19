@@ -84,7 +84,7 @@ def get_progress():
     if progress is None:
         return None
 
-    return jsonify(progress)
+    return jsonify(progress.status_text)
 
 @board_routes.route('/<team_name>', methods=['GET'])
 def board(team_name):
