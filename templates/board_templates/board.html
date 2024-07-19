@@ -196,7 +196,7 @@
             closePanel();
             // Wait for the closePanel animation to finish
             setTimeout(function() {
-                openPanelHelper(tileName, progress, completions, repetitions, rules);
+                openPanelHelper(tileName, completions, repetitions, rules);
             }, 350); // Adjust this value based on the duration of your closePanel animation
         } else {
             openPanelHelper(tileName, completions, repetitions, rules);
@@ -222,7 +222,6 @@
             },
             success: function(data) {
                 // Use the returned data to update the side panel
-
                 document.getElementById("progress").innerHTML = data;
             }
         });
