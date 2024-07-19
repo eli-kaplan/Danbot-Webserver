@@ -88,60 +88,6 @@
     }
 
 </style>
-<script>
-    var tilenames = {{ tilenames | tojson }};
-    var teamName = {{ teamname | tojson }};
-    var isOpen = false;
-
-    /* Add a function to open the side panel */
-    function openPanel(tileName, completions, repetitions, rules) {
-        if (isOpen) {
-            closePanel();
-            // Wait for the closePanel animation to finish
-            setTimeout(function() {
-                openPanelHelper(tileName, progress, completions, repetitions, rules);
-            }, 350); // Adjust this value based on the duration of your closePanel animation
-        } else {
-            openPanelHelper(tileName, completions, repetitions, rules);
-        }
-    }
-
-    function openPanelHelper(tileName, completions, repetitions, rules) {
-        // Make an AJAX request to get the progress data
-        $.ajax({
-            url: '/get_progress',  // Replace with your Flask route
-            type: 'GET',
-            data: {
-                'tileName': tileName,
-                'teamName': teamName
-            },
-            success: function(data) {
-                // Use the returned data to update the side panel
-                isOpen = true;
-                document.getElementById("mySidePanel").style.width = "400px";
-                document.getElementById("tileName").innerText = tileName;
-                document.getElementById("completions").innerText = completions;
-                document.getElementById("repetitions").innerText = repetitions;
-                document.getElementById("rules").innerText = rules;
-                document.getElementById("progress").innerHTML = data.progress;
-            }
-    }
-
-    /* Add a function to close the side panel */
-    function closePanel() {
-        isOpen = false;
-        document.getElementById("mySidePanel").style.width = "0";
-    }
-
-    document.addEventListener('click', function(event) {
-        var isClickInside = document.getElementById('mySidePanel').contains(event.target);
-        var isClickOnButton = event.target.tagName === 'BUTTON';
-        if (!isClickInside && !isClickOnButton) {
-            closePanel();
-        }
-    });
-
-</script>
 
 <!-- Add the side panel to your HTML -->
 <div id="mySidePanel" class="side-panel">
@@ -236,4 +182,61 @@
 
 </form>
 
+
+
+
+<script>
+    var tilenames = {{ tilenames | tojson }};
+    var teamName = {{ teamname | tojson }};
+    var isOpen = false;
+
+    /* Add a function to open the side panel */
+    function openPanel(tileName, completions, repetitions, rules) {
+        if (isOpen) {
+            closePanel();
+            // Wait for the closePanel animation to finish
+            setTimeout(function() {
+                openPanelHelper(tileName, progress, completions, repetitions, rules);
+            }, 350); // Adjust this value based on the duration of your closePanel animation
+        } else {
+            openPanelHelper(tileName, completions, repetitions, rules);
+        }
+    }
+
+    function openPanelHelper(tileName, completions, repetitions, rules) {
+        // Make an AJAX request to get the progress data
+        $.ajax({
+            url: '/get_progress',  // Replace with your Flask route
+            type: 'GET',
+            data: {
+                'tileName': tileName,
+                'teamName': teamName
+            },
+            success: function(data) {
+                // Use the returned data to update the side panel
+                isOpen = true;
+                document.getElementById("mySidePanel").style.width = "400px";
+                document.getElementById("tileName").innerText = tileName;
+                document.getElementById("completions").innerText = completions;
+                document.getElementById("repetitions").innerText = repetitions;
+                document.getElementById("rules").innerText = rules;
+                document.getElementById("progress").innerHTML = data.progress;
+            }
+    }
+
+    /* Add a function to close the side panel */
+    function closePanel() {
+        isOpen = false;
+        document.getElementById("mySidePanel").style.width = "0";
+    }
+
+    document.addEventListener('click', function(event) {
+        var isClickInside = document.getElementById('mySidePanel').contains(event.target);
+        var isClickOnButton = event.target.tagName === 'BUTTON';
+        if (!isClickInside && !isClickOnButton) {
+            closePanel();
+        }
+    });
+
+</script>
 {% endblock %}
