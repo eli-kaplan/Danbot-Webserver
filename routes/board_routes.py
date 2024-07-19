@@ -82,7 +82,7 @@ def get_progress():
     progress = bingo.get_progress(team.team_id, tile.tile_id)
 
     if progress is None:
-        return None
+        return jsonify("Please select a team to see your progress")
 
     return jsonify(progress.status_text)
 
