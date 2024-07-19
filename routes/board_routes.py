@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from flask import render_template, Blueprint
+from flask import render_template, Blueprint, request, jsonify
 import math
 from utils import autocomplete, database, db_entities, bingo
 
@@ -71,7 +71,17 @@ def index():
     return render_template('board_templates/board.html', teams=teams, tiles=tiles, teamnames=autocomplete.team_names(), boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles, panelData=panelData)
 
 
+@board_routes.route('/get_progress', methods=['GET'])
+def get_progress():
+    tile_name = request.args.get('tileName')
+    team_name = request.args.get('teamName')
 
+    team = db_entities.Team(database.get_team_by_name(team_name))
+    tile = db_entities.Tile(database.get_tile_by_name(tile_name))
+
+    progress = bingo.get_progress(team.team_id, tile.tile_id)
+
+    return jsonify(progress)
 
 @board_routes.route('/<team_name>', methods=['GET'])
 def board(team_name):
@@ -97,7 +107,6 @@ def board(team_name):
         tile = db_entities.Tile(tile)
         tiles.append(tile)
         pd = PanelData()
-        pd.progress = bingo.get_progress(team.team_id, tile.tile_id).status_text
         pd.repetition = f"Repetition: {tile.tile_repetition}"
         pd.rules = "Rules: WIP"
         panelData[tile.tile_name] = pd
