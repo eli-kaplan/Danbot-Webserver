@@ -195,14 +195,16 @@ def test_collections(client):
 
     player_danbis = db_entities.Player(database.get_player_by_name("Danbis"))
     player_deidera = db_entities.Player(database.get_player_by_name("Deidera"))
-    assert player_deidera.tiles_completed == 1
-    assert player_danbis.tiles_completed == 1
+    assert round(player_deidera.tiles_completed, 2) == round(1/3, 2)
+    assert round(player_danbis.tiles_completed, 2) == round(2/3, 2)
 
-    assert len(database.get_partial_completions_by_player_id(player_danbis.player_id)) == 0
-    assert len(database.get_partial_completions_by_player_id(player_deidera.player_id)) == 0
+    assert len(database.get_partial_completions_by_player_id(player_danbis.player_id)) == 1
+    deidera_partial = database.get_partial_completions_by_player_id(player_deidera.player_id)
+    assert len(deidera_partial) == 1
+    assert round(db_entities.PartialCompletion(deidera_partial[0]).partial_completion, 2) == round(2/3, 2)
 
     team = db_entities.Team(database.get_team_by_id(1))
-    assert team.team_points == 2
+    assert team.team_points == 1
 
 def test_cross_team_drops(client):
     database.reset_tables()

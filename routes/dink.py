@@ -113,7 +113,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
 
                     # If the tile is unique ignore quantity / duplicates
                     if tile.tile_unique_drops == "True":
-                        if len(drops) > tile_completion_count:
+                        if len(drops) > 0:
                             trigger_value = trigger_value + int(tile.tile_trigger_weights[i])
                         continue
                     # else multiply the drop quantity for each drop by the trigger weight
@@ -123,7 +123,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                             trigger_value = int(tile.tile_trigger_weights[i]) * int(drop.drop_quantity) + trigger_value
 
                 # If the trigger value is greater than triggers required multiplied by tile completion count then the tile has been completed an additional time
-                if trigger_value >= tile.tile_triggers_required * (tile_completion_count + 1) or (tile.tile_unique_drops == "True" and trigger_value >= tile.tile_triggers_required):
+                if trigger_value >= tile.tile_triggers_required * (tile_completion_count + 1):# or (tile.tile_unique_drops == "True" and trigger_value >= tile.tile_triggers_required):
                     description = f"{tile.tile_name} completed! Congratulations! Your team has been awarded {tile.tile_points} point(s)!"
                     database.add_completed_tile(tile.tile_id, team.team_id)
                     description = description + f"\nYou have completed this tile {tile_completion_count + 1} times."
