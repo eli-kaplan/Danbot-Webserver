@@ -214,6 +214,7 @@ def leaderboard():
 
     for player in players:
         player.gp_gained = scapify.int_to_gp(player.gp_gained)
+        player.tiles_completed = round(player.tiles_completed, 2)
 
 
     teams = []
