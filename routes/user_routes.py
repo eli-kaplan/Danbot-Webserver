@@ -238,6 +238,7 @@ def leaderboard():
     for key, value in player_partials.items():
         player_partials[key] = round(value, 2)
 
+    most_tiles_player.tiles_completed = round(most_tiles_player.tiles_completed, 2)
 
     partial_tiles = round(partial_tiles, 2)
 
