@@ -1,50 +1,50 @@
-Tile Name,Tile Type,Triggers,Trigger Weights,Unique Drops,Triggers Required,Repetition,Points
-Mage Gear Collector,DROP,"Virtus mask/Virtus robe top/Virtus robe bottom,Ancestral hat/Ancestral robe top/Ancestral robe bottom,Elder chaos hood/Elder chaos top/Elder chaos robe ","1,1,1",TRUE,3,5,1
-Full Venator Bow,DROP,Venator shard,1,FALSE,5,5,1
-Arcane & Dex,DROP,"Arcane prayer scroll, Dexterous prayer scroll","1,1",TRUE,2,5,1
-Any Jar,DROP,Jar of chemicals / Jar of darkness / Jar of decay / Jar of dirt / Jar of dreams / Jar of eyes / Jar of miasma / Jar of sand / Jar of smoke / Jar of souls / Jar of spirits / Jar of stone / Jar of swamp,1,FALSE,1,5,1
-Full Shield From Scratch,DROP,"Spectral sigil/Arcane sigil/Elysian sigil,Spirit shield, Holy elixir","1,1,1",TRUE,3,5,1
-3x Avernic Hilts,DROP,Avernic defender hilt,1,FALSE,3,5,1
-Full Brimstone Ring,DROP,"Hydra's eye, Hydra's fang, Hydra's heart","1,1,1",TRUE,3,5,1
-Mix Match Barrows,DROP,"Ahrim's hood/Dharok's helm/Guthan's helm/Karil's coif/Torag's helm/Verac's helm,Ahrim's robetop/Dharok's platebody/Guthan's platebody/Karil's leathertop/Torag's platebody/Verac's brassard,Ahrim's robeskirt/Dharok's platelegs/Guthan's chainskirt/Karil's leatherskirt/Torag's platelegs/Verac's plateskirt,Ahrim's staff/Dharok's greataxe/Guthan's warspear/Karil's crossbow/Torag's hammers/Verac's flail","1,1,1,1",TRUE,4,5,1
-3 Statuette or Higher From Revs,DROP,Ancient statuette/Ancient medallion/Ancient effigy/Ancient relic,1,FALSE,3,5,1
-NM Unique,DROP,Nightmare staff/Inquisitor's great helm/Inquisitor's hauberk/Inquisitor's plateskirt/Eldritch orb/Harmonised orb/Volatile orb,1,FALSE,1,5,1
-Rapier or Sang,DROP,Ghrazi rapier/Sanguinesti staff (uncharged),1,FALSE,1,5,1
-Full Ballista,DROP,"Monkey tail,Ballista spring,Ballista limbs,Heavy frame/Light frame","1,1,1",TRUE,1,5,1
-25 Soaked Pages,DROP,Soaked page,1,FALSE,25,5,1
-3 Unique Slayer Heads,DROP,"Abyssal head,Alchemical hydra heads,Basilisk head,Cockatrice head,Kbd heads,Kq head,Kurask head, Vorkath's head","1,1,1,1,1,1,1,1",TRUE,3,5,1
-Cudgel,DROP,Sarachnis cudgel,1,FALSE,1,5,1
-2 Nex Uniques,DROP,"Zaryte vambraces,Nihil horn,Torva full helm (damaged), Torva platebody (damaged), Torva platelegs (damaged), Ancient hilt","1,1,1,1,1,1",FALSE,2,5,1
-Godsword Hilt Set,DROP,"Amadyl hilt, Bandos hilt, Saradomin hilt, Zamorak hilt","1,1,1,1",TRUE,4,1,1
-Bandos set,SET,"Bandos chestplate, Bandos tassets, Bandos boots",,,,5,1
-Ring or Fang,DROP,"Osmumten's fang, Lightbearer","1,1",FALSE,1,5,1
-Sub 35 Trio or Sub 30 5 Man CM,NICHE,,,,1,5,1
-Double Flax,NICHE,,,,1,5,1
-Full Ward,SET,"Odium shard 1, Odium shard 2, Odium shard 3/Malediction shard 1, Malediction shard 2, Malediction shard 3",,,,5,1
-3 Masori Pieces,DROP,"Masori mask, Masori body, Masori chaps","1,1,1",FALSE,3,5,1
-5 Unique Peril Moon Pieces,DROP,"Eclipse atlatl,Eclipse moon helm, Eclipse moon chestplate, Eclipse moon tassets,Dual macuahuitl,Blood moon helm,Blood moon chestplate,Blood moon tassets,Blue moon spear,Blue moon helm, Blue moon chestplate,Blue moon tassets","1,1,1,1,1,1,1,1,1,1,1,1",TRUE,5,5,1
-ECWS or 5 Armour Seeds,DROP,"Crystal armour seed, Enhanced crystal weapon seed","1,5",FALSE,5,5,1
-150 Toa Purple,NICHE,,,,1,5,1
-Mega Rare,DROP,"Twisted bow, Tumeken's shadow (uncharged), Scythe of vitur (uncharged),Elder maul, Kodai insignia","1,1,1,1,1",FALSE,1,5,1
-3 Obsidian Armour Pices,DROP,"Obsidian helmet, Obsidian platebody, Obsidian platelegs","1,1,1",FALSE,3,5,1
-Wildy LOTR,DROP,"Tyrannical ring, Ring of the gods, Treasonous ring","1,1,1",TRUE,3,5,1
-Broken Zombie Axe,DROP,Broken Zombie Axe,1,FALSE,1,5,1
-Granite Hammer or Torm Core,DROP,"Granite hammer, Tormaline core","1,1",FALSE,1,5,1
-HMT or CM Dust,DROP,Sanguine dust/Metamorphic dust,1,FALSE,1,5,1
-Claws or Bulwark,DROP,"Dragon claws, Dinh's bulwark","1,1",FALSE,1,5,1
-Boot Collector,DROP,"Bronze boots, Iron boots, Steel boots, Mithril boots, Adamant boots, Rune boots, Dragon boots","1,1,1,1,1,1,1",TRUE,7,1,1
-9 Fire Capes or 3 Infernal Capes,KILLCOUNT,"TzTok-Jad, TzTok-Zuk","1,3",,9,5,1
-Rev Weapon or Avarice,DROP,"Amulet of avarice, Craw's bow (u), Thammaron's sceptre (u), Viggora's chainmace (u)",1,FALSE,1,5,1
-Full Mystic (Dark or Light),SET,"Mystic hat (light), Mystic robe top (light), Mystic robe bottom (light), Mystic gloves (light), Mystic boots (light)/Mystic hat (dark), Mystic robe top (dark), Mystic robe bottom (dark), Mystic gloves (dark), Mystic boots (dark)",,,,5,1
-Slayer Weapon Set,DROP,"Abyssal Whip, Dark Bow, Trident of the seas (full)/ Uncharged triden","1,1,1",TRUE,3,1,1
-3 Unique GWD Weapons,DROP,"Zamorakian spear, Steam battlestaff, Armadyl crossbow, Saradomin sword, Staff of the dead","1,1,1,1,1",TRUE,3,1,1
-3 VW Pieces,DROP,"Voidwaker blade, Voidwaker hilt, Voidwaker gem","1,1,1",FALSE,3,5,1
-5 LMS Wins,CHAT,You are victorious!,1,,5,5,1
-HMT or CM Kit,DROP,"Twisted ancestral colour kit, Sanguine ornament kit, Holy ornament kit","1,1,1",FALSE,1,5,1
-5 Colosseum Uniques,NICHE,,,,1,5,1
-All Zulrah Uniques,DROP,"Tanzanite fang, Magic fang, Serpentine visage","1,1,1",TRUE,3,5,1
-Golden Tench,DROP,Golden Tench,1,FALSE,1,5,1
-3 Justiciar Pieces,DROP,"Justiciar faceguard, Justiciar chestguard, Justiciar legguards","1,1,1",FALSE,3,5,1
-Brine Sabre,DROP,Brine sabre,1,FALSE,1,5,1
-All Cerb Crystals,DROP,"Primordial crystal,Pegasian crystal,Eternal crystal","1,1,1",TRUE,3,5,1
-Buckler or DHCB,DROP,"Twisted buckler, Dragon hunter crossbow","1,1",FALSE,1,5,1
+Tile Name,Tile Type,Triggers,Trigger Weights,Unique Drops,Triggers Required,Repetition,Points,Rules
+Mage Gear Collector,DROP,"Virtus mask/Virtus robe top/Virtus robe bottom,Ancestral hat/Ancestral robe top/Ancestral robe bottom,Elder chaos hood/Elder chaos top/Elder chaos robe ","1,1,1",TRUE,3,5,1,None
+Full Venator Bow,DROP,Venator shard,1,FALSE,5,5,1,None
+Arcane & Dex,DROP,"Arcane prayer scroll, Dexterous prayer scroll","1,1",TRUE,2,5,1,None
+Any Jar,DROP,Jar of chemicals / Jar of darkness / Jar of decay / Jar of dirt / Jar of dreams / Jar of eyes / Jar of miasma / Jar of sand / Jar of smoke / Jar of souls / Jar of spirits / Jar of stone / Jar of swamp,1,FALSE,1,5,1,None
+Full Shield From Scratch,DROP,"Spectral sigil/Arcane sigil/Elysian sigil,Spirit shield, Holy elixir","1,1,1",TRUE,3,5,1,None
+3x Avernic Hilts,DROP,Avernic defender hilt,1,FALSE,3,5,1,None
+Full Brimstone Ring,DROP,"Hydra's eye, Hydra's fang, Hydra's heart","1,1,1",TRUE,3,5,1,None
+Mix Match Barrows,DROP,"Ahrim's hood/Dharok's helm/Guthan's helm/Karil's coif/Torag's helm/Verac's helm,Ahrim's robetop/Dharok's platebody/Guthan's platebody/Karil's leathertop/Torag's platebody/Verac's brassard,Ahrim's robeskirt/Dharok's platelegs/Guthan's chainskirt/Karil's leatherskirt/Torag's platelegs/Verac's plateskirt,Ahrim's staff/Dharok's greataxe/Guthan's warspear/Karil's crossbow/Torag's hammers/Verac's flail","1,1,1,1",TRUE,4,5,1,None
+3 Statuette or Higher From Revs,DROP,Ancient statuette/Ancient medallion/Ancient effigy/Ancient relic,1,FALSE,3,5,1,None
+NM Unique,DROP,Nightmare staff/Inquisitor's great helm/Inquisitor's hauberk/Inquisitor's plateskirt/Eldritch orb/Harmonised orb/Volatile orb,1,FALSE,1,5,1,None
+Rapier or Sang,DROP,Ghrazi rapier/Sanguinesti staff (uncharged),1,FALSE,1,5,1,None
+Full Ballista,DROP,"Monkey tail,Ballista spring,Ballista limbs,Heavy frame/Light frame","1,1,1",TRUE,1,5,1,None
+25 Soaked Pages,DROP,Soaked page,1,FALSE,25,5,1,None
+3 Unique Slayer Heads,DROP,"Abyssal head,Alchemical hydra heads,Basilisk head,Cockatrice head,Kbd heads,Kq head,Kurask head, Vorkath's head","1,1,1,1,1,1,1,1",TRUE,3,5,1,None
+Cudgel,DROP,Sarachnis cudgel,1,FALSE,1,5,1,None
+2 Nex Uniques,DROP,"Zaryte vambraces,Nihil horn,Torva full helm (damaged), Torva platebody (damaged), Torva platelegs (damaged), Ancient hilt","1,1,1,1,1,1",FALSE,2,5,1,None
+Godsword Hilt Set,DROP,"Amadyl hilt, Bandos hilt, Saradomin hilt, Zamorak hilt","1,1,1,1",TRUE,4,1,1,None
+Bandos set,SET,"Bandos chestplate, Bandos tassets, Bandos boots",,,,5,1,None
+Ring or Fang,DROP,"Osmumten's fang, Lightbearer","1,1",FALSE,1,5,1,None
+Sub 35 Trio or Sub 30 5 Man CM,NICHE,,,,1,5,1,None
+Double Flax,NICHE,,,,1,5,1,None
+Full Ward,SET,"Odium shard 1, Odium shard 2, Odium shard 3/Malediction shard 1, Malediction shard 2, Malediction shard 3",,,,5,1,None
+3 Masori Pieces,DROP,"Masori mask, Masori body, Masori chaps","1,1,1",FALSE,3,5,1,None
+5 Unique Peril Moon Pieces,DROP,"Eclipse atlatl,Eclipse moon helm, Eclipse moon chestplate, Eclipse moon tassets,Dual macuahuitl,Blood moon helm,Blood moon chestplate,Blood moon tassets,Blue moon spear,Blue moon helm, Blue moon chestplate,Blue moon tassets","1,1,1,1,1,1,1,1,1,1,1,1",TRUE,5,5,1,None
+ECWS or 5 Armour Seeds,DROP,"Crystal armour seed, Enhanced crystal weapon seed","1,5",FALSE,5,5,1,None
+150 Toa Purple,NICHE,,,,1,5,1,None
+Mega Rare,DROP,"Twisted bow, Tumeken's shadow (uncharged), Scythe of vitur (uncharged),Elder maul, Kodai insignia","1,1,1,1,1",FALSE,1,5,1,None
+3 Obsidian Armour Pices,DROP,"Obsidian helmet, Obsidian platebody, Obsidian platelegs","1,1,1",FALSE,3,5,1,None
+Wildy LOTR,DROP,"Tyrannical ring, Ring of the gods, Treasonous ring","1,1,1",TRUE,3,5,1,None
+Broken Zombie Axe,DROP,Broken Zombie Axe,1,FALSE,1,5,1,None
+Granite Hammer or Torm Core,DROP,"Granite hammer, Tormaline core","1,1",FALSE,1,5,1,None
+HMT or CM Dust,DROP,Sanguine dust/Metamorphic dust,1,FALSE,1,5,1,None
+Claws or Bulwark,DROP,"Dragon claws, Dinh's bulwark","1,1",FALSE,1,5,1,None
+Boot Collector,DROP,"Bronze boots, Iron boots, Steel boots, Mithril boots, Adamant boots, Rune boots, Dragon boots","1,1,1,1,1,1,1",TRUE,7,1,1,None
+9 Fire Capes or 3 Infernal Capes,KILLCOUNT,"TzTok-Jad, TzTok-Zuk","1,3",,9,5,1,None
+Rev Weapon or Avarice,DROP,"Amulet of avarice, Craw's bow (u), Thammaron's sceptre (u), Viggora's chainmace (u)",1,FALSE,1,5,1,None
+Full Mystic (Dark or Light),SET,"Mystic hat (light), Mystic robe top (light), Mystic robe bottom (light), Mystic gloves (light), Mystic boots (light)/Mystic hat (dark), Mystic robe top (dark), Mystic robe bottom (dark), Mystic gloves (dark), Mystic boots (dark)",,,,5,1,None
+Slayer Weapon Set,DROP,"Abyssal Whip, Dark Bow, Trident of the seas (full)/ Uncharged triden","1,1,1",TRUE,3,1,1,None
+3 Unique GWD Weapons,DROP,"Zamorakian spear, Steam battlestaff, Armadyl crossbow, Saradomin sword, Staff of the dead","1,1,1,1,1",TRUE,3,1,1,None
+3 VW Pieces,DROP,"Voidwaker blade, Voidwaker hilt, Voidwaker gem","1,1,1",FALSE,3,5,1,None
+5 LMS Wins,CHAT,You are victorious!,1,,5,5,1,None
+HMT or CM Kit,DROP,"Twisted ancestral colour kit, Sanguine ornament kit, Holy ornament kit","1,1,1",FALSE,1,5,1,None
+5 Colosseum Uniques,NICHE,,,,5,5,1,None
+All Zulrah Uniques,DROP,"Tanzanite fang, Magic fang, Serpentine visage","1,1,1",TRUE,3,5,1,None
+Golden Tench,DROP,Golden Tench,1,FALSE,1,5,1,None
+3 Justiciar Pieces,DROP,"Justiciar faceguard, Justiciar chestguard, Justiciar legguards","1,1,1",FALSE,3,5,1,None
+Brine Sabre,DROP,Brine sabre,1,FALSE,1,5,1,None
+All Cerb Crystals,DROP,"Primordial crystal,Pegasian crystal,Eternal crystal","1,1,1",TRUE,3,5,1,None
+Buckler or DHCB,DROP,"Twisted buckler, Dragon hunter crossbow","1,1",FALSE,1,5,1,None

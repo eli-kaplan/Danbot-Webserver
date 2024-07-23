@@ -62,13 +62,17 @@ class Tile:
         self.tile_triggers_required = tile_tuple[6]
         self.tile_repetition = tile_tuple[7]
         self.tile_points = tile_tuple[8]
+        self.tile_rules = tile_tuple[9]
 
 
 class Request:
     def __init__(self, request_tuple):
         self.request_id = request_tuple[0],
         self.team_name = request_tuple[1],
-        self.evidence = request_tuple[2]
+        self.player_name = request_tuple[2],
+        self.tile_name = request_tuple[3],
+        self.item_name = request_tuple[4]
+        self.evidence = request_tuple[5]
 
 
 class PartialCompletion:

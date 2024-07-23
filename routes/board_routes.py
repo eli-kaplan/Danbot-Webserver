@@ -59,7 +59,7 @@ def index():
         pd = PanelData()
         pd.progress = "Progress: Please select a team to see your progress"
         pd.repetition = f"Repetition: {tile.tile_repetition}"
-        pd.rules = "Rules: WIP"
+        pd.rules = f"Rules: {tile.tile_rules}"
         panelData[tile.tile_name] = pd
         tile_id_to_name[tile.tile_id] = tile.tile_name
     tiles = sorted(tiles, key=lambda tile: tile.tile_id)
@@ -111,7 +111,7 @@ def board(team_name):
         tiles.append(tile)
         pd = PanelData()
         pd.repetition = f"Repetition: {tile.tile_repetition}"
-        pd.rules = "Rules: WIP"
+        pd.rules = f"Rules: {tile.tile_rules}"
         panelData[tile.tile_name] = pd
         tile_id_to_name[tile.tile_id] = tile.tile_name
 

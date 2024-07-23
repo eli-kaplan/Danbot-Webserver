@@ -283,7 +283,7 @@ def get_completed_tiles_by_team_id_and_tile_id(team_id, tile_id):
 
 
 def add_tile(tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required,
-             tile_repetition, tile_points):
+             tile_repetition, tile_points, tile_rules):
     with connect() as conn:
         cursor = conn.cursor()
         if tile_unique_drops == "N/A" or tile_unique_drops == "":
@@ -292,9 +292,9 @@ def add_tile(tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_uni
             tile_triggers_required = 0
 
         cursor.execute(
-            "INSERT INTO tiles (tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required, tile_repetition, tile_points) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",
+            "INSERT INTO tiles (tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required, tile_repetition, tile_points, tile_rules) VALUES (%s,%s,%s,%s,%s,%s,%s,%s, %s)",
             (tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required,
-             tile_repetition, tile_points))
+             tile_repetition, tile_points, tile_rules))
 
 def update_tile_trigger(tile_id, tile_trigger):
     with connect() as conn:
@@ -508,10 +508,10 @@ def get_manual_progress_by_tile_id_and_team_id(tile_id, team_id):
             return 0
 
 
-def add_request(team_name, evidence):
+def add_request(team_name, player_name, tile_name, item_description, image):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO requests (team_name, evidence) VALUES (%s, %s)", (team_name, evidence,))
+        cursor.execute("INSERT INTO requests (team_name, player_name, tile_name, item_name, evidence) VALUES (%s, %s, %s, %s, %s)", (team_name, player_name, tile_name, item_description, image,))
 
 
 def get_request():
@@ -684,7 +684,8 @@ def reset_tables():
                 tile_unique_drops boolean,
                 tile_triggers_required int,
                 tile_repetition int,
-                tile_points real
+                tile_points real,
+                tile_rules text
             )
             ''')
 
@@ -722,6 +723,9 @@ def reset_tables():
             CREATE TABLE requests (
                 request_id SERIAL PRIMARY KEY,
                 team_name text,
+                player_name text,
+                tile_name text, 
+                item_name text,
                 evidence text
             )
             ''')
@@ -796,8 +800,9 @@ def read_tiles(file_name):
         tile_triggers_required = tile[5]
         tile_repetition = tile[6]
         tile_points = tile[7]
+        tile_rules = tile[8]
         add_tile(tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required,
-                 tile_repetition, tile_points)
+                 tile_repetition, tile_points, tile_rules)
         tile = Tile(get_tile_by_name(tile_name))
         for item in whitelist_items:
             if item.strip() == "":
