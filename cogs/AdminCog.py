@@ -13,6 +13,39 @@ class AdminCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @discord.slash_command(name="add_player", description="Adds a player to the bingo")
+    @default_permissions(manage_webhooks=True)
+    @guild_only()
+    async def add_player(self, ctx:discord.ApplicationContext,
+                         player_name: discord.Option(str, "What is the players username?"),
+                         team_name: discord.Option(str, "What team should this player be on?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names()))):
+        await ctx.defer()
+        team = database.get_team_by_name(team_name)
+        if team is not None:
+            team = db_entities.Team(team)
+        else:
+            await ctx.respond(f"Team name {team_name} not found.")
+            return
+
+        database.add_player(player_name, 0, 0, 0, team.team_id)
+        await ctx.respond(f"{player_name} has been added to team {team.team_name}")
+
+    @discord.slash_command(name="remove_player", description="Removes a player from the bingo")
+    @default_permissions(manage_webhooks=True)
+    @guild_only()
+    async def remove_player(self, ctx:discord.ApplicationContext,
+                            player_name: discord.Option(str, "What is the players username?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, player_names()))):
+        await ctx.defer()
+        player = database.get_player_by_name(player_name)
+        if player is not None:
+            player = db_entities.Player(player)
+        else:
+            await ctx.respond(f"{player_name} was not found.")
+            return
+        database.remove_player(player.player_id)
+        await ctx.respond(f"Removed {player.player_name} from the bingo.")
+
+
     @discord.slash_command(name="change_player_team", description="Moves a player from one team to another")
     @default_permissions(manage_webhooks=True)
     @guild_only()
