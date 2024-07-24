@@ -27,7 +27,7 @@ class AdminCog(commands.Cog):
             await ctx.respond(f"Team name {team_name} not found.")
             return
 
-        database.add_player(player_name, 0, 0, 0, team.team_id)
+        database.add_player(player_name, 0, 0, 0, team.team_id, 0)
         await ctx.respond(f"{player_name} has been added to team {team.team_name}")
 
     @discord.slash_command(name="remove_player", description="Removes a player from the bingo")
