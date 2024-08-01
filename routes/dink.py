@@ -347,12 +347,28 @@ def parse_pet(data, img_file) -> dict[str, list[str]]:
     team = db_entities.Team(team)
     database.add_pet_by_playername(rsn)
 
-    if pet in black_listed_pets:
-        send_webhook(team.team_webhook, f"{player.player_name} is being followed by {pet}!", description="Too bad its not worth any points....", color=16776960, image=img_file)
+    # If a pet tile exists change behavior based on tile input
+    pet_tile = database.get_tile_by_type("PET")
+    if len(pet_tile) > 0:
+        pet_tile = db_entities.Tile(pet_tile[0])
+        tile_completion_count = len(database.get_completed_tiles_by_team_id_and_tile_id(team.team_id, pet_tile.tile_id))
+        if pet in [trigger.strip() for trigger in pet_tile.tile_triggers.split(',')] or (tile_completion_count >= pet_tile.tile_repetition and pet_tile.tile_repetition > 0):
+            send_webhook(team.team_webhook, f"{player.player_name} is being followed by {pet}!", description="Too bad its not worth any points....", color=16776960, image=img_file)
+        else:
+            database.add_player_tile_completions(player.player_id, 1)
+            database.add_team_points(team.team_id, pet_tile.tile_points)
+            database.add_completed_tile(pet_tile.tile_id, team.team_id)
+            send_webhook(team.team_webhook, f"{player.player_name} is being followed by {pet}!", description=f"{team.team_name} has been awarded {PET_POINTS} points!", color=65280, image=img_file)
+
+    # If no pet tile exists, default setup configured here
     else:
-        database.add_player_tile_completions(player.player_id, 1)
-        database.add_team_points(team.team_id, PET_POINTS)
-        send_webhook(team.team_webhook, f"{player.player_name} is being followed by {pet}!", description=f"{team.team_name} has been awarded {PET_POINTS} points!", color=65280, image=img_file)
+        if pet in black_listed_pets:
+            send_webhook(team.team_webhook, f"{player.player_name} is being followed by {pet}!",
+                         description="Too bad its not worth any points....", color=16776960, image=img_file)
+        else:
+            database.add_player_tile_completions(player.player_id, 1)
+            database.add_team_points(team.team_id, PET_POINTS)
+            send_webhook(team.team_webhook, f"{player.player_name} is being followed by {pet}!", description=f"{team.team_name} has been awarded {PET_POINTS} points!", color=65280, image=img_file)
 
     return True
 

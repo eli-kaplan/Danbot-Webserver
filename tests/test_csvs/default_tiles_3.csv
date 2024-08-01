@@ -1,5 +1,5 @@
-Tile Name,Tile Type,Triggers,Trigger Weights,Unique Drops,Triggers Required,Repetition,Points
-Test Tile,DROP,Coin pouch,1,FALSE,3,15,1
-Test Tile 2,DROP,"Bones, Coins","20,2",FALSE,20,3,1
-Test Tile 3,DROP,"Air Rune / Earth rune, Fire rune /Iron bolts, Steel arrow/ Bronze arrow","1,1,1",TRUE,3,2,1
-Vardorvis,KILLCOUNT,Vardorvis,1,N/A,10,2,1
+Tile Name,Tile Type,Triggers,Trigger Weights,Unique Drops,Triggers Required,Repetition,Points,Rules
+Test Tile,DROP,Coin pouch,1,FALSE,3,15,1,none
+Test Tile 2,DROP,"Bones, Coins","20,2",FALSE,20,3,1,none
+Test Tile 3,DROP,"Air Rune / Earth rune, Fire rune /Iron bolts, Steel arrow/ Bronze arrow","1,1,1",TRUE,3,2,1,none
+Vardorvis,KILLCOUNT,Vardorvis,1,N/A,10,2,1,none

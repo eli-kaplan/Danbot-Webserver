@@ -1,2 +1,2 @@
-Tile Name,Tile Type,Triggers,Trigger Weights,Unique Drops,Triggers Required,Repetition,Points
-Test Tile 1,SET,"Odium 1,Odium 2,Odium 3/Mal 1, Mal 2, Mal 3",N/A,TRUE,N/A,1,1
+Tile Name,Tile Type,Triggers,Trigger Weights,Unique Drops,Triggers Required,Repetition,Points,Rules
+Test Tile 1,SET,"Odium 1,Odium 2,Odium 3/Mal 1, Mal 2, Mal 3",N/A,TRUE,N/A,1,1,none

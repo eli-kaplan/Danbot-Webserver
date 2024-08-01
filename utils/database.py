@@ -340,6 +340,11 @@ def get_tile_by_name(tile_name):
         cursor.execute("SELECT * FROM tiles where lower(tile_name) = lower(%s)", (tile_name,))
         return cursor.fetchone()
 
+def get_tile_by_type(tile_type):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM tiles where tile_type = %s", (tile_type,))
+        return cursor.fetchall()
 
 def get_drops_by_item_name_and_team_id(item_name, team_id):
     with connect() as conn:

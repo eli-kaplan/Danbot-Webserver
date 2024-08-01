@@ -2,7 +2,4 @@ Tile Name,Tile Type,Triggers,Trigger Weights,Unique Drops,Triggers Required,Repe
 Test Tile,DROP,Coin pouch,1,FALSE,3,15,1,none
 Test Tile 2,DROP,"Bones, Coins","20,2",FALSE,20,3,1,none
 Test Tile 3,DROP,"Air Rune / Earth rune, Fire rune /Iron bolts, Steel arrow/ Bronze arrow","1,1,1",TRUE,3,2,1,none
-Vardorvis,KILLCOUNT,Vardorvis,N/A,N/A,10,2,1,none
-Pet,PET,None,N/A,N/A,0,0,0.5,none
-Pet,PET,None,N/A,N/A,0,0,0.5,none
-Test Niche Tile,NICHE,NONE,N/A,N/A,5,2,1,none
+Pet Tile,PET,"Skotizo","1",,1,1,1,none
