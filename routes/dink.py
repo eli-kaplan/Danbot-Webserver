@@ -358,7 +358,7 @@ def parse_pet(data, img_file) -> dict[str, list[str]]:
             database.add_player_tile_completions(player.player_id, 1)
             database.add_team_points(team.team_id, pet_tile.tile_points)
             database.add_completed_tile(pet_tile.tile_id, team.team_id)
-            send_webhook(team.team_webhook, f"{player.player_name} is being followed by {pet}!", description=f"{team.team_name} has been awarded {PET_POINTS} points!", color=65280, image=img_file)
+            send_webhook(team.team_webhook, f"{player.player_name} is being followed by {pet}!", description=f"{team.team_name} has been awarded {pet_tile.tile_points} points!", color=65280, image=img_file)
 
     # If no pet tile exists, default setup configured here
     else:
