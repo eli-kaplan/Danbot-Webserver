@@ -133,6 +133,10 @@ def get_chat_progress(tile_progress):
     return tile_progress
 
 
+def get_pet_progress(tile_progress):
+    return f"You have {database.get_total_pets_by_team(tile_progress.team.team_id)} total pets."
+
+
 def get_progress(team_id, tile_id):
     tile_progress = TileProgress()
 
@@ -163,6 +167,8 @@ def get_progress(team_id, tile_id):
         return get_niche_progress(tile_progress)
     if tile_progress.tile.tile_type == "CHAT":
         return get_chat_progress(tile_progress)
+    if tile_progress.tile.tile_type == "PET":
+        return get_pet_progress(tile_progress)
 
 
 # def check_progress(tile, team):

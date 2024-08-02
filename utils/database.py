@@ -87,6 +87,15 @@ def add_pet_by_playername(rsn):
         cursor = conn.cursor()
         cursor.execute("UPDATE players SET pet_count = pet_count + 1 WHERE lower(player_name) = lower(%s)", (rsn,))
 
+def get_total_pets_by_team(team_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT players WHERE team_id = %s", (team_id,))
+    total_pets = 0
+    for player in cursor.fetchall():
+        player_obj = db_entities.Player(player)
+        total_pets = total_pets + player_obj.pet_count
+    return total_pets
 
 def add_player_tile_completions(player_id, tiles_completed):
     with connect() as conn:
