@@ -5,6 +5,7 @@ from routes.tutorial_routes import tutorial_routes
 from routes.user_routes import user_routes
 from routes.admin_routes import admin_routes
 from routes.dink import drop_submission_route
+from routes.maxing_route import maxing_routes
 from routes.board_routes import board_routes
 import os
 import threading
@@ -25,6 +26,7 @@ app.register_blueprint(admin_routes, url_prefix="/admin")
 app.register_blueprint(user_routes, url_prefix="/user")
 app.register_blueprint(board_routes, url_prefix='/board')
 app.register_blueprint(tutorial_routes, url_prefix="/tutorial")
+app.register_blueprint(maxing_routes, url_prefix="/maxing")
 
 def start_bot():
     bot.run()
