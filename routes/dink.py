@@ -573,6 +573,7 @@ def parse_json_data(json_data, img_file) -> dict[str, list[str]]:
     return []
 
 
+
 @drop_submission_route.route('', methods=['POST'])
 def handle_request():
     if os.getenv('TRACKING') == "FALSE":

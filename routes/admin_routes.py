@@ -62,3 +62,26 @@ def upload_tiles():
     return render_template('admin_templates/upload_tiles.html')
 
 
+@admin_routes.route('/start_tracking', methods=['GET', 'POST'])
+def start_tracking():
+    if request.method == 'POST':
+        password = request.form.get('password')
+        correct_password = os.environ.get('ADMIN_PASSWORD', 'password')
+        if password == correct_password:
+            os.environ['TRACKING'] = "TRUE"
+            flash("Now tracking user data")
+        else:
+            return redirect("https://www.youtube.com/watch?v=xvFZjo5PgG0")
+    return render_template('admin_template/start_tracking.html')
+
+@admin_routes.route('/stop_tracking', methods=['GET', 'POST'])
+def stop_tracking():
+    if request.method == 'POST':
+        password = request.form.get('password')
+        correct_password = os.environ.get('ADMIN_PASSWORD', 'password')
+        if password == correct_password:
+            os.environ['TRACKING'] = "FALSE"
+            flash("No longer tracking user data")
+        else:
+            return redirect("https://www.youtube.com/watch?v=xvFZjo5PgG0")
+    return render_template('admin_template/stop_tracking.html')

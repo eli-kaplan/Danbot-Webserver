@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Reset Database</h2>
+    <h3>Submit this form to start tracking player data</h3>
+    <form action="/admin/reset_database" method="post">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password">
+        <input type="submit" value="Submit">
+    </form>
+</div>
+{% endblock %}
