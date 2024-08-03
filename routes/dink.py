@@ -1,3 +1,4 @@
+import os
 from collections import defaultdict
 
 from flask import Blueprint, jsonify, request
@@ -574,6 +575,9 @@ def parse_json_data(json_data, img_file) -> dict[str, list[str]]:
 
 @drop_submission_route.route('', methods=['POST'])
 def handle_request():
+    if os.getenv('TRACKING') == "FALSE":
+        return jsonify({"message": "Not currently tracking"})
+
     data = request.form
     try:
         img_file = request.files['file']
