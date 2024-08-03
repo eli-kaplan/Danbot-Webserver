@@ -72,7 +72,7 @@ def start_tracking():
             flash("Now tracking user data")
         else:
             return redirect("https://www.youtube.com/watch?v=xvFZjo5PgG0")
-    return render_template('admin_template/start_tracking.html')
+    return render_template('admin_templates/start_tracking.html')
 
 @admin_routes.route('/stop_tracking', methods=['GET', 'POST'])
 def stop_tracking():
@@ -84,4 +84,4 @@ def stop_tracking():
             flash("No longer tracking user data")
         else:
             return redirect("https://www.youtube.com/watch?v=xvFZjo5PgG0")
-    return render_template('admin_template/stop_tracking.html')
+    return render_template('admin_templates/stop_tracking.html')
