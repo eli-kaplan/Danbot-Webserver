@@ -3,6 +3,7 @@
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         body {
             display: flex;
@@ -10,28 +11,95 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background-color: #121212; /* Dark background */
-            color: #FFFFFF; /* Light text */
+            background-color: #121212;
+            color: #FFFFFF;
             font-family: Arial, sans-serif;
         }
 
-        nav {
-            display: flex;
-            justify-content: space-between; /* Aligns nav-left to the left and nav-right to the right */
-            background-color: #333333; /* Darker background for navbar */
-            height: 50px;
-            padding: 0 16px;
-            width: 100%;
+        .content {
+            padding-top: 60px; /* Adjust this value to match the height of your navbar */
+        }
+
+        .top-bar {
             position: fixed;
             top: 0;
+            width: 100%;
+            padding: 10px 0;
+            text-align: left;
+            font-size: 20px;
+            z-index: 1000;
+        }
+        /* Your existing styles here */
+
+        .top-bar .hamburger {
+            margin-left: 10px;
+            padding: 10px 15px; /* Add some padding */
+            border-radius: 5px; /* Round the corners */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Transition for color as well */
+            color: #f2f2f2; /* Initial text color */
+            font-size: 1.75em;
         }
 
-        .nav-left, .nav-right {
-            display: flex;
+        .top-bar .player:hover {
+            background-color: #555; /* Background color on hover */
+            color: #fff; /* Text color on hover */
         }
 
-        .content {
-            margin-top: 60px; /* Adjust as needed */
+        /* The Overlay (background) */
+        .overlay {
+          /* Height & width depends on how you want to reveal the overlay (see JS below) */
+          height: 100%;
+          width: 0;
+          position: fixed; /* Stay in place */
+          z-index: 1001; /* Sit on top */
+          left: 0;
+          top: 0;
+          background-color: rgb(0,0,0); /* Black fallback color */
+          background-color: rgba(0,0,0, 0.9); /* Black w/opacity */
+          overflow-x: hidden; /* Disable horizontal scroll */
+          transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+        }
+
+        /* Position the content inside the overlay */
+        .overlay-content {
+          position: relative;
+          top: 25%; /* 25% from the top */
+          width: 100%; /* 100% width */
+          text-align: center; /* Centered text/links */
+          margin-top: 30px; /* 30px top margin to avoid conflict with the close button on smaller screens */
+        }
+
+        /* The navigation links inside the overlay */
+        .overlay a {
+          padding: 8px;
+          text-decoration: none;
+          font-size: 36px;
+          color: #818181;
+          display: block; /* Display block instead of inline */
+          transition: 0.3s; /* Transition effects on hover (color) */
+        }
+
+        /* When you mouse over the navigation links, change their color */
+        .overlay a:hover, .overlay a:focus {
+          color: #f1f1f1;
+        }
+
+        /* Position the close button (top right corner) */
+        .overlay .closebtn {
+          position: absolute;
+          top: 20px;
+          right: 45px;
+          font-size: 60px;
+        }
+
+        /* When the height of the screen is less than 450 pixels, change the font-size of the links and position the close button again, so they don't overlap */
+        @media screen and (max-height: 450px) {
+          .overlay a {font-size: 20px}
+          .overlay .closebtn {
+            font-size: 40px;
+            top: 15px;
+            right: 35px;
+          }
         }
 
         button {
@@ -56,21 +124,74 @@
             background-color: #45a049;
         }
     </style>
+    <script>
+        /* Open when someone clicks on the span element */
+        function openNav() {
+          document.getElementById("myNav").style.width = "100%";
+        }
+
+        /* Close when someone clicks on the "x" symbol inside the overlay */
+        function closeNav() {
+          document.getElementById("myNav").style.width = "0%";
+        }
+    </script>
 </head>
 <body>
-    <nav>
-        <div class="nav-left">
-            <button onclick="location.href='/user/leaderboard'" type="button">Leaderboard</button>
-            <button onclick="location.href='/user/player/None'" type="button">Player</button>
-            <button onclick="location.href='/user/team/None'" type="button">Team</button>
-            <button onclick="location.href='/board'" type="button">Board</button>
-            <button onclick="location.href='/board/compare'" type="button">Compare Boards</button>
-            <button onclick="location.href='/tutorial/dink'" type="button">Dink Setup</button>
+    <div id="myNav" class="overlay">
+
+      <!-- Button to close the overlay navigation -->
+      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()" style="z-index:1002">&times;</a>
+
+      <!-- Overlay content -->
+        <div class="overlay-content">
+            <!-- Left Side -->
+            <div style="float: left; width: 50%;">
+                <h1>Bingo Player</h1>
+                <a href="/user/leaderboard">Leaderboard</a>
+                <a href="/user/player/None">Player Data</a>
+                <a href="/user/team/None">Team Data</a>
+                <a href="/board">Board</a>
+                <a href="/board/compare">Compare Boards</a>
+                <a href="/tutorial/dink">Dink Setup</a>
+            </div>
+            <!-- Right Side -->
+            <div style="float: right; width: 50%;">
+                <h1>Bingo Admin</h1>
+                <a href="/admin">Admin Home</a>
+                <a href="/admin/reset_database">Reset Bingo</a>
+                <a href="/admin/upload_teams">Upload Teams</a>
+                <a href="/admin/upload_tiles">Upload Tiles</a>
+                <a href="/admin/start_tracking">Start Tracking</a>
+                <a href="/admin/stop_tracking">Stop Tracking</a>
+                <a href="/admin/show_board">Show Board</a>
+                <a href="/admin/hide_board">Hide Board</a>
+            </div>
         </div>
-        <div class="nav-right">
-                <button onclick="location.href='/admin'" type="button">Admin Panel</button>
-        </div>
-    </nav>
+
+
+    </div>
+<!--    <div id="adminNav" class="overlay">-->
+
+<!--      &lt;!&ndash; Button to close the overlay navigation &ndash;&gt;-->
+<!--      <a href="javascript:void(0)" class="closebtn" onclick="closeAdminNav()">&times;</a>-->
+
+<!--      &lt;!&ndash; Overlay content &ndash;&gt;-->
+<!--      <div class="overlay-content">-->
+<!--            <a href="/admin">Admin Home</a>-->
+<!--            <a href="/admin/reset_database">Reset Bingo</a>-->
+<!--            <a href="/admin/upload_teams">Upload Teams</a>-->
+<!--            <a href="/admin/upload_tiles">Upload Tiles</a>-->
+<!--            <a href="/admin/start_tracking">Start Tracking</a>-->
+<!--            <a href="/admin/stop_tracking">Stop Tracking</a>-->
+<!--            <a href="/admin/show_board">Show Board</a>-->
+<!--            <a href="/admin/hide_board">Hide Board</a>-->
+<!--      </div>-->
+
+    </div>
+
+    <div class="top-bar">
+        <span onclick="openNav()" class="hamburger">&#9776;</span>
+    </div>
     <div class="content">
         {% block content %}
         {% endblock %}
