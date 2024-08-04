@@ -1,4 +1,6 @@
+import os
 from collections import defaultdict
+import random
 
 from flask import render_template, Blueprint, request, jsonify
 import math
@@ -8,6 +10,9 @@ board_routes = Blueprint("board_routes", __name__)
 
 @board_routes.route('/compare', methods=['GET'])
 def compare():
+    if os.getenv('BOARD_VISIBLE') == "FALSE":
+        return hidden_board()
+
     teams = []
     for team in database.get_teams():
         teams.append(db_entities.Team(team))
@@ -44,6 +49,8 @@ class PanelData:
 
 @board_routes.route('/', methods=['GET'])
 def index():
+    if os.getenv('BOARD_VISIBLE') == "FALSE":
+        return hidden_board()
     teams = []
     panelData = {}
     tile_id_to_name = {}
@@ -86,8 +93,29 @@ def get_progress():
 
     return jsonify(progress.status_text)
 
+
+def select_random_file(directory):
+    # Get a list of all files in the directory
+    files = os.listdir(directory)
+
+    # Filter out directories, only keep files
+    files = [f for f in files if os.path.isfile(os.path.join(directory, f))]
+
+    # Select a random file
+    random_file = random.choice(files)
+
+    return random_file
+def hidden_board():
+
+    random_file = select_random_file("static/hidden_board_memes")
+    random_file = "hidden_board_memes/" + random_file
+    return render_template('board_templates/hidden_board.html', PageTitle="The Tiles Haven't Been Released Yet", FileName=random_file)
+
+
 @board_routes.route('/<team_name>', methods=['GET'])
 def board(team_name):
+    if os.getenv('BOARD_VISIBLE') == "FALSE":
+        return hidden_board()
 
     panelData = {}
     tile_id_to_name = {}

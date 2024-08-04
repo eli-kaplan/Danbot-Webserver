@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Hide Board</h2>
+    <h3>Submit this form to hide your board</h3>
+    <form action="/admin/hide_board" method="post">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password">
+        <input type="submit" value="Submit">
+    </form>
+</div>
+{% endblock %}

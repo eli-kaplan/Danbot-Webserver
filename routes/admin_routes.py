@@ -85,3 +85,27 @@ def stop_tracking():
         else:
             return redirect("https://www.youtube.com/watch?v=xvFZjo5PgG0")
     return render_template('admin_templates/stop_tracking.html')
+
+@admin_routes.route('/hide_board', methods=['GET', 'POST'])
+def hide_board():
+    if request.method == 'POST':
+        password = request.form.get('password')
+        correct_password = os.environ.get('ADMIN_PASSWORD', 'password')
+        if password == correct_password:
+            os.environ['BOARD_VISIBLE'] = "FALSE"
+            flash("Board will now be hidden. Uploading tiles will not change the visibility")
+        else:
+            return redirect("https://www.youtube.com/watch?v=xvFZjo5PgG0")
+    return render_template('admin_templates/hide_board.html')
+
+@admin_routes.route('/show_board', methods=['GET', 'POST'])
+def show_board():
+    if request.method == 'POST':
+        password = request.form.get('password')
+        correct_password = os.environ.get('ADMIN_PASSWORD', 'password')
+        if password == correct_password:
+            os.environ['BOARD_VISIBLE'] = "TRUE"
+            flash("Board is now being show. Uploading tiles will not change the visibility")
+        else:
+            return redirect("https://www.youtube.com/watch?v=xvFZjo5PgG0")
+    return render_template('admin_templates/show_board.html')
