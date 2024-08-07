@@ -8,32 +8,70 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            color: #FFFFFF; /* Light text */
+            font-family: Arial, sans-serif; /* Use a readable font */
         }
+
         th {
-            background-color: #333333; /* Darker background for navbar */
+            background-color: #333; /* Darker background for navbar */
             color: white;
+            position: sticky;
+            top: 0;
+            font-size: 16px; /* Larger font size for header */
         }
+
         th, td {
             border: 1px solid #ddd;
             padding: 15px;
             text-align: left;
         }
+
         tr:nth-child(even) {
             background-color: #1E1E1E;
         }
+
         tr:hover {
-            background-color: #333333;
+            background-color: #444; /* Slightly darker hover effect */
         }
 
-        a {
-            color: white;
+        /* Optional: Remove borders or adjust as needed */
+        /* table {
+            border: none;
+        } */
+
+        /* Optional: Add spacing between rows */
+        tr {
+            margin-bottom: 5px;
         }
 
+        /* Optional: Style the search bar and header */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 10px;
+        }
+
+        .search-bar {
+            display: flex;
+        }
+
+        .search-bar input[type="text"] {
+            border: none;
+            padding: 10px;
+            color: #000;
+            background-color: #fff;
+        }
+
+        .search-bar input[type="submit"] {
+            border: none;
+            padding: 10px;
+            color: #fff;
+            background-color: #444;
+            cursor: pointer;
+        }
+
+        a {
+            color: white;
         }
     </style>
 </head>
