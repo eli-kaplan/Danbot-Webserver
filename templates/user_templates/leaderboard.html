@@ -109,15 +109,15 @@
                 <th>Total Pets</th>
             </tr>
             <tr>
-                <td>
+                <th>
                     {{ total_tiles }} tiles
                     {% if partial_tiles > 0 %}
                     ({{ partial_tiles }} partials)
                     {% endif %}
-                </td>
-                <td>{{ total_gold }}</td>
-                <td>{{ total_deaths }} deaths</td>
-                <td>{{ total_pets }} pets</td>
+                </th>
+                <th>{{ total_gold }}</th>
+                <th>{{ total_deaths }} deaths</th>
+                <th>{{ total_pets }} pets</th>
             </tr>
         </table>
         <h2>Honorable Mentions</h2>
@@ -129,10 +129,10 @@
                 <th>Pet Collector</th>
             </tr>
             <tr>
-                <td><a href="/user/player/{{ most_tiles_player.player_name }}">{{ most_tiles_player.player_name }}</a> with {{ most_tiles_player.tiles_completed }} tiles </td>
-                <td><a href="/user/player/{{ most_gold_player.player_name }}">{{ most_gold_player.player_name }}</a> with {{ most_gold_player.gp_gained }} gold </td>
-                <td><a href="/user/player/{{ most_deaths_player.player_name }}">{{ most_deaths_player.player_name }}</a> with {{ most_deaths_player.deaths }} deaths</td>
-                <td><a href="/user/player/{{ most_pets_player.player_name}}">{{ most_pets_player.player_name }}</a> with {{ most_pets_player.pet_count }} pets </td>
+                <th><a href="/user/player/{{ most_tiles_player.player_name }}">{{ most_tiles_player.player_name }}</a> with {{ most_tiles_player.tiles_completed }} tiles </th>
+                <th><a href="/user/player/{{ most_gold_player.player_name }}">{{ most_gold_player.player_name }}</a> with {{ most_gold_player.gp_gained }} gold </th>
+                <th><a href="/user/player/{{ most_deaths_player.player_name }}">{{ most_deaths_player.player_name }}</a> with {{ most_deaths_player.deaths }} deaths</th>
+                <th><a href="/user/player/{{ most_pets_player.player_name}}">{{ most_pets_player.player_name }}</a> with {{ most_pets_player.pet_count }} pets </th>
             </tr>
         </table>
         <h2>Player Ranks</h2>
