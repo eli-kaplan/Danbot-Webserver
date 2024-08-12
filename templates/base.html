@@ -29,7 +29,6 @@
             font-size: 20px;
             z-index: 1000;
         }
-        /* Your existing styles here */
 
         .top-bar .hamburger {
             margin-left: 10px;
@@ -40,66 +39,71 @@
             font-size: 1.75em;
         }
 
-        .top-bar .player:hover {
+        .top-bar .hamburger:hover {
             background-color: #555; /* Background color on hover */
             color: #fff; /* Text color on hover */
         }
 
         /* The Overlay (background) */
         .overlay {
-          /* Height & width depends on how you want to reveal the overlay (see JS below) */
-          height: 100%;
-          width: 0;
-          position: fixed; /* Stay in place */
-          z-index: 1001; /* Sit on top */
-          left: 0;
-          top: 0;
-          background-color: rgb(0,0,0); /* Black fallback color */
-          background-color: rgba(0,0,0, 0.9); /* Black w/opacity */
-          overflow-x: hidden; /* Disable horizontal scroll */
-          transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+            height: 100%;
+            width: 0;
+            position: fixed; /* Stay in place */
+            z-index: 1001; /* Sit on top */
+            left: 0;
+            top: 0;
+            background-color: rgba(0,0,0, 0.9); /* Black w/opacity */
+            overflow-x: hidden; /* Disable horizontal scroll */
+            transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         /* Position the content inside the overlay */
         .overlay-content {
-          position: relative;
-          top: 25%; /* 25% from the top */
-          width: 100%; /* 100% width */
-          text-align: center; /* Centered text/links */
-          margin-top: 30px; /* 30px top margin to avoid conflict with the close button on smaller screens */
+            width: 100%; /* 100% width */
+            text-align: center; /* Centered text/links */
+            margin-top: 30px; /* 30px top margin to avoid conflict with the close button on smaller screens */
+            overflow-y: auto; /* Allow vertical scrolling */
+            max-height: 80vh; /* Ensure content does not exceed the height of the viewport */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         /* The navigation links inside the overlay */
         .overlay a {
-          padding: 8px;
-          text-decoration: none;
-          font-size: 36px;
-          color: #818181;
-          display: block; /* Display block instead of inline */
-          transition: 0.3s; /* Transition effects on hover (color) */
+            padding: 8px;
+            text-decoration: none;
+            font-size: 36px;
+            color: #818181;
+            display: block; /* Display block instead of inline */
+            transition: 0.3s; /* Transition effects on hover (color) */
         }
 
         /* When you mouse over the navigation links, change their color */
         .overlay a:hover, .overlay a:focus {
-          color: #f1f1f1;
+            color: #f1f1f1;
         }
 
         /* Position the close button (top right corner) */
         .overlay .closebtn {
-          position: absolute;
-          top: 20px;
-          right: 45px;
-          font-size: 60px;
+            position: absolute;
+            top: 20px;
+            right: 45px;
+            font-size: 60px;
         }
 
         /* When the height of the screen is less than 450 pixels, change the font-size of the links and position the close button again, so they don't overlap */
         @media screen and (max-height: 450px) {
-          .overlay a {font-size: 20px}
-          .overlay .closebtn {
-            font-size: 40px;
-            top: 15px;
-            right: 35px;
-          }
+            .overlay a {font-size: 20px}
+            .overlay .closebtn {
+                font-size: 40px;
+                top: 15px;
+                right: 35px;
+            }
         }
 
         button {
@@ -124,85 +128,133 @@
             background-color: #45a049;
         }
 
-        /* Your existing styles here */
-
-        .top-bar .hamburger {
-            margin-left: 10px;
-            padding: 10px 15px; /* Add some padding */
-            border-radius: 5px; /* Round the corners */
-            transition: background-color 0.3s ease, color 0.3s ease; /* Transition for color as well */
-            color: #f2f2f2; /* Initial text color */
-            font-size: 1.75em;
+        /* Dropdown menu for Bingo Admin */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
         }
 
-        .top-bar .hamburger:hover {
-            background-color: #555; /* Background color on hover */
-            color: #fff; /* Text color on hover */
+        .dropdown-content {
+            display: block;
+            min-width: 100%;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            overflow-y: auto; /* Allow scrolling if content is too long */
         }
 
+        .dropdown-content a {
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            color: #f1f1f1;
+        }
+
+        .dropdown span {
+            cursor: pointer;
+        }
+
+        .dropdown-content.show {
+            max-height: 600px; /* Adjust this value as needed */
+        }
+
+        /* width */
+        ::-webkit-scrollbar {
+          width: 10px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+          background: rgba(241, 241, 241, 0.29);
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+          background: rgba(164, 162, 162, 0.49);
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+          background: rgba(0, 0, 0, 0.69);
+        }
     </style>
     <script>
         /* Open when someone clicks on the span element */
         function openNav() {
-          document.getElementById("myNav").style.width = "100%";
+            document.getElementById("myNav").style.width = "30%";
+            document.addEventListener('click', closeOverlayOnClickOutside);
         }
 
         /* Close when someone clicks on the "x" symbol inside the overlay */
         function closeNav() {
-          document.getElementById("myNav").style.width = "0%";
+            document.getElementById("myNav").style.width = "0%";
+            document.removeEventListener('click', closeOverlayOnClickOutside);
+        }
+
+        /* Toggle the dropdown menu */
+        function toggleDropdown() {
+            var content = document.getElementById("adminDropdownContent");
+            var icon = document.getElementById("dropdownIcon");
+
+            if (content.classList.contains("show")) {
+                content.classList.remove("show");
+                icon.className = "fa fa-caret-down";
+            } else {
+                content.classList.add("show");
+                icon.className = "fa fa-caret-up";
+            }
+        }
+
+        /* Close the overlay if clicked outside */
+        function closeOverlayOnClickOutside(event) {
+            var overlay = document.getElementById("myNav");
+            var hamburger = document.querySelector('.hamburger');
+
+            if (!overlay.contains(event.target) && !hamburger.contains(event.target)) {
+                closeNav();
+            }
         }
     </script>
 </head>
 <body>
     <div id="myNav" class="overlay">
 
-      <!-- Button to close the overlay navigation -->
-      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()" style="z-index:1002">&times;</a>
+        <!-- Button to close the overlay navigation -->
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()" style="z-index:1002">&times;</a>
 
-      <!-- Overlay content -->
+        <!-- Overlay content -->
         <div class="overlay-content">
-            <!-- Left Side -->
-            <div style="float: left; width: 50%;">
-                <h1>Bingo Player</h1>
-                <a href="/user/leaderboard">Leaderboard</a>
-                <a href="/user/player/None">Player Data</a>
-                <a href="/user/team/None">Team Data</a>
-                <a href="/board">Board</a>
-                <a href="/board/compare">Compare Boards</a>
-                <a href="/tutorial/dink">Dink Setup</a>
-            </div>
-            <!-- Right Side -->
-            <div style="float: right; width: 50%;">
-                <h1>Bingo Admin</h1>
-                <a href="/admin">Admin Home</a>
-                <a href="/admin/reset_database">Reset Bingo</a>
-                <a href="/admin/upload_teams">Upload Teams</a>
-                <a href="/admin/upload_tiles">Upload Tiles</a>
-                <a href="/admin/start_tracking">Start Tracking</a>
-                <a href="/admin/stop_tracking">Stop Tracking</a>
-                <a href="/admin/show_board">Show Board</a>
-                <a href="/admin/hide_board">Hide Board</a>
+            <h1>Bingo Player</h1>
+            <a href="/user/leaderboard">Leaderboard</a>
+            <a href="/user/player/None">Player Data</a>
+            <a href="/user/team/None">Team Data</a>
+            <a href="/board">Board</a>
+            <a href="/board/compare">Compare Boards</a>
+            <a href="/tutorial/dink">Dink Setup</a>
+
+            <div class="dropdown">
+                <span onclick="toggleDropdown()">
+                    <h1>Admin Menu <i id="dropdownIcon" class="fa fa-caret-down" style="padding-left: 10px"></i></h1>
+                </span>
+                <div class="dropdown-content" id="adminDropdownContent">
+                    <a href="/admin">Admin Home</a>
+                    <a href="/admin/reset_database">Reset Bingo</a>
+                    <a href="/admin/upload_teams">Upload Teams</a>
+                    <a href="/admin/upload_tiles">Upload Tiles</a>
+                    <a href="/admin/start_tracking">Start Tracking</a>
+                    <a href="/admin/stop_tracking">Stop Tracking</a>
+                    <a href="/admin/show_board">Show Board</a>
+                    <a href="/admin/hide_board">Hide Board</a>
+                </div>
             </div>
         </div>
-
-
-    </div>
-<!--    <div id="adminNav" class="overlay">-->
-
-<!--      &lt;!&ndash; Button to close the overlay navigation &ndash;&gt;-->
-<!--      <a href="javascript:void(0)" class="closebtn" onclick="closeAdminNav()">&times;</a>-->
-
-<!--      &lt;!&ndash; Overlay content &ndash;&gt;-->
-<!--      <div class="overlay-content">-->
-<!--            <a href="/admin">Admin Home</a>-->
-<!--            <a href="/admin/reset_database">Reset Bingo</a>-->
-<!--            <a href="/admin/upload_teams">Upload Teams</a>-->
-<!--            <a href="/admin/upload_tiles">Upload Tiles</a>-->
-<!--            <a href="/admin/start_tracking">Start Tracking</a>-->
-<!--            <a href="/admin/stop_tracking">Stop Tracking</a>-->
-<!--            <a href="/admin/show_board">Show Board</a>-->
-<!--            <a href="/admin/hide_board">Hide Board</a>-->
-<!--      </div>-->
 
     </div>
 
@@ -215,9 +267,9 @@
 
         {% with messages = get_flashed_messages() %}
             {% if messages %}
-                    {% for message in messages %}
-                        <p class="flash_text">{{ message }}</p>
-                    {% endfor %}
+                {% for message in messages %}
+                    <p class="flash_text">{{ message }}</p>
+                {% endfor %}
             {% endif %}
         {% endwith %}
     </div>
