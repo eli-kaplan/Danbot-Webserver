@@ -90,7 +90,7 @@ def add_pet_by_playername(rsn):
 def get_total_pets_by_team(team_id):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT players WHERE team_id = %s", (team_id,))
+        cursor.execute("SELECT * FROM players WHERE team_id = %s", (team_id,))
     total_pets = 0
     for player in cursor.fetchall():
         player_obj = db_entities.Player(player)
