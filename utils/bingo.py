@@ -134,7 +134,8 @@ def get_chat_progress(tile_progress):
 
 
 def get_pet_progress(tile_progress):
-    return f"You have {database.get_total_pets_by_team(tile_progress.team.team_id)} total pets."
+    tile_progress.status_text = f"You have {database.get_total_pets_by_team(tile_progress.team.team_id)} total pets."
+    return tile_progress
 
 
 def get_progress(team_id, tile_id):
