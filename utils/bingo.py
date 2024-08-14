@@ -49,7 +49,10 @@ def get_drop_progress(tile_progress):
 
     trigger_value = trigger_value + database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id)
 
-    tile_progress.status_text = f"<p>You have {trigger_value % tile.tile_triggers_required} / {tile.tile_triggers_required} of the drops required to complete this tile."
+    if tile_completion_count >= tile.tile_repetition:
+        tile_progress.status_text = f"This tile is fully complete. You have {tile_progress.completions}/{tile_progress.tile.tile_repetition} completed."
+    else:
+        tile_progress.status_text = f"<p>You have {trigger_value % tile.tile_triggers_required} / {tile.tile_triggers_required} of the drops required to complete this tile."
     if len(drops) > 0:
         tile_progress.status_text += "Your current drops are: <ul>"
         for name, quantity in drops.items():
@@ -152,11 +155,11 @@ def get_progress(team_id, tile_id):
     # Get the tile completions
     tile_progress.completions = len(database.get_completed_tiles_by_team_id_and_tile_id(tile_progress.team.team_id, tile_progress.tile.tile_id))
 
-    # If the tile has been completed more or equal to max allowed, return tile progress stating as such
-    if tile_progress.completions >= tile_progress.tile.tile_repetition:
-        tile_progress.status_text = f"This tile is fully complete. You have {tile_progress.completions}/{tile_progress.tile.tile_repetition} completed."
-        tile_progress.progress_value = 1
-        return tile_progress
+    # # If the tile has been completed more or equal to max allowed, return tile progress stating as such
+    # if tile_progress.completions >= tile_progress.tile.tile_repetition:
+    #     tile_progress.status_text = f"This tile is fully complete. You have {tile_progress.completions}/{tile_progress.tile.tile_repetition} completed."
+    #     tile_progress.progress_value = 1
+    #     return tile_progress
 
     if tile_progress.tile.tile_type == "DROP":
         return get_drop_progress(tile_progress)
