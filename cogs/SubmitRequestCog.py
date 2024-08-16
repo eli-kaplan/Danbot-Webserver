@@ -11,7 +11,7 @@ class SubmitRequestCog(commands.Cog):
 
     @discord.message_command(name="submit_tile")
     async def submit_tile_request(self, ctx, message: discord.Message):
-        modal = SubmitRequestModal(message=message)  # .attachments[0], title="Submit Tile Request")
+        modal = SubmitRequestModal(message=message)
         await ctx.send_modal(modal)
 
     @discord.slash_command(name="requests", description="Check if any requests need to be verified")
@@ -60,35 +60,6 @@ class RequestView(discord.ui.View):
                                                 embed=None, view=None)
 
 
-class SubmitRequestView(discord.ui.View):
-    def __init__(self, team_name, player_name, tile_name, item_description, image):
-        super().__init__()
-        self.image = image
-        self.team_name = team_name
-        self.player_name = player_name
-        self.tile_name = tile_name
-        self.item_description = item_description
-        self.timeout = None
-
-    @discord.ui.button(label="Yes", row=0, style=discord.ButtonStyle.primary)
-    async def first_button_callback(self, button, interaction):
-        self.disable_all_items()
-        try:
-            database.add_request(self.team_name, self.player_name, self.tile_name, self.item_description, self.image)
-            await interaction.response.edit_message(
-                content=f"Your request has been submitted :white_check_mark:\nAn officer will review it soon",
-                view=None, embed=None)
-        except Exception as e:
-            await interaction.response.edit_message(content=f"Unknown value {e.args[0]} :x: ", view=None,
-                                                    embed=None)
-
-    @discord.ui.button(label="No", row=0, style=discord.ButtonStyle.danger)
-    async def second_button_callback(self, button, interaction):
-        self.disable_all_items()
-        button.label = "Request closed"
-        await interaction.response.edit_message(view=self)
-
-
 class SubmitRequestModal(discord.ui.Modal):
     def __init__(self, message, *args, **kwargs) -> None:
         super().__init__(title="Submit Tile Request", *args, **kwargs)
@@ -103,16 +74,16 @@ class SubmitRequestModal(discord.ui.Modal):
             self.image = message.content
 
     async def callback(self, interaction: discord.Interaction):
-        embed = discord.Embed(title="Does this look right to you?")
-        embed.add_field(name="Team Name", value=self.children[0].value)
-        embed.add_field(name="Player Name", value=self.children[1].value)
-        embed.add_field(name="Tile Name", value=self.children[2].value)
-        embed.add_field(name="Item Description", value=self.children[3].value)
         try:
-            embed.set_image(url=self.image)
-        except:
-            embed.add_field(name="Message content:", value=self.message.content)
-        await interaction.response.send_message(embed=embed,
-                                                view=SubmitRequestView(self.children[0].value, self.children[1].value,
-                                                                       self.children[2].value, self.children[3].value,
-                                                                       self.image))
+            database.add_request(
+                self.children[0].value,  # Team name
+                self.children[1].value,  # Player name
+                self.children[2].value,  # Tile name
+                self.children[3].value,  # Item Description
+                self.image
+            )
+            await interaction.response.send_message(
+                content="Request received. Wait for an admin to view and approve it :white_check_mark:"
+            )
+        except Exception as e:
+            await interaction.response.send_message(content=f"Unknown value {e.args[0]} :x:")
