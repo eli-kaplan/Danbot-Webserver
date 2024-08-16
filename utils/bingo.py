@@ -116,8 +116,10 @@ def get_niche_progress(tile_progress):
 
     total_progress = database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id)
 
-
-    tile_progress.status_text = f"You are {total_progress % tile.tile_triggers_required}/{tile.tile_triggers_required} away from completing this tile"
+    if tile_progress.completions >= tile.tile_repetition:
+        tile_progress.status_text = f"You have fully completed this tile!"
+    else:
+        tile_progress.status_text = f"You are {total_progress % tile.tile_triggers_required}/{tile.tile_triggers_required} away from completing this tile"
 
     return tile_progress
 
