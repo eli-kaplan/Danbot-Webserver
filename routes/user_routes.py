@@ -210,6 +210,7 @@ def leaderboard():
             most_deaths_player = player
 
 
+    total_tiles = round(total_tiles, 2)
     players = sorted(players, key=lambda player: (player.tiles_completed, player.gp_gained), reverse=True)
 
     for player in players:
