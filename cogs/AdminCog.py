@@ -240,7 +240,7 @@ class AdminCog(commands.Cog):
         database.add_manual_progress(tile.tile_name, player.player_name, progress)
 
         database.add_player_partial_completions(player.player_id, team.team_id, tile.tile_id, progress / tile.tile_triggers_required)
-        response = f"Successfully added {progress} trigger weight to {tile.tile_name} for {player.player_name}'s team. Additionally I've given {player.player_name} {round(progress/tile.tile_triggers_required, 2)} tile completions"
+        response = f"Successfully added {progress} manual progress/trigger weight to {tile.tile_name} for {player.player_name}'s team. Additionally I've given {player.player_name} {round(progress/tile.tile_triggers_required, 2)} partial completions"
         progress = database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, player.team_id)
         if progress >= (tile_completions + 1) * tile.tile_triggers_required:
             database.add_completed_tile(tile.tile_id, player.team_id)
