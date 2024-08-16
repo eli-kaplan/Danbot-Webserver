@@ -24,9 +24,24 @@ class UserCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+
     @discord.slash_command(name="help", description="A list of all my cool commands!")
     async def help(self, ctx: discord.ApplicationContext):
-        await ctx.respond("I'm currently being updated. Most of my functionality isn't ready at the moment.")
+        commands_info = {
+            "help": "A list of all my cool commands!",
+            "dink": "Use this command to get help setting up your dink plugin.",
+            "player": "Get a bunch of data about a player in the bingo.",
+            "team": "Get a bunch of data about a team in the bingo.",
+            "progress": "Check your progress on a specific tile.",
+            "board": "Get a list of tiles you've already completed.",
+            "leaderboard": "Show the current standings amongst teams and players."
+        }
+
+        response = "**Here are all my available commands:**\n\n"
+        for command, description in commands_info.items():
+            response += f"/{command} - {description}\n"
+
+        await ctx.respond(response)
 
     @discord.slash_command(name="dink", description="Use this command to get help setting up your dink plugin")
     async def dink(self, ctx:discord.ApplicationContext):
