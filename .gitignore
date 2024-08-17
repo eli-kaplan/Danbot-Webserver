@@ -1,2 +1,3 @@
 my_database.db
 backups
+__pycache__/

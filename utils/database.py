@@ -315,7 +315,7 @@ def update_tile_trigger(tile_id, tile_trigger):
 def get_tiles():
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM tiles")
+        cursor.execute("SELECT * FROM tiles ORDER BY tile_id")
         return cursor.fetchall()
 
 
