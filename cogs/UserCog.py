@@ -1,4 +1,5 @@
 import os
+import urllib
 from collections import defaultdict
 
 import discord
@@ -19,6 +20,20 @@ fyellow = "33m"
 fblue = "34m"
 fwhite = "37m"
 fend = ftext + "0m"
+
+import os
+
+
+def setup_names():
+    folder_path = 'static/images/setups'
+    file_names = []
+
+    for file_name in os.listdir(folder_path):
+        if file_name.endswith('.png'):
+            file_names.append(file_name[:-4])  # Remove the '.png' from the end
+
+    return file_names
+
 
 class UserCog(commands.Cog):
     def __init__(self, bot):
@@ -67,7 +82,17 @@ class UserCog(commands.Cog):
         await ctx.respond(team_url)
 
 
+    @discord.slash_command(name="gear", description="View our catalog of gear setups for any content and budget")
+    async def gear(self, ctx: discord.ApplicationContext,
+                   setup: discord.Option(str, "What setup are you looking for?",
+                                         autocomplete=lambda ctx: fuzzy_autocomplete(ctx, setup_names()))):
 
+        base_url = "https://danbot.up.railway.app/static/images/setups/"
+        file_name = f"{setup}.png"
+        escaped_file_name = urllib.parse.quote(file_name)
+        url = f"{base_url}{escaped_file_name}"
+
+        await ctx.respond(url)
     @discord.slash_command(name="progress", description="Check your progress on a specific tile")
     async def progress(self, ctx:discord.ApplicationContext,
                        team_name: discord.Option(str, "What is your team name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names())),
