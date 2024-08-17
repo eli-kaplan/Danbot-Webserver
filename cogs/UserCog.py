@@ -90,7 +90,7 @@ class UserCog(commands.Cog):
         base_url = "https://danbot.up.railway.app/static/images/setups/"
         file_name = f"{setup}.png"
         escaped_file_name = urllib.parse.quote(file_name)
-        url = f"{base_url}{escaped_file_name}"
+        url = f"##{setup}\n{base_url}{escaped_file_name}"
 
         await ctx.respond(url)
     @discord.slash_command(name="progress", description="Check your progress on a specific tile")
