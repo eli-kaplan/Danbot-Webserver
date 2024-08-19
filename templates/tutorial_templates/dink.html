@@ -54,14 +54,74 @@
             background-color: #444;
         }
 
+    /* Modal Styles */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        padding-top: 60px;
+    }
+
+    .modal-content {
+        background-color: rgba(0,0,0, 1);
+        margin: 5% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* Could be more or less, depending on screen size */
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
 </style>
-    <script>
-        function submitForm(event) {
-            event.preventDefault();
-            var player = document.getElementById('searchbox').value;
-            window.location.href = '/user/player/' + player;
+
+<script>
+    function submitForm(event) {
+        event.preventDefault();
+        var player = document.getElementById('searchbox').value;
+        window.location.href = '/user/player/' + player;
+    }
+
+    // Modal script
+    window.onload = function() {
+        var modal = document.getElementById("myModal");
+        var btn = document.getElementById("infoButton");
+        var span = document.getElementsByClassName("close")[0];
+
+        // Open the modal
+        modal.style.display = "block";
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
         }
-    </script>
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    }
+</script>
+
 <div class="header">
     <h1>Dink Setup</h1>
 </div>
@@ -113,4 +173,36 @@
         <input type="submit" value="Search">
     </form>
 </div>
+
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Data Usage Notice</h2>
+    <p>We use your data solely to enhance your gaming experience with the Dink plugin. Your data is securely handled and is only shared with Clan Leadership. We do not share your data with any other third parties.</p>
+    <p>The plugin is completely safe to use and complies with all relevant privacy regulations. If you have any concerns, please feel free to contact me.</p>
+    <p>Data Collected:</p>
+      <ul>
+          <li><strong>Collection Log:</strong> Data is sent every time you acquire a new item in your collection log.</li>
+          <li><strong>Pets:</strong> Records the pet you received and the kill count (KC) at the time of acquisition.</li>
+          <li><strong>Levels:</strong> Tracks each level-up, including the skill and level achieved.</li>
+          <li><strong>Loot:</strong> Logs the loot obtained, including the source, quantity, and value.</li>
+          <li><strong>Death:</strong> Captures data on every death, including a screenshot.</li>
+          <li><strong>Slayer:</strong> Records data on the completion of each Slayer task.</li>
+          <li><strong>Quests:</strong> Logs data for each quest completion.</li>
+          <li><strong>Game Engine Messages:</strong> Records messages from the game engine that notify you of events like LMS wins, Inferno waves, Fight Caves waves, etc. This is <strong>NOT</strong> the same as the chat you use to talk with your friends.</li>
+          <li><strong>Clue Scrolls:</strong> Tracks clue loot, kill count, and difficulty level (easy, medium, hard, elite, or master).</li>
+          <li><strong>Speedruns:</strong> Records data every time you beat your personal best (PB).</li>
+          <li><strong>Kill Count:</strong> Logs data each time you kill a boss.</li>
+          <li><strong>Combat Tasks:</strong> Records data upon completion of each Combat Achievement (CA).</li>
+          <li><strong>Achievement Diaries:</strong> Logs data every time you complete an Achievement Diary.</li>
+          <li><strong>BA Gambles:</strong> Tracks data every time you gamble at Barbarian Assault.</li>
+          <li><strong>Player Kills:</strong> Records loot data every time you kill a player or are killed by another player.</li>
+      </ul>
+      <p>While some of this data may not seem immediately relevant to your bingo, it is designed to reduce the need for constant updates to the Dink plugin for future bingos. The plugin is used by both PvM and skilling clans, so data that might not be relevant to your current bingo could be essential for another clan’s event.</p>
+      <p>If you have any questions or are uncomfortable submitting your data, you can always submit your drops manually or reach out to Danbis for assistance.</p>
+  </div>
+</div>
+
+
+
 {% endblock %}
