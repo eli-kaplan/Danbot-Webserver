@@ -23,22 +23,22 @@ fend = ftext + "0m"
 
 import os
 
-
 def setup_names():
     folder_path = 'static/images/setups'
-    file_names = []
+    folder_names = []
 
-    for file_name in os.listdir(folder_path):
-        if file_name.endswith('.png'):
-            file_names.append(file_name[:-4])  # Remove the '.png' from the end
+    for item_name in os.listdir(folder_path):
+        item_path = os.path.join(folder_path, item_name)
+        if os.path.isdir(item_path):
+            folder_names.append(item_name)
 
-    return file_names
+    return folder_names
+
 
 
 class UserCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
 
     @discord.slash_command(name="help", description="A list of all my cool commands!")
     async def help(self, ctx: discord.ApplicationContext):
@@ -85,14 +85,25 @@ class UserCog(commands.Cog):
     @discord.slash_command(name="gear", description="View our catalog of gear setups for any content and budget")
     async def gear(self, ctx: discord.ApplicationContext,
                    setup: discord.Option(str, "What setup are you looking for?",
-                                         autocomplete=lambda ctx: fuzzy_autocomplete(ctx, setup_names()))):
+                                         autocomplete=lambda ctx: fuzzy_autocomplete(ctx, setup_names())),
+                   budget: discord.Option(str, "Max or budget gear?",
+                                          autocomplete=lambda ctx: fuzzy_autocomplete(ctx, ["budget", "max"]), default=None)):
+        await ctx.defer()
+        if budget is None:
+            await ctx.respond(f""
+                              f"# {setup.upper()}\n"
+                              f"### BUDGET {setup.upper()}\n"
+                              f"https://danbot.up.railway.app/static/images/setups/{setup}/budget.png\n"
+                              f"### MAX {setup.upper()}\n"
+                              f"https://danbot.up.railway.app/static/images/setups/{setup}/max.png\n")
+        elif budget.lower() == "max":
+            await ctx.respond(f"# MAX {setup.upper()}\n"
+                              f"https://danbot.up.railway.app/static/images/setups/{setup}/max.png\n")
+        elif budget.lower() == "budget":
+            await ctx.respond(f"# BUDGET {setup.upper()}\n"
+                              f"https://danbot.up.railway.app/static/images/setups/{setup}/budget.png\n")
+        return
 
-        base_url = "https://danbot.up.railway.app/static/images/setups/"
-        file_name = f"{setup}.png"
-        escaped_file_name = urllib.parse.quote(file_name)
-        url = f"## {setup}\n{base_url}{escaped_file_name}"
-
-        await ctx.respond(url)
     @discord.slash_command(name="progress", description="Check your progress on a specific tile")
     async def progress(self, ctx:discord.ApplicationContext,
                        team_name: discord.Option(str, "What is your team name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names())),
