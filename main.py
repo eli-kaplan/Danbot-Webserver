@@ -1,5 +1,5 @@
 from discord.ext import commands
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, make_response
 
 from routes.tutorial_routes import tutorial_routes
 from routes.user_routes import user_routes
@@ -20,6 +20,17 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'development secret')
 def home():
     return render_template('home.html')
 
+@app.route('/getcookie')
+def get_cookie(key):
+    value = request.cookies.get(key)
+    return value
+
+@app.route('/setcookie')
+def set_cookie(key, value):
+    resp = make_response("Cookie is set")
+    resp.set_cookie(key, value, max_age=60*60*24*30,
+                    samesite='Strict')
+    return resp
 
 app.register_blueprint(drop_submission_route, url_prefix='/dink')
 app.register_blueprint(admin_routes, url_prefix="/admin")

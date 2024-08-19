@@ -101,24 +101,10 @@
     </div>
 </div>
 
-<script>
-    const teamnames = {{ teamnames|tojson }}
-    function submitForm(event) {
-        event.preventDefault();
-        var team = document.getElementById('teamselect').value;
-        if (teamnames.includes(team)){
-            window.location.href = '/board/' + team;
-        }
-        else{
-            window.location.href = '/board';
-        }
-    }
-</script>
 <div class="header">
     <h1>Current Standings</h1>
     <form class="search-bar" onsubmit="submitForm(event)">
         <select id="teamselect">
-            <option value="emptyboard">Empty Board</option>
             {% for name in teamnames %}
             <option value="{{name}}"
                     {% if name == teamname %}
@@ -129,7 +115,6 @@
             </option>
             {% endfor %}
         </select>
-        <input type="submit" value="Load Board">
     </form>
 </div>
 <div class="header">
@@ -243,5 +228,22 @@
         }
     });
 
+</script>
+<script>
+    const teamnames = {{ teamnames|tojson }}
+
+    function submitForm() {
+        var team = document.getElementById('teamselect').value;
+        if (teamnames.includes(team)) {
+            window.location.href = '/board/' + team;
+        } else {
+            window.location.href = '/board';
+        }
+    }
+
+    // Listen for changes in the select element
+    document.getElementById('teamselect').addEventListener('change', function() {
+        submitForm();
+    });
 </script>
 {% endblock %}

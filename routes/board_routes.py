@@ -2,7 +2,7 @@ import os
 from collections import defaultdict
 import random
 
-from flask import render_template, Blueprint, request, jsonify
+from flask import render_template, Blueprint, request, jsonify, make_response
 import math
 from utils import autocomplete, database, db_entities, bingo
 
@@ -75,7 +75,17 @@ def index():
     completed_tiles = []
     partial_tiles = []
 
-    return render_template('board_templates/board.html', teams=teams, tiles=tiles, teamname="None Selected", teamnames=autocomplete.team_names(), boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles, panelData=panelData)
+    team_name = request.cookies.get('teamname')
+    if team_name:
+        return board(team_name)
+    else:
+        team = database.get_teams()
+        if len(team) > 0:
+            team = team[0]
+            team = db_entities.Team(team)
+            return board(team.team_name)
+        else:
+            return render_template('board_templates/board.html', teams=teams, tiles=tiles, teamname="None Selected", teamnames=autocomplete.team_names(), boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles, panelData=panelData)
 
 
 @board_routes.route('/get_progress', methods=['GET'])
@@ -116,6 +126,8 @@ def hidden_board():
 def board(team_name):
     if os.getenv('BOARD_VISIBLE') == "FALSE":
         return hidden_board()
+
+
 
     panelData = {}
     tile_id_to_name = {}
@@ -167,9 +179,10 @@ def board(team_name):
 
 
 
-
-    return render_template('board_templates/board.html', teams=teams, tiles=tiles, teamname=team_name,
-                           teamnames=autocomplete.team_names(),boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles, panelData=panelData)
+    resp = make_response(render_template('board_templates/board.html', teams=teams, tiles=tiles, teamname=team_name,
+                           teamnames=autocomplete.team_names(),boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles, panelData=panelData))
+    resp.set_cookie('teamname', team_name)
+    return resp
 
 
 def get_board_size():

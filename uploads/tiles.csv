@@ -7,15 +7,15 @@ Perilous Moons of Peril,DROP,Eclipse atlatl/Eclipse moon helm/Eclipse moon chest
 DT2 Orbs,DROP,Awakener's orb,1,FALSE,4,1,1,Get 4 Awakener's orbs 
 Tormented Demons,DROP,"Burning claw,Tormented synapse","1,2",FALSE,2,1,1,Get 2 Burning claws OR 1 Tormented synapse
 Scurrius,DROP,Scurrius' spine,1,FALSE,4,1,1,Get 4 Scurrius spines
-Dragon Pickaxe,DROP,Dragon pickaxe/Dragon pickaxe(broken),1,FALSE,1,1,1,Get a Dragon pickaxe (from any source)
+Dragon Pickaxe,DROP,Dragon pickaxe,1,FALSE,1,1,1,Get a Dragon pickaxe (from any source)
 GWD (not Nex),DROP,Armadyl helmet/Armadyl chestplate/Armadyl Chainskirt/Armadyl hilt/Zamorakian spear/Staff of the dead/Zamorak hilt/Bandos chestplate/Bandos tassets/Bandos boots/Bandos hilt/Saradomin sword/Saradomin's light/Armadyl crossbow/Saradomin hilt,1,FALSE,3,1,1,Get 3 GWD uniques (can be duplicates). Steam battlestaff DOES NOT count.
 Slayer,DROP,Unsired/Jar of chemicals/Hydra's eye/Hydra's fang/Hydra's heart/Hydra's tail/Hydra leather/Hydra's claw/Primordial crystal/Pegasian crystal/Eternal crystal/Smouldering stone/Jar of souls/Granite maul/Granite gloves/Granite ring/Granite hammer/Black tourmaline core/Jar of stone/Kraken tentacle/Trident of the seas (full)/Jar of dirt/Smoke battlestaff/Occult necklace/Dragon chainbody/Jar of smoke,1,FALSE,3,1,1,Get 3 slayer uniques. Jars from their respective slayer bosses count towards this tile.
 Corrupted Gauntlet,DROP,Crystal weapon seed/Crystal armour seed/Enhanced crystal weapon seed,1,FALSE,1,1,1,"Get a unique (weapon seed, armour seed, enh) from CG"
-Pet (center),PET,"Pet chaos elemental,Chompy chick",1,FALSE,1,1,1,Get any pet. Pet chaos elemental and chompy chick DO NOT count.
+Pet,PET,"Pet chaos elemental,Chompy chick,Skotos",1,FALSE,1,1,1,"Get any pet. Pet chaos elemental, Skotos, and chompy chick DO NOT count."
 Lord of the Rings,SET,"Berserker ring,Archers ring,Seers ring",,,,1,1,"Get one of each of the DKs rings (Archer, Berserker, Seers). Warrior ring DOES NOT count."
 Nightmare,DROP,Nightmare staff/Inquisitor's great helm/Inquisitor's hauberk/Inquisitor's plateskirt/Eldritch orb/Harmonised orb/Volatile orb/Jar of dreams/Parasitic egg,1,FALSE,1,1,1,Get one unique from Nightmare or Phosani. Slepey tablet does not count.
 Colloseum,DROP,Sunfire fanatic helm/Sunfire fanatic cuirass/Sunfire fanatic chausses/Tonalztics of ralos/Echo crystal,1,FALSE,1,1,1,Get one unique from the Fortis Colosseum. Quiver DOES NOT count.
-Inferno!!,NICHE,,,,1,1,1,This tile must be manually submitted. Upload to discord a screenshot and submit it!
+Inferno!!,NICHE,,,,1,1,1,"Sub-90min kc if you already have an infernal cape. If you've NEVER gotten an infernal cape before, then get to wave 32 and screenshot your progress. This tile must be manually submitted. Upload to discord a screenshot and submit it!"
 Zulrah,DROP,Tanzanite fang/Magic fang/Serpentine visage/Uncut onyx/Tanzanite mutagen/Magma mutagen/Jar of swamp,1,FALSE,1,1,1,Get one unique from Zulrah
 Vorkath/KBD,DROP,"Vorkath's head,Kbd heads","1,1",FALSE,3,1,1,Get 3 Vorkath or KBD heads. Can combine (e.g. 1 Vork + 2 KBD heads)
 Muspah,DROP,Venator shard,1,FALSE,1,1,1,Get one Venator shard from Muspah
