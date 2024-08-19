@@ -839,6 +839,7 @@ def read_teams(file_name):
         add_team(team_name, 0, team_webhook)
         team_obj = db_entities.Team(get_team_by_name(team_name))
         for player in players:
+            player = player.strip()
             if player == "":
                 continue
             add_player(player, 0, 0, 0, team_obj.team_id, 0)
