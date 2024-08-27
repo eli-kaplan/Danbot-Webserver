@@ -2,7 +2,7 @@ import os
 from collections import defaultdict
 import random
 
-from flask import render_template, Blueprint, request, jsonify, make_response
+from flask import render_template, Blueprint, request, jsonify, make_response, redirect, url_for
 import math
 from utils import autocomplete, database, db_entities, bingo
 
@@ -77,7 +77,7 @@ def index():
 
     team_name = request.cookies.get('teamname')
     if team_name:
-        return board(team_name)
+        return redirect(url_for('board_routes.board', team_name=team_name))
     else:
         team = database.get_teams()
         if len(team) > 0:
