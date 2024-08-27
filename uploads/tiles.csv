@@ -1,26 +1,50 @@
 Tile Name,Tile Type,Triggers,Trigger Weights,Unique Drops,Triggers Required,Repetition,Points,Rules
-Nex,DROP,Zaryte vambraces/Nihil horn/Torva full helm (damaged)/Torva platebody(damaged)/Torva platelegs (damaged)/Ancient hilt,1,FALSE,1,1,1,Get any Nex unique
-Chambers,DROP,Dexterous prayer scroll/Arcane prayer scroll/Twisted buckler/Dragon hunter crossbow/Dinh's bulwark/Ancestral hat/Ancestral robe top/Ancestral robe bottom/Dragon claws/Elder maul/Kodai insignia/Twisted bow,1,FALSE,1,1,1,Get any CoX purple
-Tombs of Amascut,DROP,Masori mask/Masori body/Masori chaps/Lightbearer/Osmumten's fang/Elidinis' ward/Tumeken's shadow,1,FALSE,1,1,1,Get any TOA purple
-ToB,DROP,Avernic defender hilt/Justiciar faceguard/Justiciar chestguard/Justiciar legguards/Ghrazi rapier/Sanguinesti staff/Scythe of vitur (uncharged),1,FALSE,1,1,1,Get any ToB purple
-Perilous Moons of Peril,DROP,Eclipse atlatl/Eclipse moon helm/Eclipse moon chestplate/Eclipse moon tassets/Dual macuahuitl/Blood moon helm/Blood moon chestplate/Blood moon tassets/Blue moon spear/Blue moon helm/Blue moon chestplate/Blue moon tassets,1,FALSE,4,1,1,Get any 4 Moons of Peril uniques (can be duplicates)
-DT2 Orbs,DROP,Awakener's orb,1,FALSE,4,1,1,Get 4 Awakener's orbs 
-Tormented Demons,DROP,"Burning claw,Tormented synapse","1,2",FALSE,2,1,1,Get 2 Burning claws OR 1 Tormented synapse
-Scurrius,DROP,Scurrius' spine,1,FALSE,4,1,1,Get 4 Scurrius spines
-Dragon Pickaxe,DROP,Dragon pickaxe,1,FALSE,1,1,1,Get a Dragon pickaxe (from any source)
-GWD (not Nex),DROP,Armadyl helmet/Armadyl chestplate/Armadyl Chainskirt/Armadyl hilt/Zamorakian spear/Staff of the dead/Zamorak hilt/Bandos chestplate/Bandos tassets/Bandos boots/Bandos hilt/Saradomin sword/Saradomin's light/Armadyl crossbow/Saradomin hilt,1,FALSE,3,1,1,Get 3 GWD uniques (can be duplicates). Steam battlestaff DOES NOT count.
-Slayer,DROP,Unsired/Jar of chemicals/Hydra's eye/Hydra's fang/Hydra's heart/Hydra's tail/Hydra leather/Hydra's claw/Primordial crystal/Pegasian crystal/Eternal crystal/Smouldering stone/Jar of souls/Granite maul/Granite gloves/Granite ring/Granite hammer/Black tourmaline core/Jar of stone/Kraken tentacle/Trident of the seas (full)/Jar of dirt/Smoke battlestaff/Occult necklace/Dragon chainbody/Jar of smoke,1,FALSE,3,1,1,Get 3 slayer uniques. Jars from their respective slayer bosses count towards this tile.
-Corrupted Gauntlet,DROP,Crystal weapon seed/Crystal armour seed/Enhanced crystal weapon seed,1,FALSE,1,1,1,"Get a unique (weapon seed, armour seed, enh) from CG"
-Pet,PET,"Pet chaos elemental,Chompy chick,Skotos",1,FALSE,1,1,1,"Get any pet. Pet chaos elemental, Skotos, and chompy chick DO NOT count."
-Lord of the Rings,SET,"Berserker ring,Archers ring,Seers ring",,,,1,1,"Get one of each of the DKs rings (Archer, Berserker, Seers). Warrior ring DOES NOT count."
-Nightmare,DROP,Nightmare staff/Inquisitor's great helm/Inquisitor's hauberk/Inquisitor's plateskirt/Eldritch orb/Harmonised orb/Volatile orb/Jar of dreams/Parasitic egg,1,FALSE,1,1,1,Get one unique from Nightmare or Phosani. Slepey tablet does not count.
-Colloseum,DROP,Sunfire fanatic helm/Sunfire fanatic cuirass/Sunfire fanatic chausses/Tonalztics of ralos/Echo crystal,1,FALSE,1,1,1,Get one unique from the Fortis Colosseum. Quiver DOES NOT count.
-Inferno!!,NICHE,,,,1,1,1,"Sub-90min kc if you already have an infernal cape. If you've NEVER gotten an infernal cape before, then get to wave 32 and screenshot your progress. This tile must be manually submitted. Upload to discord a screenshot and submit it!"
-Zulrah,DROP,Tanzanite fang/Magic fang/Serpentine visage/Uncut onyx/Tanzanite mutagen/Magma mutagen/Jar of swamp,1,FALSE,1,1,1,Get one unique from Zulrah
-Vorkath/KBD,DROP,"Vorkath's head,Kbd heads","1,1",FALSE,3,1,1,Get 3 Vorkath or KBD heads. Can combine (e.g. 1 Vork + 2 KBD heads)
-Muspah,DROP,Venator shard,1,FALSE,1,1,1,Get one Venator shard from Muspah
-Corp,DROP,Spectral sigil/Arcane sigil/Elysian sigil/Holy elixir/Jar of spirits/Spirit shield,1,FALSE,1,1,1,"Get one unique from Corp (sigil, elixir, spirit shield, jar)"
-Zalcano,DROP,Crystal tool seed/Zalcano shard,1,FALSE,1,1,1,"Get one unique from Zalcano (Crystal tool seed, Zalcano shard, or onyx). Note that onyx is also on the Zulrah drop table, so if you get it from Zalcano please contact a captain and we'll manually fix the scoring."
-Barrows,DROP,Ahrim's hood/Ahrim's robetop/Ahrim's robeskirt/Ahrim's staff/Dharok's helm/Dharok's platebody/Dharok's platelegs/Dharok's greataxe/Guthan's helm/Guthan's platebody/Guthan's chainskirt/Guthan's warspear/Karil's coif/Karil's leathertop/Karil's leatherskirt/Karil's crossbow/Torag's helm/Torag's platebody/Torag's platelegs/Torag's hammers/Verac's helm/Verac's brassard/Verac's plateskirt/Verac's flail,1,FALSE,4,1,1,Get 4 Barrows pieces (can be duplicates)
-Kits/Dust,DROP,Twisted ancestral colour kit/Sanguine ornament kit/Holy ornament kit/Sanguine dust/Metamorphic dust,1,FALSE,1,1,1,Get one kit or dust from CM CoX or HMT. ToA kits DO NOT count.
-Revenants,DROP,Ancient emblem/Ancient totem/Ancient statuette/Ancient medallion/Ancient effigy/Ancient relic,1,FALSE,1,1,1,"Get any Ancient artefact (emblem, totem, statuette, etc.) from revenants"
+2x ARAXXOR NOXIOUS HALBERD,DROP,"Noxious Halberd, I NEED TO BE CHECKED AND UPDATED",1,FALSE,2,1,1,None
+FANG RING WARD,DROP,"Osmunten's Fang, Lightbearer, Elidinis ward","1,1,1",FALSE,1,1,1,None
+ZALCANO UNIQUE,DROP,Crystal tool seed/Zalcano shard,1,FALSE,1,1,1,Tool Seed or Shard
+HYDRA LEATHER/TAIL,DROP,"Hydra leather, Hydra tail","1,1",FALSE,1,1,1,None
+5x BARROWS PIECES,DROP,Ahrim's hood/Ahrim's robetop/Ahrim's robeskirt/Ahrim's staff/Dharok's helm/Dharok's platebody/Dharok's platelegs/Dharok's greataxe/Guthan's helm/Guthan's platebody/Guthan's chainskirt/Guthan's warspear/Karil's coif/Karil's leathertop/Karil's leatherskirt/Karil's crossbow/Torag's helm/Torag's platebody/Torag's platelegs/Torag's hammers/Verac's helm/Verac's brassard/Verac's plateskirt/Verac's flail,1,FALSE,5,1,1,No unique requirement
+2x BURNING CLAW,DROP,Burning claw,1,FALSE,2,1,1,None
+ZENYTE SHARD,DROP,Zenyte shard,1,FALSE,1,1,1,None
+PHAROAH'S SCEPTRE,DROP,Pharoah's Sceptre,1,FALSE,1,1,1,None
+NIGHTMARE UNIQUE,DROP,Nightmare staff/Inquisitor's great helm/Inquisitor's hauberk/Inquisitor's plateskirt/Eldritch orb/Harmonised orb/Volatile orb/Parasitic egg,1,FALSE,1,1,1,Egg counts
+3x ECHO CRYSTALS,DROP,Echo Crystal,1,FALSE,3,1,1,All 3 in one drop is fine
+DKS LOTR,SET,"Berserker ring,Archers ring,Seers ring, Warrior ring","1,1,1,1",TRUE,3,1,1,Ring of life does NOT count. Warrior ring is required
+3x CERBERUS CRYSTALS,DROP,"Eternal crystal,Pegasian crystal, Primordial crystal","1,1,1",FALSE,3,1,1,Smouldering Stone counts
+3x UNSIRED,DROP,Unsired,1,FALSE,3,1,1,None
+2x ARAXXOR BOOTS,DROP,"Araxxor Boots, I NEED TO BE CHECKED AND UPDATED",1,FALSE,2,1,1,None
+1x AXE PIECE,DROP,"Leviathan's lure, Siren's staff, Executioner's axe head, Eye of the duke","1,1,1,1",FALSE,2,1,1,Any piece completes the tile
+DT2 VIRTUS/VESTIGE,DROP,Virtus mask/Virtus robe top/ Virtus robe bottom/Venator vestige/Bellator vestige/Ultor vestige/Magus vestige,1,FALSE,1,1,1,Any piece of virtus or any vestige counts
+5x SCURRIUS SPINES,DROP,Scurrius' spine,1,FALSE,5,1,1,None
+COX PURPLE(NON PRAYER SCROLL),DROP,Twisted buckler/Dragon hunter crossbow/Dinh's bulwark/Ancestral hat/Ancestral robe top/Ancestral robe bottom/Dragon claws/Elder maul/Kodai insignia,1,FALSE,1,1,1,None
+FULL WILDY SHIELD,SET,"Odium shard 1, Odium shard 2, Odium shard 3/Malediction shard 1, Malediction shard 2, Malediction shard 3",,,,1,1,Must have all 3 pieces of either ward (both are not needed)
+2x GROTESQUE GUARDIAN UNIQUES,DROP,"Granite maul, Granite gloves, Granite ring, Granite hammer, Black tourmaline core","1,1,1,1,1",FALSE,2,1,1,Granite maul (from GG's not normal gargoyles) counts.
+3x DRAGON PICKAXE/D2H,DROP,"Dragon pickaxe, Dragon 2h sword","1,1",FALSE,3,1,1,None
+ENHANCED CRYSTAL TELEPORT SEED,DROP,Enhanced crystal teleport seed,1,FALSE,1,1,1,None
+GWD HILT,DROP,Armadyl hilt/Bandos hilt/Saradomin hilt/Zamorak hilt,1,FALSE,1,1,1,Ancient hilt does not count (This is a nex unique)
+2x SYNAPSES,DROP,Tormented synapse,1,FALSE,2,1,1,None
+PET (UNLIMITED),PET,"Chompy chick, Skotos, Pet chaos elemental",1,FALSE,1,0,1,"Can be completed unlimited times. Chompy Chick, Skotos, and Pet Chaos Elemental do not count."
+NEX UNIQUE,DROP,Zaryte vambraces/Nihil horn/Torva full helm (damaged)/Torva platebody(damaged)/Torva platelegs (damaged)/Ancient hilt,1,FALSE,1,1,1,None
+DARK BOW OR OCCULT,DROP,Dark bow/Occult necklace,1,FALSE,1,1,1,Torn prayer scroll does NOT count
+VENATOR BOW,DROP,Venator shard,1,FALSE,5,1,1,None
+TOB ARMOUR,DROP,"Justiciar faceguard, Justiciar chestguard, Justiciar legguards","1,1,1",FALSE,1,1,1,None
+GRANITE LONGSWORD OR BOOTS,DROP,Granite longsword/Granite boots,1,FALSE,1,1,1,None
+MEGA RARE,DROP,"Twisted bow, Tumeken's shadow (uncharged), Scythe of vitur (uncharged)","1,1,1",FALSE,1,1,1,None
+2 COLOSSEUM ARMOUR OR GLAIVE,DROP,"Sunfire fanatic helm/Sunfire fanatic cuirass/Sunfire fanatic chausses,Tonalztics of ralos","1,2",FALSE,2,1,1,None
+4x MOONS PIECES,DROP,Eclipse atlatl/Eclipse moon helm/Eclipse moon chestplate/Eclipse moon tassets/Dual macuahuitl/Blood moon helm/Blood moon chestplate/Blood moon tassets/Blue moon spear/Blue moon helm/Blue moon chestplate/Blue moon tassets,1,FALSE,4,1,1,No unique requirement
+COX PRAYER SCROLL,DROP,Dexterous prayer scroll/Arcane prayer scroll,1,FALSE,1,1,1,Normal crystal weapon seed counts.
+2x GWD WEAPONS,DROP,Saradomin sword/Armadyl crossbow/Steam battlestaff/Zamorakian spear/Staff of the dead,1,FALSE,2,1,1,Hilts do not count towards this tile.
+BOSS JAR,DROP,Jar of chemicals / Jar of darkness / Jar of decay / Jar of dirt / Jar of dreams / Jar of eyes / Jar of miasma / Jar of sand / Jar of smoke / Jar of souls / Jar of spirits / Jar of stone / Jar of swamp,1,FALSE,1,1,1,None
+VOIDWAKER PIECE,DROP,"Voidwaker blade, Voidwaker hilt, Voidwaker gem","1,1,1",FALSE,1,1,1,None
+3x HYDRA RING PICES,DROP,"Hydra's eye, Hydra's fang, Hydra's heart","1,1,1",FALSE,3,1,1,No unique requirement
+2x ARAXXOR RANCOR,DROP,"Rancor, I NEED TO BE CHECKED AND UPDATED",1,FALSE,2,1,1,Requires item used to upgrade the amulet of torture
+MASORI PIECE,DROP,"Masori mask, Masori body, Masori chaps","1,1,1",FALSE,1,1,1,None
+ANY SEED FROM GAUNTLET,DROP,"Enhanced crystal weapon seed, Crystal armour seed, Crystal weapon seed","1,1,1",FALSE,1,1,1,None
+CORP SIGIL OR BLESSED SPIRIT SHIELD,DROP,"Spectral sigil/Arcane sigil/Elysian sigil,Spirit shield","1,1",FALSE,1,1,1,Any of the 3 sigils OR a spirit shield AND holy elixir
+3x TZHARR UNIQUES,DROP,Obsidian helmet/Obsidian platebody/Obsidian platelegs/Toktz-ket-xil/Obsidian cape/Toktz-xil-ek/Toktz-xil-ak/Tzhaar-ket-em/Tzhaar-ket-om/Toktz-xil-ul/Tokz-mej-tal,1,FALSE,3,1,1,"Any weapon, armor, cape counts"
+BLOOD SHARD,DROP,Blood shard,1,FALSE,1,1,1,Thieving counts
+4x DT2 QUARTZ,DROP,Blood quartz/Ice quartz/Shadow quartz/Smoke quartz,1,FALSE,4,1,1,No unique requirement
+BIG FISH (TENCH COUNTS),CHAT,The cormorant has brought you a very strange tench./You catch an enormous shark!/You catch an enormous swordfish!/You catch an enormous bass!,1,FALSE,1,1,1,"Any of the following: Big Shark, Big Bass, Big Swordfish, or Golden Tench. Big harpoonfish (from tempoross) does not count."
+2x GWD ARMOUR PIECES,DROP,Bandos chestplate/Bandos tassets/Bandos boots/Armadyl helmet/Armadyl chestplate/Armadyl chainskirt,1,FALSE,2,1,1,None
+CM/HMT DUST OR KIT,DROP,Twisted ancestral colour kit/Sanguine ornament kit/Holy ornament kit/Sanguine dust/Metamorphic dust,1,FALSE,1,1,1,None
+TOB WEAPON,DROP,"Sanguinesti staff (uncharged), Ghrazi rapier, Avernic defender hilt","1,1,1",FALSE,1,1,1,None

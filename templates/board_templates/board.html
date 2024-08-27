@@ -151,7 +151,7 @@
                         data-rules="{{panelData[tilenames[outerloopindex * boardsize + loop.index0]].rules}}"
                         onclick="openPanel(this.dataset.tile, this.dataset.completions, this.dataset.repetitions, this.dataset.rules)">{{tilenames[outerloopindex * boardsize + loop.index0]}}</button>
             {% else %}
-                <button style="background-color: red;"
+                <button style="background-color: slategrey;"
                         data-tile="{{tilenames[outerloopindex * boardsize + loop.index0]}}"
                         data-completions="{{panelData[tilenames[outerloopindex * boardsize + loop.index0]].completions}}"
                         data-repetitions="{{panelData[tilenames[outerloopindex * boardsize + loop.index0]].repetition}}"
