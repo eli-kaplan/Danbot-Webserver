@@ -28,6 +28,9 @@
             text-align: left;
             font-size: 20px;
             z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .top-bar .hamburger {
@@ -42,6 +45,52 @@
         .top-bar .hamburger:hover {
             background-color: #555; /* Background color on hover */
             color: #fff; /* Text color on hover */
+        }
+
+        .top-bar .profile-menu {
+            margin-right: 10px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .top-bar .profile-icon {
+            font-size: 1.75em;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            background-color: #444;
+            transition: background-color 0.3s ease;
+        }
+
+        .top-bar .profile-icon:hover {
+            background-color: #555;
+        }
+
+        .profile-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #1e1e1e;
+            min-width: 150px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 5px;
+        }
+
+        .profile-dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+        }
+
+        .profile-dropdown-content a:hover {
+            background-color: #555;
+        }
+
+        .profile-menu:hover .profile-dropdown-content {
+            display: block;
         }
 
         /* The Overlay (background) */
@@ -238,29 +287,41 @@
             <a href="/board">Board</a>
             <a href="/board/compare">Compare Boards</a>
             <a href="/tutorial/dink">Dink Setup</a>
-
+            {% if current_user.is_authenticated and current_user.is_admin %}
             <div class="dropdown">
                 <span onclick="toggleDropdown()">
                     <h1>Admin Menu <i id="dropdownIcon" class="fa fa-caret-down" style="padding-left: 10px"></i></h1>
                 </span>
                 <div class="dropdown-content" id="adminDropdownContent">
-                    <a href="/admin">Admin Home</a>
-                    <a href="/admin/reset_database">Reset Bingo</a>
-                    <a href="/admin/upload_teams">Upload Teams</a>
-                    <a href="/admin/upload_tiles">Upload Tiles</a>
-                    <a href="/admin/start_tracking">Start Tracking</a>
-                    <a href="/admin/stop_tracking">Stop Tracking</a>
-                    <a href="/admin/show_board">Show Board</a>
-                    <a href="/admin/hide_board">Hide Board</a>
+                    <a href="/team/teams">Manage Teams</a>
+                    <a href="/player/players">Manage Players</a>
+                    <a href="/tile/tiles">Manage Tiles</a>
+                    <a href="/admin/submit_a_tile">Submit Data</a>
                 </div>
             </div>
+            {% endif %}
         </div>
 
     </div>
 
     <div class="top-bar">
         <span onclick="openNav()" class="hamburger">&#9776;</span>
+        <div class="profile-menu">
+            {% if current_user.is_authenticated %}
+                <h2 style="display: inline; margin-right: 10px;">{{ current_user.username }}</h2>
+            {% endif %}
+            <i class="fa fa-user-circle profile-icon"></i>
+            <div class="profile-dropdown-content">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Login</a>
+                {% endif %}
+            </div>
+        </div>
     </div>
+
+
     <div class="content">
         {% block content %}
         {% endblock %}

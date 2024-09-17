@@ -247,6 +247,11 @@ def parse_kill_count(data, img_file) -> dict[str, list[str]]:
     boss_name = data['extra']['boss']
     print(f"KILLCOUNT: {rsn} - {boss_name}")
 
+    try:
+        quantity = data['extra']['quantity']
+    except:
+        quantity = 1
+
     player = database.get_player_by_name(rsn)
     if player is None:
         return False
@@ -259,7 +264,7 @@ def parse_kill_count(data, img_file) -> dict[str, list[str]]:
     team = db_entities.Team(team)
     team_id = team.team_id
 
-    database.add_killcount(player_id, team_id, boss_name, 1)
+    database.add_killcount(player_id, team_id, boss_name, quantity)
     if database.get_drop_whitelist_by_item_name(boss_name) is not None:
         tile = Tile(database.get_tile_by_drop(boss_name))
         team = Team(database.get_team_by_id(team_id))
@@ -272,7 +277,7 @@ def parse_kill_count(data, img_file) -> dict[str, list[str]]:
         for i in range(len(tile.tile_trigger_weights)):
             killcount_weights[tile.tile_triggers.split(',')[i].strip().lower()] = int(tile.tile_trigger_weights[i])
 
-        database.add_player_partial_completions(player_id, team.team_id, tile.tile_id, killcount_weights[boss_name.lower()] / tile.tile_triggers_required)
+        database.add_player_partial_completions(player_id, team.team_id, tile.tile_id, (killcount_weights[boss_name.lower()] * quantity) / tile.tile_triggers_required)
         team_killcount = database.get_manual_progress_by_tile_id_and_team_id(tile.tile_id, team.team_id)
         total_killcount = []
         for boss_trigger in tile.tile_triggers.split(','):

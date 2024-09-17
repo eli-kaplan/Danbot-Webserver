@@ -1,6 +1,6 @@
 
 
-def award_drop_json(player_name, item_name, item_value, item_quantity):
+def award_drop_json(player_name, item_name, item_value, item_quantity, drop_value=0):
     request = {
 
                 'type': 'LOOT',

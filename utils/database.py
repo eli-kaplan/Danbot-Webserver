@@ -1,16 +1,149 @@
 import os
 import csv
 import psycopg2
-
+from flask_bcrypt import Bcrypt
+from flask_login import UserMixin, logout_user
 import utils.db_entities as db_entities
+from routes import dink
 from utils.db_entities import Player, Tile
+from utils.spoofed_jsons import spoof_drop
 
+bcrypt = Bcrypt()
 
 def connect():
-    return psycopg2.connect(dbname=os.getenv('PGDATABASE'), user=os.getenv('PGUSER'), password=os.getenv('PGPASSWORD'),
-                            host=os.getenv('PGHOST'), port=os.getenv('PGPORT'))
+    return psycopg2.connect(
+        dbname=os.getenv('PGDATABASE'),
+        user=os.getenv('PGUSER'),
+        password=os.getenv('PGPASSWORD'),
+        host=os.getenv('PGHOST'),
+        port=os.getenv('PGPORT')
+    )
+
+# User authentication functions
+
+class User(UserMixin):
+    def __init__(self, user_id, username, email, password, is_admin=False):
+        self.id = user_id
+        self.username = username
+        self.email = email
+        self.password = password
+        self.is_admin = is_admin
+
+def add_user(username, email, password):
+    with connect() as conn:
+        cursor = conn.cursor()
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        cursor.execute(
+            "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)",
+            (username, email, hashed_password)
+        )
+        conn.commit()
 
 
+def get_tile_names():
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT tile_name FROM tiles")
+        tiles = cursor.fetchall()
+
+    # Extract the tile names from the fetched records
+    tile_names = [tile[0] for tile in tiles]
+    return tile_names
+
+
+def get_player_names():
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT player_name FROM players")
+        players = cursor.fetchall()
+
+    # Extract the player names from the fetched records
+    player_names = [player[0] for player in players]
+    return player_names
+
+
+def update_tile(tile_id,new_tile_id, tile_name, tile_type, old_tile_triggers, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required, tile_repetition, tile_points, tile_rules):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE tiles
+            SET tile_id = %s, tile_name = %s, tile_type = %s, tile_triggers = %s, tile_trigger_weights = %s, tile_unique_drops = %s,
+                tile_triggers_required = %s, tile_repetition = %s, tile_points = %s, tile_rules = %s
+            WHERE tile_id = %s
+        ''', (new_tile_id, tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required,
+              tile_repetition, tile_points, tile_rules, tile_id))
+
+        cursor.execute('''
+            DELETE FROM drop_whitelist
+            WHERE tile_id = %s
+        ''', (tile_id,))
+
+        conn.commit()
+
+    old_trigger_set = set()
+    for x in old_tile_triggers.split(','):
+        for trigger in x.split('/'):
+            old_trigger_set.add(trigger)
+
+    new_trigger_set = set()
+    for x in tile_triggers.split(','):
+        for trigger in x.split('/'):
+            add_drop_whitelist(trigger, tile_id)
+            new_trigger_set.add(trigger)
+
+    for trigger in new_trigger_set:
+        if trigger not in old_trigger_set:
+            drops = get_drops_by_item_name(trigger.strip())
+            for drop in drops:
+                drop = db_entities.Drop(drop)
+                remove_drop_by_pk(drop.drop_pk)
+                json_data = spoof_drop.award_drop_json(drop.player_name, drop.drop_name, drop.drop_value, drop.drop_quantity)
+                result = dink.parse_loot(json_data, None)
+
+
+def remove_drop_by_pk(drop_pk):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM drops WHERE drop_pk = %s", (drop_pk))
+
+def remove_tile(tile_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            DELETE FROM drop_whitelist
+            WHERE tile_id = %s
+        ''', (tile_id,))
+        cursor.execute("DELETE FROM tiles WHERE tile_id = %s", (tile_id,))
+        conn.commit()
+
+
+def get_user_by_email(email):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+        result = cursor.fetchone()
+        if result:
+            return User(result[0], result[1], result[2], result[3])
+        return None
+
+def get_user_by_id(user_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
+        result = cursor.fetchone()
+        try:
+            if result:
+                return User(result[0], result[1], result[2], result[3], result[4])
+            return None
+        except:
+            return None
+
+def check_password(hashed_password, password):
+    return bcrypt.check_password_hash(hashed_password, password)
+
+# Add these functions to your existing database functions
+
+# Functions for 'teams' table
 def add_team_points(team_id, team_points):
     with connect() as conn:
         cursor = conn.cursor()
@@ -20,6 +153,7 @@ def add_team_points(team_id, team_points):
             WHERE team_id = %s
         '''
         cursor.execute(update_query, (team_points, team_id,))
+        conn.commit()
 
 def rename_team(old_team_name, new_team_name):
     with connect() as conn:
@@ -133,6 +267,28 @@ def get_players():
         return cursor.fetchall()
 
 
+def get_players_by_team():
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT t.team_name, p.player_id, p.player_name, p.deaths, p.gp_gained, p.tiles_completed, p.pet_count
+            FROM players p
+            JOIN teams t ON p.team_id = t.team_id
+            ORDER BY t.team_name, p.player_id
+        ''')
+        players = cursor.fetchall()
+
+    # Group players by team name
+    players_by_team = {}
+    for player in players:
+        team_name = player[0]
+        if team_name not in players_by_team:
+            players_by_team[team_name] = []
+        players_by_team[team_name].append(player[1:])
+
+    return players_by_team
+
+
 def get_players_by_team_id(team_id):
     with connect() as conn:
         cursor = conn.cursor()
@@ -164,6 +320,11 @@ def add_drop(team_id, player_id, player_name, drop_name, drop_value, drop_quanti
         cursor.execute("UPDATE Players SET gp_gained = gp_gained + %s WHERE player_id = %s",
                        (drop_value * drop_quantity, player_id))
 
+
+def remove_drop_by_pk(drop_pk):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM drops WHERE drops_pk = %s", (drop_pk,))
 
 def remove_drop(player_id, drop_name):
     with connect() as conn:
@@ -295,15 +456,30 @@ def add_tile(tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_uni
              tile_repetition, tile_points, tile_rules):
     with connect() as conn:
         cursor = conn.cursor()
+
+        # Start at 1 and increment upwards until we find an unused tile_id
+        available_id = 1
+        while True:
+            cursor.execute("SELECT 1 FROM tiles WHERE tile_id = %s", (available_id,))
+            if not cursor.fetchone():
+                break
+            available_id += 1
+
         if tile_unique_drops == "N/A" or tile_unique_drops == "":
             tile_unique_drops = "FALSE"
         if tile_triggers_required == "N/A" or tile_triggers_required == "":
             tile_triggers_required = 0
 
         cursor.execute(
-            "INSERT INTO tiles (tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required, tile_repetition, tile_points, tile_rules) VALUES (%s,%s,%s,%s,%s,%s,%s,%s, %s)",
-            (tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required,
-             tile_repetition, tile_points, tile_rules))
+            "INSERT INTO tiles (tile_id, tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops, tile_triggers_required, tile_repetition, tile_points, tile_rules) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+            (available_id, tile_name, tile_type, tile_triggers, tile_trigger_weights, tile_unique_drops,
+             tile_triggers_required, tile_repetition, tile_points, tile_rules))
+        conn.commit()
+    for x in tile_triggers.split(','):
+        for trigger in x.split('/'):
+            add_drop_whitelist(trigger.strip(), available_id)
+
+
 
 def update_tile_trigger(tile_id, tile_trigger):
     with connect() as conn:
@@ -361,7 +537,28 @@ def get_drops_by_item_name_and_team_id(item_name, team_id):
         cursor.execute("SELECT * FROM drops where team_id = %s and lower(drop_name) = lower(%s)", (team_id, item_name,))
         return cursor.fetchall()
 
+def update_player(player_id, player_name, deaths, gp_gained, tiles_completed, team_id, pet_count):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE players
+            SET player_name = %s, deaths = %s, gp_gained = %s, tiles_completed = %s, team_id = %s, pet_count = %s
+            WHERE player_id = %s
+        ''', (player_name, deaths, gp_gained, tiles_completed, team_id, pet_count, player_id))
+        conn.commit()
 
+
+def update_team_webhook(team_id, team_webhook):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE teams set team_webhook = %s where team_id = %s", (team_webhook, team_id,))
+        conn.commit()
+
+def get_drops_by_item_name(item_name):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM drops WHERE lower(drop_name) = lower(%s)", (item_name,))
+        return cursor.fetchall()
 # Functions for 'killcount' table
 def add_killcount(player_id, team_id, bossname, kills):
     with connect() as conn:
@@ -638,6 +835,16 @@ def reset_tables():
     print("All tables dropped successfully.")
     print("Recreating now...")
 
+    cursor.execute('''
+        CREATE TABLE users (
+            user_id SERIAL PRIMARY KEY,
+            username text NOT NULL,
+            email text NOT NULL UNIQUE,
+            password text NOT NULL,
+            is_admin boolean DEFAULT FALSE
+        )
+    ''')
+
     # Create the 'drops' table
 
     cursor.execute('''
@@ -658,7 +865,7 @@ def reset_tables():
                 tiles_completed real,
                 team_id integer,
                 pet_count integer,
-                FOREIGN KEY(team_id) REFERENCES teams(team_id)
+                FOREIGN KEY(team_id) REFERENCES teams(team_id) ON DELETE CASCADE
             )
             ''')
 
@@ -672,8 +879,8 @@ def reset_tables():
                 drop_quantity integer,
                 drop_source text,
                 drops_pk SERIAL PRIMARY KEY,
-                FOREIGN KEY(player_id) REFERENCES players(player_id),
-                FOREIGN KEY(team_id) REFERENCES teams(team_id)
+                FOREIGN KEY(player_id) REFERENCES players(player_id) ON DELETE CASCADE,
+                FOREIGN KEY(team_id) REFERENCES teams(team_id) ON DELETE CASCADE
             )
         ''')
 
@@ -684,8 +891,8 @@ def reset_tables():
                 boss_name text,
                 kills integer,
                 killcount_pk SERIAL PRIMARY KEY,
-                FOREIGN KEY(player_id) REFERENCES players(player_id),
-                FOREIGN KEY (team_id) REFERENCES teams(team_id)
+                FOREIGN KEY(player_id) REFERENCES players(player_id) ON DELETE CASCADE,
+                FOREIGN KEY (team_id) REFERENCES teams(team_id) ON DELETE CASCADE
             )''')
 
     cursor.execute('''
@@ -707,7 +914,7 @@ def reset_tables():
             CREATE TABLE drop_whitelist (
                 drop_name text PRIMARY KEY,
                 tile_id int,
-                FOREIGN KEY (tile_id) REFERENCES tiles(tile_id)
+                FOREIGN KEY (tile_id) REFERENCES tiles(tile_id) ON DELETE CASCADE
             )''')
 
     cursor.execute('''
@@ -715,8 +922,8 @@ def reset_tables():
                 team_id integer,
                 tile_id integer,
                 completed_tile_pk SERIAL PRIMARY KEY,
-                FOREIGN KEY (tile_id) REFERENCES tiles(tile_id),
-                FOREIGN KEY (team_id) REFERENCES teams(team_id)
+                FOREIGN KEY (tile_id) REFERENCES tiles(tile_id) ON DELETE CASCADE,
+                FOREIGN KEY (team_id) REFERENCES teams(team_id) ON DELETE CASCADE
             )
             ''')
 
@@ -727,9 +934,9 @@ def reset_tables():
                 tile_id integer,
                 progress real,
                 manual_tile_progress_pk SERIAL PRIMARY KEY,
-                FOREIGN KEY (team_id) REFERENCES teams(team_id),
-                FOREIGN KEY (tile_id) REFERENCES tiles(tile_id),
-                FOREIGN KEY (player_id) REFERENCES players(player_id)
+                FOREIGN KEY (team_id) REFERENCES teams(team_id) ON DELETE CASCADE,
+                FOREIGN KEY (tile_id) REFERENCES tiles(tile_id) ON DELETE CASCADE,
+                FOREIGN KEY (player_id) REFERENCES players(player_id) ON DELETE CASCADE
             )
             ''')
 
@@ -751,9 +958,9 @@ def reset_tables():
                 tile_id integer,
                 chat text,
                 chats_pk SERIAL PRIMARY KEY,
-                FOREIGN KEY(team_id) REFERENCES teams(team_id),
-                FOREIGN KEY(player_id) REFERENCES players(player_id),
-                FOREIGN KEY(tile_id) REFERENCES tiles(tile_id)                
+                FOREIGN KEY(team_id) REFERENCES teams(team_id) ON DELETE CASCADE,
+                FOREIGN KEY(player_id) REFERENCES players(player_id) ON DELETE CASCADE,
+                FOREIGN KEY(tile_id) REFERENCES tiles(tile_id) ON DELETE CASCADE                
             )
             ''')
 
@@ -764,9 +971,9 @@ def reset_tables():
                 player_id integer,
                 partial_completion real,
                 partial_completion_pk SERIAL PRIMARY KEY,
-                FOREIGN KEY(team_id) REFERENCES teams(team_id),
-                FOREIGN KEY(tile_id) REFERENCES tiles(tile_id),
-                FOREIGN KEY(player_id) REFERENCES players(player_id)
+                FOREIGN KEY(team_id) REFERENCES teams(team_id) ON DELETE CASCADE,
+                FOREIGN KEY(tile_id) REFERENCES tiles(tile_id) ON DELETE CASCADE,
+                FOREIGN KEY(player_id) REFERENCES players(player_id) ON DELETE CASCADE
             )
             ''')
 
@@ -779,9 +986,9 @@ def reset_tables():
                 drop_name text,
                 player_name text,
                 relevant_drops_pk SERIAL PRIMARY KEY,
-                FOREIGN KEY(team_id) REFERENCES teams(team_id),
-                FOREIGN KEY(tile_id) REFERENCES tiles(tile_id),
-                FOREIGN KEY(player_id) REFERENCES players(player_id)    
+                FOREIGN KEY(team_id) REFERENCES teams(team_id) ON DELETE CASCADE,
+                FOREIGN KEY(tile_id) REFERENCES tiles(tile_id) ON DELETE CASCADE,
+                FOREIGN KEY(player_id) REFERENCES players(player_id) ON DELETE CASCADE
             )
             ''')
 

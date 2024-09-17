@@ -26,6 +26,7 @@ class Drop:
         self.drop_value = drop_tuple[4]
         self.drop_quantity = drop_tuple[5]
         self.drop_source = drop_tuple[6]
+        self.drop_pk = drop_tuple[7]
 
 
 class Killcount:

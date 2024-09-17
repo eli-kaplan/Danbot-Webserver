@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 style="text-align: center; color: #fff;">Add list of players for team {{ team_name }}</h1>
+<form action="{{ url_for('player_management.add_player_list', team_id=team_id) }}" method="POST" style="width: 600px; min-width: 600px; margin: 0 auto; background-color: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);">
+    <div style="margin-bottom: 15px;">
+        <label for="player_names" style="display: block; margin-bottom: 5px; color: #ccc;">Input all player names separated by new lines</label>
+        <textarea id="player_names" name="player_names" rows="10" required style="width: 100%; padding: 10px; border: 1px solid #444; border-radius: 5px; background-color: #333; color: #ccc; box-sizing: border-box; resize: vertical;"></textarea>
+    </div>
+    <button type="submit" style="width: 100%; padding: 10px; background-color: #444; color: #fff; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">Create Player</button>
+</form>
+{% endblock %}

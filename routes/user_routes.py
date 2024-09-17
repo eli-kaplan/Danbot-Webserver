@@ -169,6 +169,8 @@ def player(player_name):
     return render_template('user_templates/player.html', player=player, drops=drops, killcount=killcount, team=team, playernames=autocomplete.player_names(), partial_completions=round(partial_completions, 2), relevant_drops=relevant_drops)
 
 
+
+
 @user_routes.route('/leaderboard', methods=['GET'])
 def leaderboard():
     most_deaths_player = None
