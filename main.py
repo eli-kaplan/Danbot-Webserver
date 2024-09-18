@@ -4,6 +4,7 @@ from flask import Flask, request, render_template, make_response, redirect, url_
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 
 from routes.admin.player_routes import player_routes
+from routes.admin.relevant_drops_routes import relevant_drop_routes
 from routes.admin.team_routes import team_routes
 from routes.admin.tile_routes import tile_routes
 from routes.tutorial_routes import tutorial_routes
@@ -91,6 +92,7 @@ app.register_blueprint(tutorial_routes, url_prefix="/tutorial")
 app.register_blueprint(tile_routes, url_prefix="/tile")
 app.register_blueprint(team_routes, url_prefix="/team")
 app.register_blueprint(player_routes, url_prefix="/player")
+app.register_blueprint(relevant_drop_routes, url_prefix="/relevant_drop")
 
 def start_bot():
     bot.run()

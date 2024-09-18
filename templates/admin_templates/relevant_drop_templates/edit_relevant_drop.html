@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 style="text-align: center; color: #fff;">Edit Relevant Drop</h1>
+<form method="POST" action="{{ url_for('relevant_drop_management.edit_relevant_drop', relevant_drops_pk=relevant_drop[6]) }}" style="width: 600px; margin: 0 auto; background-color: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);">
+
+    <!-- Tile Name Field -->
+    <div style="margin-bottom: 15px;">
+        <label for="tile_name" style="color: #ccc;">Tile Name:</label>
+        <input type="text" id="tile_name" name="tile_name" value="{{ relevant_drop[3] }}" required style="width: 100%; padding: 10px; border: 1px solid #444; border-radius: 5px; background-color: #333; color: #ccc; box-sizing: border-box;" list="tileNames" autocomplete="off">
+        <datalist id="tileNames">
+            {% for tile_name in tile_types.keys() %}
+            <option value="{{ tile_name }}">{{ tile_name }}</option>
+            {% endfor %}
+        </datalist>
+    </div>
+
+    <!-- Drop Name Field (Auto-filled based on triggers) -->
+    <div style="margin-bottom: 15px;">
+        <label for="drop_name" style="color: #ccc;">Drop Name:</label>
+        <input type="text" id="drop_name" name="drop_name" value="{{ relevant_drop[4] }}" required style="width: 100%; padding: 10px; border: 1px solid #444; border-radius: 5px; background-color: #333; color: #ccc; box-sizing: border-box;" list="dropNames" autocomplete="off">
+        <datalist id="dropNames"></datalist>
+    </div>
+
+    <!-- Player Name Field -->
+    <div style="margin-bottom: 15px;">
+        <label for="player_name" style="color: #ccc;">Player Name:</label>
+        <input type="text" id="player_name" name="player_name" value="{{ relevant_drop[5] }}" required style="width: 100%; padding: 10px; border: 1px solid #444; border-radius: 5px; background-color: #333; color: #ccc; box-sizing: border-box;">
+    </div>
+
+    <button type="submit" style="width: 100%; padding: 10px; background-color: #444; color: #fff; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">Update Relevant Drop</button>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.querySelector("form");
+        const tileTriggers = {{ tile_triggers | tojson }}; // Tile triggers by tile name
+
+        const tileInput = document.getElementById("tile_name");
+        const dropInput = document.getElementById("drop_name");
+        const dataList = document.getElementById("dropNames");
+
+        // Function to populate drop name options based on the tile
+        function populateDropOptions(tileName) {
+            dropInput.value = "";
+            dataList.innerHTML = "";
+
+            if (tileTriggers[tileName]) {
+                tileTriggers[tileName].forEach(trigger => {
+                    const option = document.createElement("option");
+                    option.value = trigger;
+                    dataList.appendChild(option);
+                });
+
+                // Automatically select the first trigger as the drop name if available
+                if (tileTriggers[tileName].length > 0) {
+                    dropInput.value = tileTriggers[tileName][0];
+                }
+            }
+        }
+
+        // Event listener for changes in the tile name field
+        tileInput.addEventListener("input", function() {
+            const tileName = this.value.trim();
+            populateDropOptions(tileName);
+        });
+
+        // Populate drop names on page load if a tile is already selected
+        populateDropOptions(tileInput.value.trim());
+    });
+</script>
+{% endblock %}

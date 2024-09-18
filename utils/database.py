@@ -1053,4 +1053,70 @@ def read_teams(file_name):
 
     return teams
 
+def get_relevant_drop_by_id(drop_pk):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM relevant_drops WHERE relevant_drops_pk = %s", (drop_pk,))
+        return cursor.fetchone()
 
+
+def update_relevant_drop(relevant_drops_pk, new_tile_name, new_drop_name, new_player_name):
+    with connect() as conn:
+        cursor = conn.cursor()
+
+        # Fetch tile_id from the new tile_name
+        cursor.execute("SELECT tile_id FROM tiles WHERE lower(tile_name) = lower(%s)", (new_tile_name,))
+        tile = cursor.fetchone()
+        if not tile:
+            raise ValueError(f"Tile with name {new_tile_name} does not exist.")
+        new_tile_id = tile[0]
+
+        # Update the relevant drop record with the new details
+        cursor.execute('''
+            UPDATE relevant_drops
+            SET tile_id = %s, tile_name = %s, drop_name = %s, player_name = %s
+            WHERE relevant_drops_pk = %s
+        ''', (new_tile_id, new_tile_name, new_drop_name, new_player_name, relevant_drops_pk))
+
+        conn.commit()
+
+def get_tile_triggers():
+    """
+    Fetches all tiles and their associated triggers from the database and
+    returns them as a dictionary where the key is the tile name and the value is a list of triggers.
+    """
+    with connect() as conn:
+        cursor = conn.cursor()
+
+        # Query to fetch tile names and their associated triggers
+        cursor.execute("SELECT tile_name, tile_triggers FROM tiles")
+
+        # Fetch all rows from the result
+        rows = cursor.fetchall()
+
+        # Create a dictionary mapping tile_name to a list of triggers
+        tile_triggers = {}
+        for row in rows:
+            tile_name = row[0]
+            triggers = row[1].split(',') if row[1] else []  # Split the trigger string into a list
+            tile_triggers[tile_name] = triggers
+
+    return tile_triggers
+
+def get_tile_types():
+    """
+    Fetches all tiles and their types from the database.
+    Returns a dictionary where the key is the tile name and the value is its type.
+    """
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT tile_name, tile_type FROM tiles")
+        rows = cursor.fetchall()
+
+        tile_types = {}
+        for row in rows:
+            tile_name = row[0]
+            tile_type = row[1]
+            tile_types[tile_name] = tile_type
+
+    return tile_types

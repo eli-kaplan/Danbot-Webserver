@@ -163,6 +163,7 @@ def player(player_name):
     for relevant_drop in database.get_relevant_drop_by_player_id(player.player_id):
         relevant_drop = db_entities.RelevantDrop(relevant_drop)
         relevant_drops.append(relevant_drop)
+
     if len(relevant_drops) > 0:
         relevant_drops = sorted(relevant_drops, key=lambda relevant_drop: relevant_drop.tile_name, reverse=True)
 
@@ -242,8 +243,8 @@ def leaderboard():
     for key, value in player_partials.items():
         player_partials[key] = round(value, 2)
 
-    most_tiles_player.tiles_completed = round(most_tiles_player.tiles_completed, 2)
-
+    if most_tiles_player is not None:
+        most_tiles_player.tiles_completed = round(most_tiles_player.tiles_completed, 2)
     partial_tiles = round(partial_tiles, 2)
 
     return render_template('user_templates/leaderboard.html', teams=teams, players=players, most_tiles_player=most_tiles_player,

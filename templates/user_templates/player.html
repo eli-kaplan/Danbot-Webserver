@@ -1,21 +1,32 @@
 {% extends "base.html" %}
-/* https://docs.wiseoldman.net/names-api/name-endpoints */
-/* https://api.wiseoldman.net/v2/names?username=smoakherb&limit=1 */
 {% block content %}
 <title>{{ player.player_name }}</title>
     <style>
+        .main-content {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .left-column, .right-column {
+            width: 48%; /* Make the columns roughly half the width */
+            display: flex;
+            flex-direction: column;
+        }
+
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+            border-collapse: separate;
+            border-spacing: 0;
             font-family: Arial, sans-serif; /* Use a readable font */
+            border-radius: 8px; /* Beveled edges for the table */
+            overflow: hidden; /* Ensure the border-radius affects the table */
+            margin-bottom: 20px; /* Add space between tables */
         }
 
         th {
             background-color: #333; /* Darker background for navbar */
             color: white;
-            position: sticky;
-            top: 0;
             font-size: 16px; /* Larger font size for header */
         }
 
@@ -23,6 +34,20 @@
             border: 1px solid #ddd;
             padding: 15px;
             text-align: left;
+        }
+
+        /* Ensure border-radius is applied on table corners */
+        th:first-child {
+            border-top-left-radius: 8px;
+        }
+        th:last-child {
+            border-top-right-radius: 8px;
+        }
+        tr:last-child td:first-child {
+            border-bottom-left-radius: 8px;
+        }
+        tr:last-child td:last-child {
+            border-bottom-right-radius: 8px;
         }
 
         tr:nth-child(even) {
@@ -33,17 +58,10 @@
             background-color: #444; /* Slightly darker hover effect */
         }
 
-        /* Optional: Remove borders or adjust as needed */
-        /* table {
-            border: none;
-        } */
-
-        /* Optional: Add spacing between rows */
         tr {
             margin-bottom: 5px;
         }
 
-        /* Optional: Style the search bar and header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -73,6 +91,36 @@
         a {
             color: white;
         }
+
+        /* Ensure buttons are displayed inline */
+        .action-buttons {
+            display: flex;
+            gap: 10px; /* Add space between buttons */
+        }
+
+        .action-buttons form {
+            display: inline;
+        }
+
+        .action-buttons button {
+            padding: 5px 10px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Hover state for edit button */
+        .action-buttons button:hover {
+            background-color: limegreen;
+        }
+
+        /* Hover state for delete button */
+        .delete-button:hover {
+            background-color: red !important;
+        }
     </style>
 
     <script>
@@ -84,71 +132,129 @@
     </script>
 </head>
 <body>
-    <div class="content">
-        <div class="header">
-            <h1><a href="/user/team/{{ team.team_name }}">{{team.team_name}}</a></h1>
-            <form onsubmit="submitForm(event)" class="search-bar">
-                <datalist id="player-names">
-                    {% for playername in playernames %}
-                    <option value="{{playername}}">
-                    {% endfor %}
-                </datalist>
-                <input type="text" id="searchbox" name="searchboxcontent" placeholder="Search..." list="player-names" autocomplete="off">
-                <input type="submit" value="Search">
-            </form>
+    <div class="header">
+        <h1><a href="/user/team/{{ team.team_name }}">{{team.team_name}}</a></h1>
+        <form onsubmit="submitForm(event)" class="search-bar">
+            <datalist id="player-names">
+                {% for playername in playernames %}
+                <option value="{{playername}}">
+                {% endfor %}
+            </datalist>
+            <input type="text" id="searchbox" name="searchboxcontent" placeholder="Search..." list="player-names" autocomplete="off">
+            <input type="submit" value="Search">
+        </form>
+    </div>
+    <div class="header" style="justify-content: center;">
+        <h1>{{player.player_name}}</h1>
+    </div>
+
+    {% if current_user.is_authenticated and current_user.is_admin %}
+    <div class="action-buttons" style="margin-left: 20px;">
+        <form action="/player/edit/{{ player.player_id }}" method="GET">
+            <button>Edit Player</button>
+        </form>
+        <form action="/player/delete/{{ player.player_id }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this player?');">
+            <button class="delete-button">Delete Player</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <div class="main-content">
+        <!-- Left Column: Player Stats and Killcounts -->
+        <div class="left-column">
+            <h2>Player Stats</h2>
+            <table>
+                <tr>
+                    <th>Tiles Completed</th>
+                    <th>Gold Gained</th>
+                    <th>Pets Gained</th>
+                    <th>Total Deaths</th>
+                </tr>
+                <tr>
+                    <td>{{ player.tiles_completed }}{% if partial_completions > 0 %} ({{ partial_completions }}){% endif %}</td>
+                    <td>{{player.gp_gained}}</td>
+                    <td>{{player.pet_count}} pets</td>
+                    <td>{{player.deaths}}</td>
+                </tr>
+            </table>
+
+            <h2>Killcount</h2>
+            <table>
+                <tr>
+                    <th>Boss Name</th>
+                    <th>Kill Count</th>
+                </tr>
+                {% for kills in killcount %}
+                <tr>
+                    <td>{{ kills.boss_name }}</td>
+                    <td>{{ kills.kills }}</td>
+                </tr>
+                {% endfor %}
+            </table>
         </div>
-        <div class="header" style="justify-content: center;">
-            <h1>{{player.player_name}}</h1>
+
+        <!-- Right Column: Relevant Drops and All Drops -->
+        <div class="right-column">
+            <h2>Relevant Drops</h2>
+            <table>
+                <tr>
+                    <th>Tile Name</th>
+                    <th>Drop Name</th>
+                    {% if current_user.is_authenticated and current_user.is_admin %}
+                    <th>Actions</th>
+                    {% endif %}
+                </tr>
+                {% for relevant_drop in relevant_drops %}
+                <tr>
+                    <td>{{ relevant_drop.tile_name }}</td>
+                    <td>{{ relevant_drop.drop_name }}</td>
+                    {% if current_user.is_authenticated and current_user.is_admin %}
+                    <td>
+                        <div class="action-buttons">
+                            <form action="/relevant_drop/edit/{{ relevant_drop.relevant_drops_pk }}" method="GET">
+                                <button>Edit</button>
+                            </form>
+                            <form action="/relevant_drop/delete/{{ relevant_drop.relevant_drops_pk}}" method="POST" onsubmit="return confirm('Are you sure you want to delete this drop?');">
+                                <button class="delete-button">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+
+            <h2>Drops</h2>
+            <table>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Quantity</th>
+                    <th>Gold Gained</th>
+                    {% if current_user.is_authenticated and current_user.is_admin %}
+                    <th>Actions</th>
+                    {% endif %}
+                </tr>
+                {% for drop in drops %}
+                <tr>
+                    <td>{{ drop[0] }}</td>
+                    <td>{{ drop[1] }}</td>
+                    <td>{{ drop[2] }}</td>
+                    {% if current_user.is_authenticated and current_user.is_admin %}
+                    <td>
+                        <div class="action-buttons">
+                            <form action="/drop/{{ drop[3] }}/edit" method="GET">
+                                <button>Edit</button>
+                            </form>
+                            <form action="/drop/{{ drop[3] }}/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this drop?');">
+                                <button class="delete-button">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
         </div>
-        <table>
-            <tr>
-                <th>Tiles Completed: {{ player.tiles_completed }} {% if partial_completions > 0 %}({{ partial_completions }}){% endif %}</th>
-                <th>Gold gained: {{player.gp_gained}}</th>
-                <th>Pets gained: {{player.pet_count}} pets</th>
-                <th>Total Deaths: {{player.deaths}}</th>
-            </tr>
-        </table>
-        <h2>Relevant Drops</h2>
-        <table>
-            <tr>
-                <th>Tile name</th>
-                <th>Drop name</th>
-            </tr>
-            {% for relevant_drop in relevant_drops %}
-            <tr>
-                <td>{{ relevant_drop.tile_name }}</td>
-                <td>{{ relevant_drop.drop_name }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-        <h2>Killcount</h2>
-        <table>
-            <tr>
-                <th>Boss name</th>
-                <th>Kill count</th>
-            </tr>
-            {% for kills in killcount %}
-            <tr>
-                <td>{{ kills.boss_name }}</td>
-                <td>{{ kills.kills }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-        <h2>Drops</h2>
-        <table>
-            <tr>
-                <th>Item name</th>
-                <th>Quantity</th>
-                <th>Gold gained</th>
-            </tr>
-            {% for drop in drops %}
-            <tr>
-                <td>{{ drop[0] }}</td>
-                <td>{{ drop[1] }}</td>
-                <td>{{ drop[2] }}</td>
-            </tr>
-            {% endfor %}
-        </table>
     </div>
 </body>
 {% endblock %}

@@ -93,3 +93,4 @@ class RelevantDrop:
         self.tile_name = relevant_drop_tuple[3]
         self.drop_name = relevant_drop_tuple[4]
         self.player_name = relevant_drop_tuple[5]
+        self.relevant_drops_pk = relevant_drop_tuple[6]

@@ -21,7 +21,7 @@ def player_list():
 API_KEY = "o901h0ovbwg1t8q3w9jbybee"
 DISCORD_NAME = "danny0897"
 
-@player_routes.route('players/add_list/<int:team_id>', methods=['GET', 'POST'])
+@player_routes.route('/add_list/<int:team_id>', methods=['GET', 'POST'])
 @admin_required
 def add_player_list(team_id):
     team = get_team_by_id(team_id)
@@ -69,7 +69,7 @@ def add_player_list(team_id):
     return render_template('admin_templates/player_templates/new_player_list.html', team_name=team_name, team_id=team_id)
 
 
-@player_routes.route('/players/new', methods=['GET', 'POST'])
+@player_routes.route('/new', methods=['GET', 'POST'])
 @admin_required
 def create_player():
     teams = get_teams()  # Fetch all teams to get their names
@@ -113,7 +113,7 @@ def create_player():
 
 
 
-@player_routes.route('/players/edit/<int:player_id>', methods=['GET', 'POST'])
+@player_routes.route('/edit/<int:player_id>', methods=['GET', 'POST'])
 @admin_required
 def edit_player(player_id):
     player = get_player_by_id(player_id)
@@ -138,7 +138,7 @@ def edit_player(player_id):
     return render_template('admin_templates/player_templates/edit_player.html', player=player, teams=teams)
 
 
-@player_routes.route('/players/delete/<int:player_id>', methods=['POST'])
+@player_routes.route('/delete/<int:player_id>', methods=['GET','POST'])
 @admin_required
 def delete_player(player_id):
     remove_player(player_id)
