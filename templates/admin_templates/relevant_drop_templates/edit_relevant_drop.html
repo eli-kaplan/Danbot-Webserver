@@ -25,7 +25,12 @@
     <!-- Player Name Field -->
     <div style="margin-bottom: 15px;">
         <label for="player_name" style="color: #ccc;">Player Name:</label>
-        <input type="text" id="player_name" name="player_name" value="{{ relevant_drop[5] }}" required style="width: 100%; padding: 10px; border: 1px solid #444; border-radius: 5px; background-color: #333; color: #ccc; box-sizing: border-box;">
+        <input type="text" id="player_name" name="player_name" value="{{ relevant_drop[5] }}" required style="width: 100%; padding: 10px; border: 1px solid #444; border-radius: 5px; background-color: #333; color: #ccc; box-sizing: border-box;" list="playerNames" autocomplete="off">
+        <datalist id="playerNames">
+            {% for player_name in player_names %}
+            <option value="{{ player_name }}">{{ player_name }}</option>
+            {% endfor %}
+        </datalist>
     </div>
 
     <button type="submit" style="width: 100%; padding: 10px; background-color: #444; color: #fff; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">Update Relevant Drop</button>
@@ -35,6 +40,7 @@
     document.addEventListener("DOMContentLoaded", function() {
         const form = document.querySelector("form");
         const tileTriggers = {{ tile_triggers | tojson }}; // Tile triggers by tile name
+        const currentDropName = "{{ relevant_drop[4] }}"; // Current drop name from the relevant drop
 
         const tileInput = document.getElementById("tile_name");
         const dropInput = document.getElementById("drop_name");
@@ -42,7 +48,7 @@
 
         // Function to populate drop name options based on the tile
         function populateDropOptions(tileName) {
-            dropInput.value = "";
+            dropInput.value = currentDropName;  // Default to the existing drop name
             dataList.innerHTML = "";
 
             if (tileTriggers[tileName]) {
@@ -52,8 +58,8 @@
                     dataList.appendChild(option);
                 });
 
-                // Automatically select the first trigger as the drop name if available
-                if (tileTriggers[tileName].length > 0) {
+                // If the current drop name is not in the list of triggers, set the first trigger as default
+                if (!tileTriggers[tileName].includes(currentDropName) && tileTriggers[tileName].length > 0) {
                     dropInput.value = tileTriggers[tileName][0];
                 }
             }

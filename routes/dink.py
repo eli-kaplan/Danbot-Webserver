@@ -76,7 +76,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
 
         # Add the item to the database
         print(f"LOOT: {player.player_name} - {itemName} x {itemQuantity} ({itemQuantity * itemPrice})")
-        database.add_drop(team.team_id, player.player_id, rsn, itemName, item_each, itemQuantity, itemSource)
+        drop_pk = database.add_drop(team.team_id, player.player_id, rsn, itemName, item_each, itemQuantity, itemSource)
 
         # If the item is relevant
         if database.get_drop_whitelist_by_item_name(itemName) is not None:
@@ -93,7 +93,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                 if tile_completion_count >= tile.tile_repetition:
                     continue
 
-                database.add_relevant_drop(team.team_id, player.player_id, tile.tile_id, tile.tile_name, itemName, player.player_name)
+                database.add_relevant_drop(team.team_id, player.player_id, tile.tile_id, tile.tile_name, itemName, player.player_name, drop_pk)
                 # Find the weight of the trigger and add the proportion to the players tile completions
                 for i in range(len(tile.tile_triggers.split(','))):
                     for trigger in tile.tile_triggers.split(',')[i].split('/'):
@@ -155,7 +155,7 @@ def parse_loot(data, img_file) -> dict[str, list[str]]:
                 if tile_completion_count >= tile.tile_repetition:
                     continue
 
-                database.add_relevant_drop(team.team_id, player.player_id, tile.tile_id, tile.tile_name, itemName, player.player_name)
+                database.add_relevant_drop(team.team_id, player.player_id, tile.tile_id, tile.tile_name, itemName, player.player_name, drop_pk)
                 color = 16776960 # Yellow by default
                 description = "You are still missing\n" # Assume set is not completed
                 missing_items = []
@@ -316,7 +316,15 @@ def parse_kill_count(data, img_file) -> dict[str, list[str]]:
         elif boss_name.lower() == "TzTok-Jad".lower() or boss_name.lower() == "TzTok-Zuk".lower() or boss_name.lower() == "Sol-Heredit".lower():
             send_webhook(team.team_webhook, f"{player.player_name} killed {boss_name}! You are {(team_killcount % tile.tile_triggers_required)}/{tile.tile_triggers_required} from completing {tile.tile_name}",
                          description="", color=16776960, image=img_file)
-            database.add_relevant_drop(team.team_id, player.player_id, tile.tile_id, tile.tile_name, boss_name, player.player_name)
+            drop_name = ""
+            if boss_name.lower() == "TzTok-Jad".lower():
+                drop_name = "Fire cape"
+            if boss_name.lower() == "TzTok-Zuk".lower():
+                drop_name = "Infernal cape"
+            if boss_name.lower() == "Sol-Heredit".lower():
+                drop_name = "Dizana's quiver"
+            drop_pk = database.add_drop(team.team_id, player.player_id, player.player_name, drop_name, 0, 1, boss_name.lower())
+            database.add_relevant_drop(team.team_id, player.player_id, tile.tile_id, tile.tile_name, boss_name, player.player_name, drop_pk)
     return True
 
 
@@ -553,7 +561,7 @@ def parse_json_data(json_data, img_file) -> dict[str, list[str]]:
         elif type == 'BARBARIAN_ASSAULT_GAMBLE':
             return parse_barbarian_assault_gamble(data)
         elif type == 'PLAYER_KILL':
-            return parse_player_kill(data)
+            return # parse_player_kill(data)
         elif type == 'GROUP_STORAGE':
             return parse_group_storage(data)
         elif type == 'GRAND_EXCHANGE':

@@ -163,7 +163,6 @@ def player(player_name):
     for relevant_drop in database.get_relevant_drop_by_player_id(player.player_id):
         relevant_drop = db_entities.RelevantDrop(relevant_drop)
         relevant_drops.append(relevant_drop)
-
     if len(relevant_drops) > 0:
         relevant_drops = sorted(relevant_drops, key=lambda relevant_drop: relevant_drop.tile_name, reverse=True)
 
@@ -189,6 +188,8 @@ def leaderboard():
     total_pets = 0
     total_tiles = 0
 
+    teams_gp_earned = defaultdict(int)
+
     players = []
     for player in database.get_players():
         player = db_entities.Player(player)
@@ -198,6 +199,8 @@ def leaderboard():
         total_deaths += player.deaths
         total_pets += player.pet_count
         total_tiles += player.tiles_completed
+
+        teams_gp_earned[player.team_id] = teams_gp_earned[player.team_id] + player.gp_gained
 
         if player.tiles_completed >= most_tiles:
             most_tiles = player.tiles_completed
@@ -225,7 +228,7 @@ def leaderboard():
     for team in database.get_teams():
         teams.append(db_entities.Team(team))
 
-    teams = sorted(teams, key=lambda team: team.team_points, reverse=True)
+    teams = sorted(teams, key=lambda team: (team.team_points, teams_gp_earned[team.team_id]), reverse=True)
 
     team_partial_tiles = defaultdict(int)
     player_partials = defaultdict(int)
@@ -251,4 +254,4 @@ def leaderboard():
                            most_gold_player=most_gold_player, most_pets_player=most_pets_player,
                            most_deaths_player=most_deaths_player,
                            total_pets=total_pets, total_tiles=total_tiles, total_gold=scapify.int_to_gp(total_gold),
-                           total_deaths=total_deaths, partial_tiles=partial_tiles, team_partial_tiles=team_partial_tiles, player_partials=player_partials)
+                           total_deaths=total_deaths, partial_tiles=partial_tiles, team_partial_tiles=team_partial_tiles, player_partials=player_partials, teams_gp_earned=teams_gp_earned)

@@ -314,11 +314,29 @@ def get_player_by_id(player_id):
 def add_drop(team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source):
     with connect() as conn:
         cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO drops (team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-            (team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source))
-        cursor.execute("UPDATE Players SET gp_gained = gp_gained + %s WHERE player_id = %s",
-                       (drop_value * drop_quantity, player_id))
+
+        # Insert the new drop and return the primary key
+        cursor.execute('''
+            INSERT INTO drops (team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            RETURNING drops_pk
+        ''', (team_id, player_id, player_name, drop_name, drop_value, drop_quantity, drop_source))
+
+        # Fetch the newly created primary key
+        drop_pk = cursor.fetchone()[0]
+
+        # Update the player's gp_gained based on the drop
+        cursor.execute('''
+            UPDATE Players 
+            SET gp_gained = gp_gained + %s 
+            WHERE player_id = %s
+        ''', (drop_value * drop_quantity, player_id))
+
+        # Commit the transaction
+        conn.commit()
+
+        # Return the primary key of the new drop
+        return drop_pk
 
 
 def remove_drop_by_pk(drop_pk):
@@ -770,13 +788,13 @@ def delete_chat(chats_pk):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM chats WHERE chats_pk = %s", (chats_pk,))
 
-def add_relevant_drop(team_id, player_id, tile_id, tile_name, drop_name, player_name):
+def add_relevant_drop(team_id, player_id, tile_id, tile_name, drop_name, player_name, drops_pk):
     with connect() as conn:
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO relevant_drops (team_id, player_id, tile_id, tile_name, drop_name, player_name)
-            VALUES (%s, %s, %s, %s, %s, %s)
-            ''', (team_id, player_id, tile_id, tile_name, drop_name, player_name))
+            INSERT INTO relevant_drops (team_id, player_id, tile_id, tile_name, drop_name, player_name, drops_pk)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            ''', (team_id, player_id, tile_id, tile_name, drop_name, player_name, drops_pk))
         conn.commit()
 
 def get_relevant_drop_by_player_id(player_id):
@@ -800,8 +818,63 @@ def get_relevant_drop_by_team_id_and_tile_id(team_id, tile_id):
 def delete_relevant_drop(relevant_drops_pk):
     with connect() as conn:
         cursor = conn.cursor()
+
+        # Fetch the relevant drop details: player_name, tile_id, drop_name
+        cursor.execute('''
+            SELECT player_name, tile_id, drop_name 
+            FROM relevant_drops 
+            WHERE relevant_drops_pk = %s
+        ''', (relevant_drops_pk,))
+        relevant_drop = cursor.fetchone()
+
+        if not relevant_drop:
+            raise ValueError(f"Relevant drop with ID {relevant_drops_pk} does not exist.")
+
+        player_name = relevant_drop[0]
+        tile_id = relevant_drop[1]
+        drop_name = relevant_drop[2]
+
+        # Fetch the trigger values and weights for the relevant tile
+        cursor.execute('''
+            SELECT tile_triggers, tile_trigger_weights, tile_triggers_required
+            FROM tiles 
+            WHERE tile_id = %s
+        ''', (tile_id,))
+        tile_data = cursor.fetchone()
+
+        if not tile_data:
+            raise ValueError(f"Tile with ID {tile_id} does not exist.")
+
+        tile_triggers = tile_data[0].split(',')
+        tile_trigger_weights = list(map(float, tile_data[1].split(',')))
+        tile_triggers_required = tile_data[2]
+
+        # Ensure the drop name exists in the tile triggers
+        if drop_name not in tile_triggers:
+            raise ValueError(f"Drop '{drop_name}' is not a valid trigger for tile ID {tile_id}.")
+
+        # Calculate the reduction amount using the drop trigger weight
+        drop_index = tile_triggers.index(drop_name)
+        drop_weight = tile_trigger_weights[drop_index]
+        reduction_amount = drop_weight / tile_triggers_required
+
+        # Update the player's partial completion, reducing by the calculated amount
+        cursor.execute('''
+            UPDATE partial_completions 
+            SET partial_completion = partial_completion - %s 
+            WHERE player_id = (
+                SELECT player_id FROM players WHERE lower(player_name) = lower(%s)
+            ) AND tile_id = %s
+        ''', (reduction_amount, player_name, tile_id))
+
+        # Delete the relevant drop
         cursor.execute("DELETE FROM relevant_drops WHERE relevant_drops_pk = %s", (relevant_drops_pk,))
-        conn.commit()
+
+        # Delete the associated drop in the drops table
+        cursor.execute("DELETE FROM drops WHERE drops_pk = (SELECT drops_pk FROM relevant_drops WHERE relevant_drops_pk = %s)", (relevant_drops_pk,))
+
+        # Commit
+
 
 
 def change_player_team(player_id, new_team_id):
@@ -834,16 +907,6 @@ def reset_tables():
 
     print("All tables dropped successfully.")
     print("Recreating now...")
-
-    cursor.execute('''
-        CREATE TABLE users (
-            user_id SERIAL PRIMARY KEY,
-            username text NOT NULL,
-            email text NOT NULL UNIQUE,
-            password text NOT NULL,
-            is_admin boolean DEFAULT FALSE
-        )
-    ''')
 
     # Create the 'drops' table
 
@@ -985,7 +1048,9 @@ def reset_tables():
                 tile_name text,
                 drop_name text,
                 player_name text,
+                drops_pk SERIAL,
                 relevant_drops_pk SERIAL PRIMARY KEY,
+                FOREIGN KEY(drops_pk) REFERENCES  drops(drops_pk) ON DELETE CASCADE,
                 FOREIGN KEY(team_id) REFERENCES teams(team_id) ON DELETE CASCADE,
                 FOREIGN KEY(tile_id) REFERENCES tiles(tile_id) ON DELETE CASCADE,
                 FOREIGN KEY(player_id) REFERENCES players(player_id) ON DELETE CASCADE
@@ -1071,14 +1136,119 @@ def update_relevant_drop(relevant_drops_pk, new_tile_name, new_drop_name, new_pl
             raise ValueError(f"Tile with name {new_tile_name} does not exist.")
         new_tile_id = tile[0]
 
-        # Update the relevant drop record with the new details
+        # Get the trigger value and trigger weight for the tile
+        cursor.execute('''
+            SELECT tile_triggers, tile_trigger_weights, tile_triggers_required
+            FROM tiles 
+            WHERE tile_id = %s
+        ''', (new_tile_id,))
+        tile_data = cursor.fetchone()
+        tile_triggers = tile_data[0].split(',')  # Each trigger can be a group
+        tile_trigger_weights = list(map(float, tile_data[1].split(',')))
+        tile_trigger_weight_required = tile_data[2]
+
+        # Parse triggers and associate them with weights
+        trigger_to_weight_map = {}
+        for i, trigger_group in enumerate(tile_triggers):
+            triggers = [t.strip() for t in trigger_group.split('/')]  # Split by '/'
+            weight = tile_trigger_weights[i]
+            for trigger in triggers:
+                trigger_to_weight_map[trigger] = weight
+
+        # Ensure the new drop name exists in the tile triggers
+        if new_drop_name not in trigger_to_weight_map:
+            raise ValueError(f"Drop '{new_drop_name}' is not a valid trigger for tile '{new_tile_name}'.")
+
+        # Get the trigger weight for this drop
+        drop_weight = trigger_to_weight_map[new_drop_name]
+
+        # Fetch the old player associated with this relevant drop and the old tile
+        cursor.execute('''
+            SELECT player_name, tile_id, player_id 
+            FROM relevant_drops 
+            WHERE relevant_drops_pk = %s
+        ''', (relevant_drops_pk,))
+        old_relevant_drop = cursor.fetchone()
+        old_player_name = old_relevant_drop[0]
+        old_tile_id = old_relevant_drop[1]
+        old_player_id = old_relevant_drop[2]
+
+        # Calculate the reduction amount for the old player's partial completion
+        reduction_amount = drop_weight / tile_trigger_weight_required
+
+        # Reduce the old player's partial completion for the tile
+        cursor.execute('''
+            UPDATE partial_completions 
+            SET partial_completion = partial_completion - %s 
+            WHERE player_id = %s AND tile_id = %s
+        ''', (reduction_amount, old_player_id, old_tile_id))
+
+        # Fetch the new player's player_id and team_id
+        cursor.execute('''
+            SELECT player_id, team_id 
+            FROM players 
+            WHERE lower(player_name) = lower(%s)
+        ''', (new_player_name,))
+        new_player = cursor.fetchone()
+        if not new_player:
+            raise ValueError(f"Player with name {new_player_name} does not exist.")
+        new_player_id, new_team_id = new_player
+
+        # Add the completion amount to the new player
+        cursor.execute('''
+            UPDATE partial_completions 
+            SET partial_completion = partial_completion + %s 
+            WHERE player_id = %s AND tile_id = %s
+        ''', (reduction_amount, new_player_id, new_tile_id))
+
+        # Fetch the drop details (quantity and value) for calculating the gold gained
+        cursor.execute('''
+            SELECT drop_quantity, drop_value 
+            FROM drops 
+            WHERE drops_pk = (
+                SELECT drops_pk FROM relevant_drops WHERE relevant_drops_pk = %s
+            )
+        ''', (relevant_drops_pk,))
+        drop_data = cursor.fetchone()
+        drop_quantity, drop_value = drop_data
+
+        # Calculate the total gold for this drop
+        gold_gained = drop_quantity * drop_value
+
+        # Remove the gold gained from the old player
+        cursor.execute('''
+            UPDATE players 
+            SET gp_gained = gp_gained - %s 
+            WHERE player_id = %s
+        ''', (gold_gained, old_player_id))
+
+        # Add the gold gained to the new player
+        cursor.execute('''
+            UPDATE players 
+            SET gp_gained = gp_gained + %s 
+            WHERE player_id = %s
+        ''', (gold_gained, new_player_id))
+
+        # Update the relevant drop record with the new details (player_id, team_id, tile_id, tile_name, drop_name, player_name)
         cursor.execute('''
             UPDATE relevant_drops
-            SET tile_id = %s, tile_name = %s, drop_name = %s, player_name = %s
+            SET tile_id = %s, tile_name = %s, drop_name = %s, player_name = %s, player_id = %s, team_id = %s
             WHERE relevant_drops_pk = %s
-        ''', (new_tile_id, new_tile_name, new_drop_name, new_player_name, relevant_drops_pk))
+        ''', (new_tile_id, new_tile_name, new_drop_name, new_player_name, new_player_id, new_team_id, relevant_drops_pk))
+
+        # Also update the drop name, player, and team in the drops table for the relevant player
+        cursor.execute('''
+            UPDATE drops
+            SET drop_name = %s, team_id = %s, player_id = %s
+            WHERE drops_pk = (
+                SELECT drops_pk FROM relevant_drops WHERE relevant_drops_pk = %s
+            )
+        ''', (new_drop_name, new_team_id, new_player_id, relevant_drops_pk))
 
         conn.commit()
+
+
+
 
 def get_tile_triggers():
     """
@@ -1098,10 +1268,11 @@ def get_tile_triggers():
         tile_triggers = {}
         for row in rows:
             tile_name = row[0]
-            triggers = row[1].split(',') if row[1] else []  # Split the trigger string into a list
+            triggers = [trigger.strip() for trigger in row[1].replace('/', ',').split(',') if trigger]  # Split and strip
             tile_triggers[tile_name] = triggers
 
     return tile_triggers
+
 
 def get_tile_types():
     """
@@ -1120,3 +1291,34 @@ def get_tile_types():
             tile_types[tile_name] = tile_type
 
     return tile_types
+
+
+def get_drop_by_id(drop_pk):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM drops WHERE drops_pk = %s", (drop_pk,))
+        return cursor.fetchone()
+
+
+def update_drop(drop_pk, new_tile_name, new_drop_name, new_player_name, new_quantity, new_value):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE drops
+            SET tile_name = %s, drop_name = %s, player_name = %s, drop_quantity = %s, drop_value = %s
+            WHERE drops_pk = %s
+        ''', (new_tile_name, new_drop_name, new_player_name, new_quantity, new_value, drop_pk))
+        conn.commit()
+
+def delete_drop(drop_pk):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM drops WHERE drops_pk = %s", (drop_pk,))
+        conn.commit()
+
+
+def get_relevant_drops_by_item_name_and_team_id(item, team_id):
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM relevant_drops where team_id = %s and lower(drop_name) = lower(%s)", (team_id, item,))
+        return cursor.fetchall()

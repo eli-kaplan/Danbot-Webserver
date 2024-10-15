@@ -59,8 +59,8 @@ def submit_a_tile():
             json = award_drop_json(
                 request.form['ign'],
                 request.form['event_to_trigger'],
-                int(request.form['quantity']),
-                int(request.form['value'])
+                int(request.form['value']),
+                int(request.form['quantity'])
             )
             # Pass the image path to your parsing function or handle it accordingly
             dink.parse_loot(json, image_file)

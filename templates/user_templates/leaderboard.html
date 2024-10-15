@@ -85,12 +85,14 @@
             <tr>
                 <th>Rank</th>
                 <th>Team Name</th>
+                <th>Gold</th>
                 <th>Points</th>
             </tr>
             {% for team in teams %}
             <tr>
                 <td>{{ loop.index }}</td>
                 <td><a href="/user/team/{{team.team_name}}">{{ team.team_name }}</a></td>
+                <td>{{ teams_gp_earned[team.team_id] }}</td>
                 <td>
                     {{ team.team_points }}
                     {% if team_partial_tiles[team.team_id] > 0 %}
