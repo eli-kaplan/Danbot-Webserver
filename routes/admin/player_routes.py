@@ -49,7 +49,16 @@ def add_player_list(team_id):
                 players_to_add.append(player)
             elif response.status_code == 404:
                 response_suggestion = requests.get(f"https://api.wiseoldman.net/v2/players/search?username={player.strip().replace('-', '%20')}&limit=1")
-                flash(f'The given RSN {player} does not exist and was not added to the team. Did you mean {response_suggestion.json()[0]["displayName"]} instead?', 'danger')
+                response_data = response_suggestion.json()
+
+                if response_data and len(response_data) > 0:
+                    suggested_name = response_data[0]["displayName"]
+                    flash(
+                        f'The given RSN {player} does not exist and was not added to the team. Did you mean {suggested_name} instead?',
+                        'danger')
+                else:
+                    flash(f'The given RSN {player} does not exist and was not added to the team.', 'danger')
+
                 successful = False
                 continue
             else:
