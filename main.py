@@ -103,10 +103,10 @@ def create_app():
 if __name__ == "__main__":
     from waitress import serve
 
-    print("Starting bot....")
-    bot_thread = threading.Thread(target=start_bot)
-    bot_thread.start()
-    print("Bot started!")
+    #print("Starting bot....")
+    #bot_thread = threading.Thread(target=start_bot)
+    #bot_thread.start()
+    #print("Bot started!")
 
     print("Starting server...")
     port = os.environ.get('PORT', 80)
