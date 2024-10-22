@@ -1,7 +1,4 @@
-import teampassword
-import config
-import db_entities
-import database
+from  utils import teampassword, config, db_entities, database
 import os
 import random
 from flask import render_template
