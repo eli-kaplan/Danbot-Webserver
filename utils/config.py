@@ -14,7 +14,9 @@ def allow_db_reset() -> bool:
 def allow_view_board(is_admin: bool) -> bool:
     """Determines if board is visible
 
-    Env: BOARD_VISIBLE (defaults to true)
+    Envs: 
+        - BOARD_VISIBLE (defaults to true)
+        - ADMINS_CAN_VIEW_BOARD (defaults to true)
     
     Args:
         is_admin (bool): Whether current user is an admin
@@ -22,7 +24,9 @@ def allow_view_board(is_admin: bool) -> bool:
     Returns:
         bool: Should the board be visible?
     """
-    return to_bool(os.getenv("BOARD_VISIBLE", "TRUE")) or is_admin
+    board_visible = to_bool(os.getenv("BOARD_VISIBLE", "TRUE"))
+    admins_can_view_board = to_bool(os.getenv("ADMINS_CAN_VIEW_BOARD", "TRUE"))
+    return board_visible or (is_admin and admins_can_view_board)
 
 def enable_tracking() -> bool:
     """Determines if tracking is enabled
