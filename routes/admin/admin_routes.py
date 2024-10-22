@@ -6,7 +6,7 @@ from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 
 from routes import dink
-from utils import database, db_entities
+from utils import database, db_entities, config
 from utils.database import get_player_names, get_tile_names, get_tiles
 from utils.spoofed_jsons.spoof_chat import spoof_chat
 from utils.spoofed_jsons.spoof_drop import award_drop_json
@@ -102,6 +102,9 @@ def submit_a_tile():
 @admin_routes.route('/reset_database', methods=['GET', 'POST'])
 @admin_required
 def reset_database():
+    if not config.allow_db_reset():
+        flash("Database reset is disabled", "danger")
+        return redirect(url_for('home'))
     if not current_user.is_admin:
         flash("You do not have permission to access this page.", "danger")
         return redirect(url_for('home'))

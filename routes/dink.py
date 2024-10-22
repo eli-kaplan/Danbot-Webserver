@@ -4,7 +4,7 @@ from collections import defaultdict
 from flask import Blueprint, jsonify, request
 import json
 
-from utils import database, db_entities
+from utils import database, db_entities, config
 from utils.db_entities import Player, Team, Tile, Drop
 from utils.send_webhook import send_webhook
 
@@ -589,7 +589,7 @@ def parse_json_data(json_data, img_file) -> dict[str, list[str]]:
 
 @drop_submission_route.route('', methods=['POST'])
 def handle_request():
-    if os.getenv('TRACKING') == "FALSE":
+    if not config.enable_tracking():
         return jsonify({"message": "Not currently tracking"})
 
     data = request.form

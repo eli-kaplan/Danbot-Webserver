@@ -1,3 +1,5 @@
+# TODO: Deprecated
+
 import os
 
 import discord
@@ -7,9 +9,10 @@ from cogs.AdminCog import AdminCog
 from cogs.SubmitRequestCog import SubmitRequestCog
 from cogs.UserCog import UserCog
 from discord.ext import commands
+from utils import config
 
 bot = discord.Bot()
-token = os.getenv('DISCORD_BOT_TOKEN')
+token = config.get_discord_bot_token()
 
 
 @bot.event

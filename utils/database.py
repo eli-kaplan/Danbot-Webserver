@@ -901,8 +901,10 @@ def reset_tables():
         "SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';")
     tables = cursor.fetchall()
 
-    # Drop each table
+    # Drop each table (besides "users")
     for table in tables:
+        if table.lower() == "users":
+            continue
         cursor.execute(f"DROP TABLE IF EXISTS {table[0]} CASCADE;")
 
     print("All tables dropped successfully.")

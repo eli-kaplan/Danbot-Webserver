@@ -16,10 +16,11 @@ import os
 import threading
 import bot
 
+from utils import config
 from utils.database import add_user, get_user_by_email, check_password, get_user_by_id  # Import your database functions
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'development secret')
+app.secret_key =  config.get_flask_secret_key()
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -109,6 +110,5 @@ if __name__ == "__main__":
     #print("Bot started!")
 
     print("Starting server...")
-    port = os.environ.get('PORT', 80)
     print("Server started!")
-    serve(app, host="0.0.0.0", port=port)
+    serve(app, host="0.0.0.0", port=config.get_server_port())

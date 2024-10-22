@@ -5,7 +5,7 @@ from collections import defaultdict
 import discord
 from discord.ext import commands
 
-from utils import bingo, database, db_entities
+from utils import bingo, database, db_entities, config
 from utils.autocomplete import player_names, team_names, tile_names, fuzzy_autocomplete
 
 ftext = "\u001b["
@@ -61,7 +61,7 @@ class UserCog(commands.Cog):
     @discord.slash_command(name="dink", description="Use this command to get help setting up your dink plugin")
     async def dink(self, ctx:discord.ApplicationContext):
         await ctx.defer()
-        server_ip = os.getenv('SERVER_IP')
+        server_ip = config.get_server_ip()
         player_url = f"http://{server_ip}/tutorial/dink"
         await ctx.respond(player_url)
 
@@ -69,7 +69,7 @@ class UserCog(commands.Cog):
     async def player(self, ctx: discord.ApplicationContext,
                      player_name: discord.Option(str, "What is the username?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, player_names()))):
         await ctx.defer()
-        server_ip = os.getenv('SERVER_IP')
+        server_ip = config.get_server_ip()
         player_url = f"http://{server_ip}/user/player/{player_name.replace(' ', '%20')}"
         await ctx.respond(player_url)
 
@@ -77,7 +77,7 @@ class UserCog(commands.Cog):
     async def team(self, ctx: discord.ApplicationContext,
                    team_name: discord.Option(str, "What is the team name?", autocomplete=lambda ctx: fuzzy_autocomplete(ctx, team_names()))):
         await ctx.defer()
-        server_ip = os.getenv('SERVER_IP')
+        server_ip = config.get_server_ip()
         team_url = f"http://{server_ip}/user/team/{team_name.replace(' ', '%20')}"
         await ctx.respond(team_url)
 
@@ -171,6 +171,6 @@ class UserCog(commands.Cog):
     @discord.slash_command(name="leaderboard", description="Show the current standings amongst teams and players")
     async def leaderboard(self, ctx: discord.ApplicationContext):
         await ctx.defer()
-        server_ip = os.getenv('SERVER_IP')
+        server_ip = config.get_server_ip()
         leaderboard_url = f"http://{server_ip}/user/leaderboard"
         await ctx.respond(leaderboard_url)

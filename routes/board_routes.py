@@ -3,14 +3,15 @@ from collections import defaultdict
 import random
 
 from flask import render_template, Blueprint, request, jsonify, make_response, redirect, url_for
+from flask_login import current_user
 import math
-from utils import autocomplete, database, db_entities, bingo
+from utils import autocomplete, database, db_entities, bingo, config
 
 board_routes = Blueprint("board_routes", __name__)
 
 @board_routes.route('/compare', methods=['GET'])
 def compare():
-    if os.getenv('BOARD_VISIBLE') == "FALSE":
+    if not config.allow_view_board(current_user.is_authenticated and current_user.is_admin):
         return hidden_board()
 
     teams = []
@@ -49,7 +50,7 @@ class PanelData:
 
 @board_routes.route('/', methods=['GET'])
 def index():
-    if os.getenv('BOARD_VISIBLE') == "FALSE":
+    if not config.allow_view_board(current_user.is_authenticated and current_user.is_admin):
         return hidden_board()
     teams = []
     panelData = {}
@@ -124,7 +125,7 @@ def hidden_board():
 
 @board_routes.route('/<team_name>', methods=['GET'])
 def board(team_name):
-    if os.getenv('BOARD_VISIBLE') == "FALSE":
+    if not config.allow_view_board(current_user.is_authenticated and current_user.is_admin):
         return hidden_board()
 
 
