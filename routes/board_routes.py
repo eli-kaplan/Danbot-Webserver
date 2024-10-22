@@ -33,7 +33,7 @@ def is_team_authenticated(provided_pw: str, team_name: str) -> bool:
     try:
         team_entry = db_entities.Team(database.get_team_by_name(team_name)) 
 
-        return teampassword.calculate_team_password(team_entry) == provided_pw
+        return teampassword.calculate_team_password(team_entry.team_webhook) == provided_pw
     except:
         return False
 
