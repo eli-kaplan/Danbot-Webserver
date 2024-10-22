@@ -79,7 +79,7 @@ def index():
 
     team_name = request.cookies.get('teamname')
     if team_name:
-        return redirect(url_for('board_routes.board', team_name=team_name))
+        return redirect(url_for('board_routes.render_board', team_name=team_name))
     else:
         team = database.get_teams()
         if len(team) > 0:
