@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, Blueprint, flash, redirect, send_from_directory
+from flask import Flask, request, render_template, Blueprint, flash, redirect, send_from_directory, jsonify
 
 from utils.autocomplete import player_names
 from utils import config
@@ -138,4 +138,4 @@ def dink_config():
         "gambleEnabled":True
     }
 
-    return json.dumps(dink_plugin_config)
+    return jsonify(dink_plugin_config)
