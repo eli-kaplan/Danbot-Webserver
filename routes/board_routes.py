@@ -133,11 +133,15 @@ def render_board(team_name):
     # If user is authenticated for a particular team, only show this team name
     # Otherwise (tiles are globally visible), show all
     teams = []
+    team_names = []
     if authenticated_team != "":
         teams.append(team)
+        team_names.append(team_name)
     else:
         for t in database.get_teams():
-            teams.append(db_entities.Team(t))
+            team_entry = db_entities.Team(t)
+            teams.append(team_entry)
+            team_names.append(team_entry.team_name)
 
     # get tiles for board population
     tiles = []
@@ -175,7 +179,7 @@ def render_board(team_name):
 
 
     resp = make_response(render_template('board_templates/board.html', teams=teams, tiles=tiles, teamname=team_name,
-                           teamnames=autocomplete.team_names(),boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles, panelData=panelData))
+                           teamnames=team_names,boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles, panelData=panelData))
     resp.set_cookie('teamname', team_name)
     return resp
 
