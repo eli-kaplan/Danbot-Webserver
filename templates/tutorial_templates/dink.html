@@ -143,7 +143,7 @@
     <script>
     document.getElementById('copyButton').addEventListener('click', function() {
         var button = this
-        fetch('{{ url_for('static', filename='images/dink/dink.txt') }}')
+        fetch("{{ url_for('dinkconfig') }}")
         .then(response => response.text())
         .then(text => {
             navigator.clipboard.writeText(text)
