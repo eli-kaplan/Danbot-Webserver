@@ -85,7 +85,7 @@ def index():
         if len(team) > 0:
             team = team[0]
             team = db_entities.Team(team)
-            return board(team.team_name)
+            return render_board(team.team_name)
         else:
             return render_template('board_templates/board.html', teams=teams, tiles=tiles, teamname=team_name, teamnames=autocomplete.team_names(), boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles, panelData=panelData)
 
@@ -107,7 +107,7 @@ def get_progress():
 
 
 @board_routes.route('/<team_name>', methods=['GET'])
-def board(team_name):
+def render_board(team_name):
     team_password = request.args.get('pw') or None
     authenticated_team = ""
     if team_password is not None:
