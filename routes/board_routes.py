@@ -5,13 +5,41 @@ import random
 from flask import render_template, Blueprint, request, jsonify, make_response, redirect, url_for
 from flask_login import current_user
 import math
-from utils import autocomplete, database, db_entities, bingo, config
+from utils import autocomplete, database, db_entities, bingo, config, teampassword
 
 board_routes = Blueprint("board_routes", __name__)
 
+def is_board_globally_visible(current_user: object) -> bool:
+    """Determines if the board info is globally visible 
+
+    Args:
+        current_user (object): current user data
+
+    Returns:
+        bool: Whether the board should be shown
+    """
+    return config.allow_view_board(current_user.is_authenticated and current_user.is_admin)
+
+def is_team_authenticated(provided_pw: str, team_name: str) -> bool:
+    """Determines if the provided password is valid for a particular team ID
+
+    Args:
+        provided_pw (str): Password from URL
+        team_name (str): Team name
+
+    Returns:
+        bool: Whether this user is authorized to see this team's board
+    """
+    try:
+        team_entry = db_entities.Team(database.get_team_by_name(team_name)) 
+
+        return teampassword.calculate_team_password(team_entry) == provided_pw
+    except:
+        return False
+
 @board_routes.route('/compare', methods=['GET'])
 def compare():
-    if not config.allow_view_board(current_user.is_authenticated and current_user.is_admin):
+    if not is_board_globally_visible(current_user):
         return hidden_board()
 
     teams = []
@@ -50,8 +78,9 @@ class PanelData:
 
 @board_routes.route('/', methods=['GET'])
 def index():
-    if not config.allow_view_board(current_user.is_authenticated and current_user.is_admin):
+    if not is_board_globally_visible(current_user):
         return hidden_board()
+
     teams = []
     panelData = {}
     tile_id_to_name = {}
@@ -120,15 +149,21 @@ def hidden_board():
 
     random_file = select_random_file("static/hidden_board_memes")
     random_file = "hidden_board_memes/" + random_file
-    return render_template('board_templates/hidden_board.html', PageTitle="The Tiles Haven't Been Released Yet", FileName=random_file)
+    return render_template('board_templates/hidden_board.html', PageTitle="Board is hidden :)", FileName=random_file)
 
 
 @board_routes.route('/<team_name>', methods=['GET'])
 def board(team_name):
-    if not config.allow_view_board(current_user.is_authenticated and current_user.is_admin):
-        return hidden_board()
+    team_password = request.args.get('pw') or None
+    authenticated_team = ""
+    if team_password is not None:
+        if not is_team_authenticated(team_password, team_name):
+            return hidden_board()
 
-
+        authenticated_team = team_name
+    else:
+        if not is_board_globally_visible(current_user):
+            return hidden_board()
 
     panelData = {}
     tile_id_to_name = {}
@@ -141,9 +176,14 @@ def board(team_name):
         team = db_entities.Team(("None", 0, None, -1))
 
     # get list of teams for the dropdown menu
+    # If user is authenticated for a particular team, only show this team name
+    # Otherwise (tiles are globally visible), show all
     teams = []
-    for t in database.get_teams():
-        teams.append(db_entities.Team(t))
+    if authenticated_team != "":
+        teams.append(team)
+    else:
+        for t in database.get_teams():
+            teams.append(db_entities.Team(t))
 
     # get tiles for board population
     tiles = []
