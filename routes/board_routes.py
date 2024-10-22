@@ -5,42 +5,14 @@ import random
 from flask import render_template, Blueprint, request, jsonify, make_response, redirect, url_for
 from flask_login import current_user
 import math
-from utils import autocomplete, database, db_entities, bingo, config, teampassword
+from utils import autocomplete, database, db_entities, bingo, board
 
 board_routes = Blueprint("board_routes", __name__)
 
-def is_board_globally_visible(current_user: object) -> bool:
-    """Determines if the board info is globally visible 
-
-    Args:
-        current_user (object): current user data
-
-    Returns:
-        bool: Whether the board should be shown
-    """
-    return config.allow_view_board(current_user.is_authenticated and current_user.is_admin)
-
-def is_team_authenticated(provided_pw: str, team_name: str) -> bool:
-    """Determines if the provided password is valid for a particular team ID
-
-    Args:
-        provided_pw (str): Password from URL
-        team_name (str): Team name
-
-    Returns:
-        bool: Whether this user is authorized to see this team's board
-    """
-    try:
-        team_entry = db_entities.Team(database.get_team_by_name(team_name)) 
-
-        return teampassword.calculate_team_password(team_entry.team_webhook) == provided_pw
-    except:
-        return False
-
 @board_routes.route('/compare', methods=['GET'])
 def compare():
-    if not is_board_globally_visible(current_user):
-        return hidden_board()
+    if not board.is_board_globally_visible(current_user):
+        return board.hidden_board()
 
     teams = []
     for team in database.get_teams():
@@ -78,8 +50,8 @@ class PanelData:
 
 @board_routes.route('/', methods=['GET'])
 def index():
-    if not is_board_globally_visible(current_user):
-        return hidden_board()
+    if not board.is_board_globally_visible(current_user):
+        return board.hidden_board()
 
     teams = []
     panelData = {}
@@ -107,13 +79,13 @@ def index():
 
     team_name = request.cookies.get('teamname')
     if team_name:
-        return redirect(url_for('board_routes.board', team_name=team_name))
+        return redirect(url_for('board_routes.render_board', team_name=team_name))
     else:
         team = database.get_teams()
         if len(team) > 0:
             team = team[0]
             team = db_entities.Team(team)
-            return board(team.team_name)
+            return render_board(team.team_name)
         else:
             return render_template('board_templates/board.html', teams=teams, tiles=tiles, teamname=team_name, teamnames=autocomplete.team_names(), boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles, panelData=panelData)
 
@@ -134,36 +106,18 @@ def get_progress():
     return jsonify(progress.status_text)
 
 
-def select_random_file(directory):
-    # Get a list of all files in the directory
-    files = os.listdir(directory)
-
-    # Filter out directories, only keep files
-    files = [f for f in files if os.path.isfile(os.path.join(directory, f))]
-
-    # Select a random file
-    random_file = random.choice(files)
-
-    return random_file
-def hidden_board():
-
-    random_file = select_random_file("static/hidden_board_memes")
-    random_file = "hidden_board_memes/" + random_file
-    return render_template('board_templates/hidden_board.html', PageTitle="Board is hidden :)", FileName=random_file)
-
-
 @board_routes.route('/<team_name>', methods=['GET'])
-def board(team_name):
+def render_board(team_name):
     team_password = request.args.get('pw') or None
     authenticated_team = ""
     if team_password is not None:
-        if not is_team_authenticated(team_password, team_name):
-            return hidden_board()
+        if not board.is_team_authenticated(team_password, team_name):
+            return board.hidden_board()
 
         authenticated_team = team_name
     else:
-        if not is_board_globally_visible(current_user):
-            return hidden_board()
+        if not board.is_board_globally_visible(current_user):
+            return board.hidden_board()
 
     panelData = {}
     tile_id_to_name = {}
@@ -179,11 +133,15 @@ def board(team_name):
     # If user is authenticated for a particular team, only show this team name
     # Otherwise (tiles are globally visible), show all
     teams = []
+    team_names = []
     if authenticated_team != "":
         teams.append(team)
+        team_names.append(team_name)
     else:
         for t in database.get_teams():
-            teams.append(db_entities.Team(t))
+            team_entry = db_entities.Team(t)
+            teams.append(team_entry)
+            team_names.append(team_entry.team_name)
 
     # get tiles for board population
     tiles = []
@@ -221,7 +179,7 @@ def board(team_name):
 
 
     resp = make_response(render_template('board_templates/board.html', teams=teams, tiles=tiles, teamname=team_name,
-                           teamnames=autocomplete.team_names(),boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles, panelData=panelData))
+                           teamnames=team_names,boardsize=get_board_size(), tilenames=autocomplete.tile_names(), completed_tiles=completed_tiles, partial_tiles=partial_tiles, panelData=panelData))
     resp.set_cookie('teamname', team_name)
     return resp
 

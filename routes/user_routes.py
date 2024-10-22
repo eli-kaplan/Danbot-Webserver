@@ -1,12 +1,16 @@
 from collections import defaultdict
 
 from flask import render_template, Blueprint
-from utils import autocomplete, scapify, database, db_entities
+from utils import autocomplete, scapify, database, db_entities, board
+from flask_login import current_user
 
 user_routes = Blueprint("user_routes", __name__)
 
 @user_routes.route('/team/<team_name>')
 def team(team_name):
+    if not board.is_board_globally_visible(current_user):
+        return board.hidden_board()
+
     # Find team, if it doesn't exist make an empty none team
     try:
         team = database.get_team_by_name(team_name)
@@ -120,6 +124,9 @@ def team(team_name):
 
 @user_routes.route('/player/<player_name>')
 def player(player_name):
+    if not board.is_board_globally_visible(current_user):
+        return board.hidden_board()
+
     player = database.get_player_by_name(player_name)
     try:
         player = db_entities.Player(player)
@@ -173,6 +180,9 @@ def player(player_name):
 
 @user_routes.route('/leaderboard', methods=['GET'])
 def leaderboard():
+    if not board.is_board_globally_visible(current_user):
+        return board.hidden_board()
+
     most_deaths_player = None
     most_pets_player = None
     most_gold_player = None
