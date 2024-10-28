@@ -903,7 +903,7 @@ def reset_tables():
 
     # Drop each table (besides "users")
     for table in tables:
-        if table.lower() == "users":
+        if table[0].lower() == "users":
             continue
         cursor.execute(f"DROP TABLE IF EXISTS {table[0]} CASCADE;")
 
