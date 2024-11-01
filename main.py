@@ -27,7 +27,7 @@ login_manager.login_view = 'login'
 
 @app.context_processor
 def inject_is_dink_enabled():
-    return dict("enable_dink_setup", config.enable_dink_setup_page())
+    return dict(enable_dink_setup=config.enable_dink_setup_page())
 
 @login_manager.user_loader
 def load_user(user_id):
