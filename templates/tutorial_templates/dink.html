@@ -125,6 +125,7 @@
 <div class="header">
     <h1>Dink Setup</h1>
 </div>
+{% if enable_dink_setup %}
 <div class="step-block">
     <h2>Step 1 - Install Dink</h2>
     <p>Navigate to the plugin hub by clicking the wrench in the top right corner. Then click the plug as seen in the image below and search "Dink". Then click install.</p>
@@ -202,7 +203,7 @@
       <p>If you have any questions or are uncomfortable submitting your data, you can always submit your drops manually or reach out to Danbis (danny0897 on discord) for assistance.</p>
   </div>
 </div>
-
+{% endif %}
 
 
 {% endblock %}

@@ -25,6 +25,10 @@ app.secret_key =  config.get_flask_secret_key()
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+@app.context_processor
+def inject_is_dink_enabled():
+    return dict(enable_dink_setup=config.enable_dink_setup_page())
+
 @login_manager.user_loader
 def load_user(user_id):
     return get_user_by_id(user_id)

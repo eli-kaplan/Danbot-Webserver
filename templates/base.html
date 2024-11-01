@@ -286,7 +286,9 @@
             <a href="/user/team/None">Team Data</a>
             <a href="/board">Board</a>
             <a href="/board/compare">Compare Boards</a>
+            {% if enable_dink_setup %}
             <a href="/tutorial/dink">Dink Setup</a>
+            {% endif %}
             {% if current_user.is_authenticated and current_user.is_admin %}
             <div class="dropdown">
                 <span onclick="toggleDropdown()">

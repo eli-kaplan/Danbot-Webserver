@@ -11,6 +11,16 @@ def allow_db_reset() -> bool:
     """
     return to_bool(os.getenv("ALLOW_DB_RESET", "FALSE"))
 
+def enable_dink_setup_page() -> bool:
+    """Determines if Dink setup is allowed
+
+    Env: ALLOW_DINK_SETUP (defaults to false)
+
+    Returns:
+        bool: Allow Dink setup page to be shown?
+    """
+    return to_bool(os.getenv("ALLOW_DINK_SETUP", "FALSE"))
+
 def allow_view_board(is_admin: bool) -> bool:
     """Determines if board is visible
 
