@@ -65,7 +65,9 @@
             const tileTypes = {{ tile_types | tojson }};
             const sanitizedPlayerNames = playerNames.map(name => name.replace(/\r/g, ''));
             const quantityField = document.getElementById("quantity_field");
+            const quantityInput = document.getElementById("quantity");
             const valueField = document.getElementById("value_field");
+            const valueInput = document.getElementById("value");
 
             form.addEventListener("submit", function(event) {
                 const ign = document.getElementById("ign").value.trim();
@@ -122,9 +124,9 @@
                 // Show or hide quantity and value fields based on tile type
                 if (tileTypes[tileName] === 'DROP' || tileTypes[tileName] === 'SET') {
                     quantityField.style.display = 'block';
-                    quantityField.value = "1";
+                    quantityInput.value = 1;
                     valueField.style.display = 'block';
-                    valueField.value = "1";
+                    valueInput.value = 1;
                 } else if (tileTypes[tileName] == 'KILLCOUNT') {
                     quantityField.style.display = 'block';
                     valueField.style.display = 'none';
